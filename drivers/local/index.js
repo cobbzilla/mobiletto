@@ -1,19 +1,26 @@
+const { dirname } = require('path')
+
 const {
     M_FILE, M_DIR, M_LINK, M_SPECIAL,
-    MobilettoError, writeStream, closeStream, readCloseHandler, MobilettoNotFoundError
+    MobilettoError, writeStream, closeStream, MobilettoNotFoundError
 } = require('../../index')
 
 const fs = require('fs')
 
+const DEFAULT_MODE = '0700'
+
 class StorageClient {
     baseDir
-    constructor(baseDir) {
+    mode
+    constructor(baseDir, opts) {
         const resolved = this.resolveSymlinks(baseDir)
         if (!resolved.stat.isDirectory()) {
-            throw new MobilettoError(`local.storageClient: not a directory: ${baseDir}${symlinksFollowed ? ` (resolved to ${dir})` : ''}`)
+            const dest = resolved.path === baseDir ? null : resolved.path
+            throw new MobilettoError(`local.storageClient: not a directory: ${baseDir}${dest ? ` (resolved to ${dest})` : ''}`)
         }
         const dir = resolved.path
         this.baseDir = dir.endsWith('/') ? dir : dir + '/'
+        this.mode = opts && opts.mode ? opts.mode : DEFAULT_MODE
     }
     resolveSymlinks (path) {
         let stat = fs.lstatSync(path)
@@ -51,20 +58,24 @@ class StorageClient {
     }
     async list (path) {
         const dir = this.normalizePath(path)
-        const files = fs.readdirSync(dir)
-        return files.map(f => {
-            const stat = fs.lstatSync(dir + '/' + f)
-            const type = this.fileType(stat)
-            const entry = {
-                name: f,
-                type
-            }
-            if (type === M_LINK) {
-                const resolved = this.resolveSymlinks(dir + '/' + f)
-                entry.link = resolved.path
-            }
-            return entry
-        })
+        try {
+            const files = fs.readdirSync(dir)
+            return files.map(f => {
+                const stat = fs.lstatSync(dir + '/' + f)
+                const type = this.fileType(stat)
+                const entry = {
+                    name: f,
+                    type
+                }
+                if (type === M_LINK) {
+                    const resolved = this.resolveSymlinks(dir + '/' + f)
+                    entry.link = resolved.path
+                }
+                return entry
+            })
+        } catch (err) {
+            throw new MobilettoError(`list(${path}) error: ${err}`, err)
+        }
     }
     async metadata (path) {
         const file = this.normalizePath(path)
@@ -74,22 +85,51 @@ class StorageClient {
                 throw new MobilettoError(`metadata: lstat error`)
             }
             return {
-                name: file,
+                name: file.startsWith(this.baseDir) ? file.substring(this.baseDir.length) : file,
                 type: this.fileType(lstat),
                 size: lstat.size,
                 mtime: lstat.mtimeMs
             }
         } catch (err) {
             if (err.code && err.code === 'ENOENT') {
-                throw new MobilettoNotFoundError(err.message)
+                throw new MobilettoNotFoundError(path)
             }
-            throw err
+            throw new MobilettoError(`metadata(${path}) error: ${err}`, err)
         }
     }
+
+    mkdirs (path) {
+        try {
+            // console.log(`mkdirs: creating directory: ${path}`)
+            fs.mkdirSync(path, {recursive: true, mode: this.mode})
+        } catch (err) {
+            throw new MobilettoError(`mkdirs: error creating directory ${path}: ${err}`, err)
+        }
+    }
+
     async write (path, generator) {
-        const file = this.normalizePath(path);
+        const file = this.normalizePath(path)
+
+        // console.log(`read: reading path: ${path} - ${file}`)
+        const parent = dirname(file);
+        let dirStat
+        try {
+            dirStat = fs.lstatSync(parent)
+        } catch (err) {
+            if (err.code && err.code === 'ENOENT') {
+                this.mkdirs(parent)
+            } else {
+                throw new MobilettoError(`write: lstat error on ${parent}: ${err}`, err)
+            }
+        }
+        if (typeof dirStat === 'undefined') {
+            this.mkdirs(parent)
+        } else if (!dirStat.isDirectory()) {
+            throw new MobilettoError(`write: not a directory: ${parent} (cannot write file ${file})`)
+        }
+
         // console.log(`write: writing path ${path} -> ${file}`)
-        const stream = fs.createWriteStream(file)
+        const stream = fs.createWriteStream(file, {mode: this.mode})
         const writer = writeStream(stream)
         const closer = closeStream(stream)
         let count = 0
@@ -106,25 +146,44 @@ class StorageClient {
     async read (path, callback) {
         const file = this.normalizePath(path)
         // console.log(`read: reading path: ${path} - ${file}`)
-        const stream = fs.createReadStream(file)
-        let count = 0
-        const streamHandler = stream =>
-            new Promise((resolve, reject) => {
-                stream.on('data', (data) => {
-                    count += data ? data.length : 0
-                    callback(data)
+        try {
+            const stream = fs.createReadStream(file)
+            let count = 0
+            const streamHandler = stream =>
+                new Promise((resolve, reject) => {
+                    stream.on('data', (data) => {
+                        count += data ? data.length : 0
+                        callback(data)
+                    })
+                    stream.on('error', reject)
+                    stream.on('end', resolve)
                 })
-                stream.on('error', reject)
-                stream.on('end', () => { callback(null); resolve() })
-            })
-        await streamHandler(stream)
-        return count
+            await streamHandler(stream)
+            return count
+        } catch (err) {
+            if (err.code && err.code === 'ENOENT') {
+                throw new MobilettoNotFoundError(path)
+            }
+            throw new MobilettoError(`read(${path}) error: ${err}`, err)
+        }
     }
 
-    async remove (path) {
+    async remove (path, options) {
+        const recursive = options && options.recursive ? options.recursive : false
+        const quiet = options && options.quiet ? options.quiet : false
         const file = this.normalizePath(path)
         // console.log(`remove: deleting path: ${path} = ${file}`)
-        fs.unlinkSync(file)
+        try {
+            fs.rmSync(file, {recursive: recursive, force: quiet, maxRetries: 2})
+        } catch (err) {
+            if (err.code && err.code === 'ENOENT') {
+                if (!quiet) {
+                    throw new MobilettoNotFoundError(path)
+                }
+            } else {
+                throw new MobilettoError(`remove(${path}) error: ${err}`, err)
+            }
+        }
         return Promise.resolve(true)
     }
 }
@@ -133,7 +192,7 @@ function storageClient (key, secret, opts) {
     if (!key) {
         throw new MobilettoError('local.storageClient: key is required')
     }
-    return new StorageClient(key)
+    return new StorageClient(key, opts)
 }
 
 module.exports = {storageClient}

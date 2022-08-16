@@ -1,9 +1,9 @@
-const { MobilettoError, M_DIR, M_FILE, readCloseHandler, MobilettoNotFoundError} = require('../../index')
+const { MobilettoError, M_DIR, M_FILE, MobilettoNotFoundError} = require('../../index')
 
 const {
     S3Client,
     ListObjectsCommand,
-    HeadObjectCommand, GetObjectCommand, PutObjectCommand, DeleteObjectCommand
+    HeadObjectCommand, GetObjectCommand, DeleteObjectCommand, DeleteObjectsCommand, NoSuchKey
 } = require('@aws-sdk/client-s3')
 
 const { Readable } = require('stream');
@@ -11,6 +11,8 @@ const {Upload} = require("@aws-sdk/lib-storage");
 
 const DEFAULT_REGION = 'us-east-1'
 const DEFAULT_PREFIX = ''
+
+const DELETE_OBJECTS_MAX_KEYS = 1000;
 
 class StorageClient {
     client
@@ -48,19 +50,23 @@ class StorageClient {
         })
     }
 
-    async _list (path, params = {}) {
+    async _list (path, params = {}, recursive = false) {
         const logPrefix = `_list(path=${path}):`
 
         // Declare truncated as a flag that the while loop is based on.
         let truncated = true
 
-        const Prefix = this.prefix + (path.startsWith('/') ? path.substring(0) : path)
+        const Prefix = this.prefix +
+            (path.startsWith('/') ? path.substring(0) : path) +
+            (path.endsWith('/') ? '' : '/')
         const bucketParams = Object.assign({}, params, {
             Region: this.region,
             Bucket: this.bucket,
-            Prefix,
-            Delimiter: '/'
+            Prefix
         })
+        if (!recursive) {
+            bucketParams.Delimiter = '/'
+        }
         const objects = []
         // console.log(`${logPrefix} bucketParams=${JSON.stringify(bucketParams)}`)
 
@@ -79,14 +85,9 @@ class StorageClient {
                     })
                 }
                 truncated = response.IsTruncated
-                // If truncated is true, assign the key of the last element in the response to the pageMarker variable.
+                // If truncated is true, advance the marker
                 if (truncated) {
-                    try {
-                        bucketParams.Marker = response.NextMarker
-                    } catch (truncErr) {
-                        console.log(`${logPrefix} unexpectedly early truncation (can happen when files and folders have the same name) err = ${truncErr}`)
-                        return objects
-                    }
+                    bucketParams.Marker = response.NextMarker
                 }
                 // At end of the list, response.truncated is false, and the function exits the while loop.
             } catch (err) {
@@ -101,6 +102,14 @@ class StorageClient {
         path.startsWith(this.prefix)
             ? path
             : this.prefix + (path.startsWith('/') ? path.substring(1) : path)
+
+    s3error (err, key, path, method) {
+        return (err instanceof MobilettoError || err instanceof MobilettoNotFoundError)
+            ? err
+            : (err instanceof NoSuchKey) || (err.name && err.name === 'NotFound')
+                ? new MobilettoNotFoundError(key)
+                : new MobilettoError(`${method}(${path}) error: ${err}`, err)
+    }
 
     async metadata (path) {
         const Key = this.normalizeKey(path)
@@ -121,11 +130,7 @@ class StorageClient {
             }
             return meta
         } catch (err) {
-            if (err.name && err.name === 'NotFound') {
-                throw new MobilettoNotFoundError(Key)
-            }
-            console.error(`wtf: ${err}`)
-            throw err
+            throw this.s3error(err, Key, path, 'metadata')
         }
     }
 
@@ -148,7 +153,7 @@ class StorageClient {
         })
         let total = 0
         uploader.on('httpUploadProgress', (progress) => {
-            console.log(`write(${bucketParams.Key}): ${JSON.stringify(progress)}`)
+            // console.log(`write(${bucketParams.Key}): ${JSON.stringify(progress)}`)
             total += progress.loaded
         })
         const response = await uploader.done()
@@ -160,37 +165,86 @@ class StorageClient {
 
     async read (path, callback) {
         const Key = this.normalizeKey(path)
-        console.log(`read: reading Key: ${path} - ${Key}`)
+        // console.log(`read: reading Key: ${path} - ${Key}`)
         const bucketParams = {
             Region: this.region,
             Bucket: this.bucket,
             Key,
             Delimiter: '/'
         }
-        const data = await this.client.send(new GetObjectCommand(bucketParams))
-        let count = 0
-        const streamHandler = stream =>
-            new Promise((resolve, reject) => {
-                stream.on('data', (data) => {
-                    count += data ? data.length : 0
-                    callback(data)
+        try {
+            const data = await this.client.send(new GetObjectCommand(bucketParams))
+            let count = 0
+            const streamHandler = stream =>
+                new Promise((resolve, reject) => {
+                    stream.on('data', (data) => {
+                        count += data ? data.length : 0
+                        callback(data)
+                    })
+                    stream.on('error', reject)
+                    stream.on('end', resolve)
                 })
-                stream.on('error', reject)
-                stream.on('end', resolve)
-            })
-        await streamHandler(data.Body)
-        return count
+            await streamHandler(data.Body)
+            return count
+        } catch (err) {
+            throw this.s3error(err, Key, path, 'read')
+        }
     }
 
-    async remove (path) {
-        const Key = this.normalizeKey(path)
-        const bucketParams = {
-            Region: this.region,
-            Bucket: this.bucket,
-            Key
+    async remove (path, options = null) {
+        const recursive = options && options.recursive
+        const quiet = options && options.quiet
+        if (recursive) {
+            let objects = await this._list(path, { MaxKeys: DELETE_OBJECTS_MAX_KEYS }, true)
+            while (objects && objects.length > 0) {
+                const Delete = {
+                    Objects: objects.map(obj => { return {Key: obj} })
+                }
+                if (quiet) {
+                    Delete.Quiet = true
+                }
+                const bucketParams = {
+                    Region: this.region,
+                    Bucket: this.bucket,
+                    Delete
+                }
+                console.log(`remove(${path}): deleting objects: ${JSON.stringify(objects)}`)
+                const response = await this.client.send(new DeleteObjectsCommand(bucketParams))
+                let statusCode = response.$metadata.httpStatusCode;
+                let statusClass = Math.floor(statusCode / 100);
+                if (statusClass !== 2) {
+                    throw new MobilettoError(`remove(${path}): DeleteObjectsCommand returned HTTP status ${statusCode}`)
+                }
+                if (!quiet && response.Errors && response.Errors.length > 0) {
+                    throw new MobilettoError(`remove(${path}): DeleteObjectsCommand returned Errors: ${JSON.stringify(response.Errors)}`)
+                }
+                objects = await this._list(path, {MaxKeys: DELETE_OBJECTS_MAX_KEYS})
+            }
+        } else {
+            const Key = this.normalizeKey(path)
+            const bucketParams = {
+                Region: this.region,
+                Bucket: this.bucket,
+                Key
+            }
+            try {
+                // DeleteObjectCommand silently succeeds and returns HTTP 204 even for non-existent Keys
+                // Thus, if quiet is false, we must check metadata explicitly, which will fail with
+                // MobilettoNotFoundError, which is the correct behavior
+                if (!quiet) {
+                    await this.metadata(path)
+                }
+                const response = await this.client.send(new DeleteObjectCommand(bucketParams))
+                let statusCode = response.$metadata.httpStatusCode;
+                let statusClass = Math.floor(statusCode / 100);
+                if (statusClass !== 2) {
+                    throw new MobilettoError(`remove: DeleteObjectCommand returned HTTP status ${statusCode}`)
+                }
+            } catch (err) {
+                throw this.s3error(err, Key, path, 'remove')
+            }
         }
-        const response = await this.client.send(new DeleteObjectCommand(bucketParams))
-        return response.$metadata.httpStatusCode === 204
+        return true
     }
 }
 

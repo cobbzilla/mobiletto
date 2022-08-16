@@ -1,6 +1,7 @@
 // adapted from https://stackoverflow.com/a/27724419
-function MobilettoError (message) {
+function MobilettoError (message, err) {
     this.message = `${message}`
+    this.err = err
     // Use V8's native method if available, otherwise fallback
     if ('captureStackTrace' in Error) {
         Error.captureStackTrace(this, TypeError)
@@ -34,7 +35,7 @@ function writeStream (stream) {
         if (chunk) {
             stream.write(chunk, (err) => {
                 if (err) {
-                    console.log(`writeStream: error writing to ${file}: ${err}`)
+                    console.log(`writeStream: error writing: ${err}`)
                     throw err
                 }
             })
@@ -45,7 +46,7 @@ function writeStream (stream) {
 function closeStream (stream) {
     return () => stream.close((err) => {
         if (err) {
-            console.log(`closeStream: error closing file ${file}: ${err}`)
+            console.log(`closeStream: error closing: ${err}`)
             throw err
         }
     })
