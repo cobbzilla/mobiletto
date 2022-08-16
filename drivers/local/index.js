@@ -111,7 +111,7 @@ class StorageClient {
         const file = this.normalizePath(path)
 
         // console.log(`read: reading path: ${path} - ${file}`)
-        const parent = dirname(file);
+        const parent = dirname(file)
         let dirStat
         try {
             dirStat = fs.lstatSync(parent)

@@ -1,13 +1,13 @@
 // To run the tests, you need a .env file one level above this directory
 // that contains env vars for all the process.env stuff in DRIVER_CONFIG below
-require('dotenv').config();
+require('dotenv').config()
 
 const randomstring = require('randomstring')
 
 const { expect, should, assert } = require('chai')
 
 const { mobiletto } = require('../index.js')
-const {MobilettoNotFoundError, M_FILE, M_DIR} = require("../index");
+const {MobilettoNotFoundError, M_FILE, M_DIR} = require("../index")
 
 // chunk size used by generator function, used by driver's 'write' function
 // the temp file is also TEMP_SZ_MULTIPLE of this number
@@ -86,7 +86,7 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
 
         describe(`${driverName} - write a file, read file, read metadata, delete file`, () => {
             // some random data, plus a bit extra
-            const size = (READ_SZ * TEMP_SZ_MULTIPLE) + Math.floor(Math.random() * (READ_SZ/2));
+            const size = (READ_SZ * TEMP_SZ_MULTIPLE) + Math.floor(Math.random() * (READ_SZ/2))
             const randomData = rand(size)
             const fileSuffix = '' + Date.now()
             let fixture
@@ -136,8 +136,8 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
 
         describe(`${driverName} - write files in a new dir, read metadata, recursively delete`, () => {
             // a random directory and file within it
-            const randomParent = `random_dir_${rand(10)}`;
-            const subdirName = `subdir_` + Date.now();
+            const randomParent = `random_dir_${rand(10)}`
+            const subdirName = `subdir_` + Date.now()
             const randomPath = `${randomParent}/${subdirName}/random_file_${Date.now()}`
             const fileCount = 3 + Math.floor(Math.random() * 10)
             let fixture

@@ -6,14 +6,14 @@ const {
     HeadObjectCommand, GetObjectCommand, DeleteObjectCommand, DeleteObjectsCommand, NoSuchKey
 } = require('@aws-sdk/client-s3')
 
-const { Readable } = require('stream');
-const {Upload} = require("@aws-sdk/lib-storage");
+const { Readable } = require('stream')
+const {Upload} = require("@aws-sdk/lib-storage")
 
 const DEFAULT_REGION = 'us-east-1'
 const DEFAULT_PREFIX = ''
 const DEFAULT_DELIMITER = '/'
 
-const DELETE_OBJECTS_MAX_KEYS = 1000;
+const DELETE_OBJECTS_MAX_KEYS = 1000
 
 class StorageClient {
     client
@@ -213,8 +213,8 @@ class StorageClient {
                 }
                 // console.log(`remove(${path}): deleting objects: ${JSON.stringify(objects)}`)
                 const response = await this.client.send(new DeleteObjectsCommand(bucketParams))
-                let statusCode = response.$metadata.httpStatusCode;
-                let statusClass = Math.floor(statusCode / 100);
+                let statusCode = response.$metadata.httpStatusCode
+                let statusClass = Math.floor(statusCode / 100)
                 if (statusClass !== 2) {
                     throw new MobilettoError(`remove(${path}): DeleteObjectsCommand returned HTTP status ${statusCode}`)
                 }
@@ -238,8 +238,8 @@ class StorageClient {
                     await this.metadata(path)
                 }
                 const response = await this.client.send(new DeleteObjectCommand(bucketParams))
-                let statusCode = response.$metadata.httpStatusCode;
-                let statusClass = Math.floor(statusCode / 100);
+                let statusCode = response.$metadata.httpStatusCode
+                let statusClass = Math.floor(statusCode / 100)
                 if (statusClass !== 2) {
                     throw new MobilettoError(`remove: DeleteObjectCommand returned HTTP status ${statusCode}`)
                 }
