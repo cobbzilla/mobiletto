@@ -25,6 +25,7 @@ It supports apps that are agnostic to where files are stored.
     //     * bucket: required, name of the S3 bucket
     //     * region: optional, the AWS region to communicate with, default is us-east-1
     //     * prefix: optional, all read/writes within the S3 bucket will be under this prefix
+    //     * delimiter: optional, directory delimiter, default is '/'
     const s3 = await mobiletto('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1'})
 
     // list files
@@ -77,9 +78,10 @@ A driver is any JS file that exports a 'storageClient' function with this signat
 * `secret`: a string, your API secret (can be omitted for the `local` driver)
 * `opts`: an object, the properties are per-driver:
   * For `local`, the `mode` property is the file permissions to set when creating new files and directories
-  * For `s3`, the `bucket` property is required. Other properties are:
-    * `region`: the S3 region (default is us-east-1)
-    * `prefix`: a prefix to prepend to all S3 paths
+  * For `s3`, the `bucket` property is required. Optional properties are:
+    * `region`: the S3 region, default is us-east-1
+    * `prefix`: a prefix to prepend to all S3 paths, default is the empty string
+    * `delimiter`: the directory delimiter, default is '/'
 
 The object that the storageClient function returns must define these functions:
 

@@ -11,6 +11,7 @@ const {Upload} = require("@aws-sdk/lib-storage");
 
 const DEFAULT_REGION = 'us-east-1'
 const DEFAULT_PREFIX = ''
+const DEFAULT_DELIMITER = '/'
 
 const DELETE_OBJECTS_MAX_KEYS = 1000;
 
@@ -19,15 +20,17 @@ class StorageClient {
     region
     bucket
     prefix
+    delimiter
     constructor(key, secret, opts) {
         if (!key || !secret || !opts || !opts.bucket) {
             throw new MobilettoError('key, secret, and opts.bucket are required')
         }
         this.bucket = opts.bucket
+        const delim = this.delimiter = opts.delimiter || DEFAULT_DELIMITER
         this.prefix = opts.prefix || DEFAULT_PREFIX
-            ? opts.prefix.endsWith('/')
+            ? opts.prefix.endsWith(delim)
                 ? opts.prefix
-                : opts.prefix + '/'
+                : opts.prefix + delim
             : ''
         this.region = opts.region || DEFAULT_REGION
         const credentials = {
@@ -41,11 +44,11 @@ class StorageClient {
         return await this._list('', { MaxKeys: 1 })
     }
 
-    async list (path) {
+    async list (path = '') {
         return (await this._list(path)).map(obj => {
             return {
                 name: obj,
-                type: obj.endsWith('/') ? M_DIR : M_FILE
+                type: obj.endsWith(this.delimiter) ? M_DIR : M_FILE
             }
         })
     }
@@ -57,15 +60,15 @@ class StorageClient {
         let truncated = true
 
         const Prefix = this.prefix +
-            (path.startsWith('/') ? path.substring(0) : path) +
-            (path.endsWith('/') ? '' : '/')
+            (path.startsWith(this.delimiter) ? path.substring(0) : path) +
+            (path.length === 0 || path.endsWith(this.delimiter) ? '' : this.delimiter)
         const bucketParams = Object.assign({}, params, {
             Region: this.region,
             Bucket: this.bucket,
             Prefix
         })
         if (!recursive) {
-            bucketParams.Delimiter = '/'
+            bucketParams.Delimiter = this.delimiter
         }
         const objects = []
         // console.log(`${logPrefix} bucketParams=${JSON.stringify(bucketParams)}`)
@@ -101,7 +104,7 @@ class StorageClient {
     normalizeKey = (path) =>
         path.startsWith(this.prefix)
             ? path
-            : this.prefix + (path.startsWith('/') ? path.substring(1) : path)
+            : this.prefix + (path.startsWith(this.delimiter) ? path.substring(1) : path)
 
     s3error (err, key, path, method) {
         return (err instanceof MobilettoError || err instanceof MobilettoNotFoundError)
@@ -117,7 +120,7 @@ class StorageClient {
             Region: this.region,
             Bucket: this.bucket,
             Key,
-            Delimiter: '/'
+            Delimiter: this.delimiter
         }
         try {
             const head = await this.client.send(new HeadObjectCommand(bucketParams))
@@ -141,7 +144,7 @@ class StorageClient {
             Bucket: this.bucket,
             Key,
             Body: Readable.from(generator),
-            Delimiter: '/'
+            Delimiter: this.delimiter
         }
 
         const uploader = new Upload({
@@ -170,7 +173,7 @@ class StorageClient {
             Region: this.region,
             Bucket: this.bucket,
             Key,
-            Delimiter: '/'
+            Delimiter: this.delimiter
         }
         try {
             const data = await this.client.send(new GetObjectCommand(bucketParams))
@@ -208,7 +211,7 @@ class StorageClient {
                     Bucket: this.bucket,
                     Delete
                 }
-                console.log(`remove(${path}): deleting objects: ${JSON.stringify(objects)}`)
+                // console.log(`remove(${path}): deleting objects: ${JSON.stringify(objects)}`)
                 const response = await this.client.send(new DeleteObjectsCommand(bucketParams))
                 let statusCode = response.$metadata.httpStatusCode;
                 let statusClass = Math.floor(statusCode / 100);

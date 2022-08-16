@@ -2,7 +2,6 @@
 // that contains env vars for all the process.env stuff in DRIVER_CONFIG below
 require('dotenv').config();
 
-const { basename } = require('path')
 const randomstring = require('randomstring')
 
 const { expect, should, assert } = require('chai')
@@ -64,19 +63,24 @@ function rand (count) {
 // within the singular 'for' loop below. This ensures that all drivers pass exactly
 // the same set of tests, with exactly the same inputs/outputs.
 // This greatly supports developer sanity
+
 for (const driverName of Object.keys(DRIVER_CONFIG)) {
     const config = DRIVER_CONFIG[driverName]
     const nonexistentFile = 'random_file_that_does_not_exist_' + rand(100) + '_' + Date.now()
-
-function tempFilename(name, i) {
-    return name + (i > 0 ? '_' + i : '');
-}
-
-describe(`${driverName} test`, () => {
+    const tempFilename = (name, i) => name + (i > 0 ? '_' + i : '')
+    describe(`${driverName} test`, () => {
         describe(`${driverName} - create api client`, () => {
             it("should validate the config and return an API object", async () => {
                 const api = await mobiletto(driverName, config.key, config.secret, config.opts)
                 should().exist(api, 'expected API object to exist')
+            })
+        })
+
+        describe(`${driverName} - listing with no arguments returns some results`, () => {
+            it("should return some results from a default listing", async () => {
+                const api = await mobiletto(driverName, config.key, config.secret, config.opts)
+                const results = await api.list()
+                expect(results).to.have.lengthOf.greaterThan(0, 'expected some results in the default listing')
             })
         })
 
@@ -89,10 +93,8 @@ describe(`${driverName} test`, () => {
             beforeEach((done) => {
                 const name = `test_file_${fileSuffix}`
                 mobiletto(driverName, config.key, config.secret, config.opts)
-                    .then(api => {
-                        fixture = {api, name, randomData}
-                        done()
-                    })
+                    .then(api => { fixture = {api, name, randomData} })
+                    .finally(done)
             })
             it("should write a file", async () => {
                 const data = fixture.randomData
@@ -141,10 +143,8 @@ describe(`${driverName} test`, () => {
             let fixture
             beforeEach((done) => {
                 mobiletto(driverName, config.key, config.secret, config.opts)
-                    .then(api => {
-                        fixture = {api, name: randomPath}
-                        done()
-                    })
+                    .then(api => { fixture = {api, name: randomPath} })
+                    .finally(done)
             })
             it(`should write ${fileCount} files in a new directory`, async () => {
                 function* dataGenerator() {

@@ -36,7 +36,7 @@ class StorageClient {
         return { path, stat }
     }
     async testConfig () {
-        return await this.list('')
+        return await this.list()
     }
     fileType (stat) {
         if (stat.isDirectory()) {
@@ -56,7 +56,7 @@ class StorageClient {
         }
         return this.baseDir + path
     }
-    async list (path) {
+    async list (path = '') {
         const dir = this.normalizePath(path)
         try {
             const files = fs.readdirSync(dir)
