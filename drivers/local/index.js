@@ -2,7 +2,7 @@ const { dirname } = require('path')
 
 const {
     M_FILE, M_DIR, M_LINK, M_SPECIAL,
-    MobilettoError, writeStream, closeStream, MobilettoNotFoundError
+    MobilettoError, MobilettoNotFoundError, readStream, writeStream, closeStream
 } = require('../../index')
 
 const fs = require('fs')
@@ -143,23 +143,12 @@ class StorageClient {
         return Promise.resolve(count)
     }
 
-    async read (path, callback) {
+    async read (path, callback, endCallback = null) {
         const file = this.normalizePath(path)
         // console.log(`read: reading path: ${path} - ${file}`)
         try {
             const stream = fs.createReadStream(file)
-            let count = 0
-            const streamHandler = stream =>
-                new Promise((resolve, reject) => {
-                    stream.on('data', (data) => {
-                        count += data ? data.length : 0
-                        callback(data)
-                    })
-                    stream.on('error', reject)
-                    stream.on('end', resolve)
-                })
-            await streamHandler(stream)
-            return count
+            return await readStream(stream, callback, endCallback)
         } catch (err) {
             if (err.code && err.code === 'ENOENT') {
                 throw new MobilettoNotFoundError(path)

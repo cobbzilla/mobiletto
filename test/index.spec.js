@@ -98,7 +98,6 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             })
             it("should write a file", async () => {
                 const data = fixture.randomData
-
                 function* dataGenerator() {
                     // read in 8k chunks
                     for (let i = 0; i < data.length; i += READ_SZ) {
@@ -106,7 +105,6 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
                         yield data.slice(i, end)
                     }
                 }
-
                 const response = await fixture.api.write(fixture.name, dataGenerator())
                 expect(response).to.equal(data.length, 'expected write API to return correct number of bytes written')
             })

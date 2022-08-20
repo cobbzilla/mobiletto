@@ -1,4 +1,7 @@
-const { MobilettoError, M_DIR, M_FILE, MobilettoNotFoundError} = require('../../index')
+const {
+    M_DIR, M_FILE,
+    MobilettoError, MobilettoNotFoundError, readStream
+} = require('../../index')
 
 const {
     S3Client,
@@ -166,7 +169,7 @@ class StorageClient {
         return total
     }
 
-    async read (path, callback) {
+    async read (path, callback, endCallback = null) {
         const Key = this.normalizeKey(path)
         // console.log(`read: reading Key: ${path} - ${Key}`)
         const bucketParams = {
@@ -177,18 +180,7 @@ class StorageClient {
         }
         try {
             const data = await this.client.send(new GetObjectCommand(bucketParams))
-            let count = 0
-            const streamHandler = stream =>
-                new Promise((resolve, reject) => {
-                    stream.on('data', (data) => {
-                        count += data ? data.length : 0
-                        callback(data)
-                    })
-                    stream.on('error', reject)
-                    stream.on('end', resolve)
-                })
-            await streamHandler(data.Body)
-            return count
+            return await readStream(data.Body, callback, endCallback)
         } catch (err) {
             throw this.s3error(err, Key, path, 'read')
         }
