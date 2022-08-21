@@ -13,7 +13,7 @@ Today the supported drivers are:
 * `local`: read/write to local filesystem
 
 # Basic usage
-    const { mobiletto, readFile } = require('mobiletto')
+    const { mobiletto } = require('mobiletto')
 
     // General usage
     const api = await mobiletto(driverName, key, secret, opts)
