@@ -110,10 +110,11 @@ The object that the storageClient function returns must define these functions:
     async metadata (path)
     
     // Read a file
-    async read (path, callback) // callback receives a chunk of data; a null chunk signals end of data
+    // callback receives a chunk of data. endCallback is called at end-of-stream
+    async read (path, callback, endCallback = null)
 
     // Write a file
-    async write (path, readFunc) // readFunc returns the data you want to write, or null to finish
+    async write (path, readFunc) // readFunc returns the data you want to write
 
     // Remove a file, or recursively delete a directory
     async remove (path, {recursive = false, quiet = false})
