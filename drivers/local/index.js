@@ -9,6 +9,16 @@ const fs = require('fs')
 
 const DEFAULT_MODE = '0700'
 
+const isENOENT = (err) => err.code && err.code === 'ENOENT'
+
+const ioError = (err, path, method) => isENOENT(err)
+    ? err instanceof MobilettoNotFoundError
+        ? err
+        : new MobilettoNotFoundError(path)
+    : err instanceof MobilettoError || err instanceof MobilettoNotFoundError
+        ? err
+        : new MobilettoError(`${method}(${path}) error: ${err}`, err)
+
 class StorageClient {
     baseDir
     mode
@@ -74,7 +84,7 @@ class StorageClient {
                 return entry
             })
         } catch (err) {
-            throw new MobilettoError(`list(${path}) error: ${err}`, err)
+            throw ioError(err, path, 'list')
         }
     }
     async metadata (path) {
@@ -82,19 +92,23 @@ class StorageClient {
         try {
             const lstat = fs.lstatSync(file)
             if (!lstat) {
-                throw new MobilettoError(`metadata: lstat error`)
+                throw new MobilettoError('metadata: lstat error')
+            }
+            const type = this.fileType(lstat)
+            if (type === M_DIR && path !== '') {
+                const contents = await this.list(path)
+                if (contents.length === 0) {
+                    throw new MobilettoNotFoundError(path)
+                }
             }
             return {
                 name: file.startsWith(this.baseDir) ? file.substring(this.baseDir.length) : file,
-                type: this.fileType(lstat),
+                type,
                 size: lstat.size,
                 mtime: lstat.mtimeMs
             }
         } catch (err) {
-            if (err.code && err.code === 'ENOENT') {
-                throw new MobilettoNotFoundError(path)
-            }
-            throw new MobilettoError(`metadata(${path}) error: ${err}`, err)
+            throw ioError(err, path, 'metadata')
         }
     }
 
@@ -150,10 +164,7 @@ class StorageClient {
             const stream = fs.createReadStream(file)
             return await readStream(stream, callback, endCallback)
         } catch (err) {
-            if (err.code && err.code === 'ENOENT') {
-                throw new MobilettoNotFoundError(path)
-            }
-            throw new MobilettoError(`read(${path}) error: ${err}`, err)
+            throw ioError(err, path, 'read')
         }
     }
 
@@ -165,7 +176,7 @@ class StorageClient {
         try {
             fs.rmSync(file, {recursive: recursive, force: quiet, maxRetries: 2})
         } catch (err) {
-            if (err.code && err.code === 'ENOENT') {
+            if (isENOENT(err)) {
                 if (!quiet) {
                     throw new MobilettoNotFoundError(path)
                 }

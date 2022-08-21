@@ -80,12 +80,14 @@ class StorageClient {
         while (truncated) {
             try {
                 const response = await this.client.send(new ListObjectsCommand(bucketParams))
-                if (typeof response.Contents !== 'undefined') {
+                const hasContents = typeof response.Contents !== 'undefined';
+                if (hasContents) {
                     response.Contents.forEach((item) => {
                         objects.push(item.Key) // todo: transform into standard object
                     })
                 }
-                if (typeof response.CommonPrefixes !== 'undefined') {
+                const hasCommonPrefixes = typeof response.CommonPrefixes !== 'undefined';
+                if (hasCommonPrefixes) {
                     response.CommonPrefixes.forEach((item) => {
                         objects.push(item.Prefix) // todo: transform into standard object
                     })
@@ -94,12 +96,22 @@ class StorageClient {
                 // If truncated is true, advance the marker
                 if (truncated) {
                     bucketParams.Marker = response.NextMarker
+                } else if (!hasContents && !hasCommonPrefixes) {
+                    if (path === '') {
+                        break
+                    }
+                    throw new MobilettoNotFoundError(path)
                 }
                 // At end of the list, response.truncated is false, and the function exits the while loop.
             } catch (err) {
-                console.log(`${logPrefix} Error: ${err}`)
-                truncated = false
+                if (err instanceof MobilettoNotFoundError) {
+                    throw err
+                }
+                throw new MobilettoError(`${logPrefix} Error: ${err}`)
             }
+        }
+        if (recursive && objects.length === 0) {
+            throw new MobilettoNotFoundError(path)
         }
         return objects
     }

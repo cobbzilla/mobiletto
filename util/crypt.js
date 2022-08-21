@@ -36,27 +36,28 @@ function getCipher(enc) {
     return crypto.createCipheriv(enc.algo, enc.key, enc.iv);
 }
 
-function encrypt (plainText, key = KEY, iv = CRYPTO_IV, outputEncoding = 'base64') {
-    if (!key) {
+function encrypt (plainText, encryption, outputEncoding = 'base64') {
+    if (!encryption || !encryption.key) {
         if (WARN_PLAINTEXT) {
-            console.warn(` ****** key is undefined, encryption of user-data is DISABLED`)
+            console.warn(` ****** encryption.key is undefined, encryption is DISABLED`)
         }
         return plainText
     }
-    const cipher = getCipher(key, iv)
-    return Buffer.concat([cipher.update(plainText), cipher.final()]).toString(outputEncoding)
+    const cipher = getCipher(encryption)
+    const encoded = Buffer.concat([cipher.update(plainText), cipher.final()])
+    return encoded.toString(outputEncoding)
 }
 
 function getDecipher(enc) {
     return crypto.createDecipheriv(enc.algo, enc.key, enc.iv);
 }
 
-function decrypt (cipherText, key = KEY, iv = CRYPTO_IV, outputEncoding = 'utf8') {
-    if (!key) {
+function decrypt (cipherText, encryption, outputEncoding = 'utf8', inputEncoding = 'base64') {
+    if (!encryption || !encryption.key) {
         return cipherText
     }
-    const cipher = getDecipher(key, iv)
-    const data = Buffer.from(cipherText, 'base64')
+    const cipher = getDecipher(encryption)
+    const data = Buffer.from(cipherText, inputEncoding)
     return Buffer.concat([cipher.update(data), cipher.final()]).toString(outputEncoding)
 }
 

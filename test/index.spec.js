@@ -6,18 +6,22 @@ const randomstring = require('randomstring')
 
 const { expect, should, assert } = require('chai')
 
-const { mobiletto } = require('../index.js')
-const {MobilettoNotFoundError, M_FILE, M_DIR} = require("../index")
+const { mobiletto, connect, MobilettoNotFoundError, M_FILE, M_DIR } = require("../index")
+const { encrypt, decrypt, normalizeKey, normalizeIV, DEFAULT_CRYPT_ALGO } = require("../util/crypt")
 
 // chunk size used by generator function, used by driver's 'write' function
 // the temp file is also TEMP_SZ_MULTIPLE of this number
 const READ_SZ = 8 * 1024   // xfer data in 8k chunks
 const TEMP_SZ_MULTIPLE = 3 // temp file will be ~24k (READ_SZ * 3)
-const ENC_SIZE_CLOSE_ENOUGH_PERCENT = 0.05;
+
+// encoded bytes written will differ from actual bytes provided
+// likewise, plaintext bytes read will differ from encoded bytes read
+// our tests give some leeway when filesize differences
+const ENC_SIZE_CLOSE_ENOUGH_PERCENT = 0.10
 
 DRIVER_CONFIG = {
     local: {
-        key: '/tmp'
+        key: process.env.LOCAL_STORAGE || '/tmp'
     },
     s3: {
         key: process.env.S3_ACCESS,
@@ -30,13 +34,17 @@ DRIVER_CONFIG = {
     }
 }
 
+function closeEnough (expected, actual, percent = ENC_SIZE_CLOSE_ENOUGH_PERCENT) {
+    expect(Math.abs(expected - actual)).to.be.lessThan(Math.floor(expected * percent),
+        'expected size within 5% of actual (due to encryption)')
+}
+
 async function assertMeta (api, name, expectedSize, closeEnoughPercent = null) {
     const meta = await api.metadata(name)
     should().exist(meta, 'expected return value from metadata call')
     expect(meta.name).equals(name, 'expected name of written file to be correct')
     if (closeEnoughPercent) {
-        expect(Math.abs(expectedSize - meta.size)).to.be.lessThan(Math.floor(meta.size * ENC_SIZE_CLOSE_ENOUGH_PERCENT),
-            'expected write API to return within 5% of bytes written (due to encryption)')
+        closeEnough(expectedSize, meta.size, closeEnoughPercent)
     } else {
         expect(meta.size).equals(expectedSize, 'expected size of written file to equal size of randomData')
     }
@@ -68,17 +76,20 @@ async function writeRandomFile(fixture, size) {
     return await fixture.api.write(fixture.name, dataGenerator())
 }
 
-async function readFile(fixture) {
-    const chunks = []
-    function reader(chunk) {
-        if (chunk) {
-            chunks.push(chunk)
+describe('crypto test', () => {
+    it("should encrypt and decrypt successfully", async () => {
+        const enc = {
+            key: normalizeKey(randomstring.generate(32)),
+            iv: normalizeIV(randomstring.generate(16)),
+            algo: DEFAULT_CRYPT_ALGO
         }
-    }
-    const response = await fixture.api.read(fixture.name, reader)
-    const data = Buffer.concat(chunks)
-    return { response, data }
-}
+        const plaintext = randomstring.generate(1024 + Math.floor(1024*Math.random()))
+        const ciphertext = encrypt(plaintext, enc)
+        const decrypted = decrypt(ciphertext, enc)
+        expect(decrypted).to.equal(plaintext, 'decrypted data did not match plaintext')
+    })
+
+})
 
 // To test a single driver:
 //  - Uncomment one of the lines below to set driverName to the one you want to test
@@ -120,7 +131,7 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             let fixture
             beforeEach((done) => {
                 const name = `test_file_${fileSuffix}`
-                mobiletto(driverName, config.key, config.secret, config.opts)
+                connect(driverName, config.key, config.secret, config.opts)
                     .then(api => { fixture = {api, name, randomData} })
                     .finally(done)
             })
@@ -129,8 +140,8 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
                 expect(response).to.equal(size, 'expected write API to return correct number of bytes written')
             })
             it("should read the file we just wrote", async () => {
-                const { response, data } = await readFile(fixture);
-                expect(response).is.equal(data.length, 'expected read API to return correct number of bytes read')
+                const data = await fixture.api.readFile(fixture.name);
+                expect(data.length).is.equal(size, 'expected read API to return correct number of bytes read')
                 expect(data.toString('utf8')).to.equal(fixture.randomData, 'expected to read back the same data we wrote')
             })
             it("should load metadata on the file we just wrote", async () => {
@@ -161,13 +172,12 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             })
             it("should write an encrypted file", async () => {
                 encryptedByteCount = await writeRandomFile(fixture, size);
-                expect(Math.abs(encryptedByteCount - size)).to.be.lessThan(Math.floor(size * ENC_SIZE_CLOSE_ENOUGH_PERCENT),
-                    'expected write API to return within 5% of bytes written (due to encryption)')
+                closeEnough(size, encryptedByteCount)
             })
             it("should read the encrypted file we just wrote", async () => {
-                const { response, data } = await readFile(fixture);
-                expect(response).is.equal(encryptedByteCount, 'expected read API to return correct number of bytes read')
-                expect(data.toString('utf8')).to.equal(fixture.randomData, 'expected to read back the same data we wrote')
+                const data = await fixture.api.readFile(fixture.name);
+                expect(data.length).is.equal(size, 'expected read API to return correct number of bytes read')
+                expect(data.toString()).to.equal(fixture.randomData, 'expected to read back the same data we wrote')
             })
             it("should load metadata on the encrypted file we just wrote", async () => {
                 await assertMeta(fixture.api, fixture.name, fixture.randomData.length, ENC_SIZE_CLOSE_ENOUGH_PERCENT)
@@ -181,58 +191,70 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             })
         })
 
-        describe(`${driverName} - write files in a new dir, read metadata, recursively delete`, () => {
-            // a random directory and file within it
-            const randomParent = `random_dir_${rand(10)}`
-            const subdirName = `subdir_` + Date.now()
-            const randomPath = `${randomParent}/${subdirName}/random_file_${Date.now()}`
-            const fileCount = 3 + Math.floor(Math.random() * 10)
-            let fixture
-            beforeEach((done) => {
-                mobiletto(driverName, config.key, config.secret, config.opts)
-                    .then(api => { fixture = {api, name: randomPath} })
-                    .finally(done)
+        for (const encryption of [null, {key: rand(32)}]) {
+            const encDesc = encryption ? '(with encryption)' : '(without encryption)'
+            describe(`${driverName} - ${encDesc} write files in a new dir, read metadata, recursively delete`, () => {
+            // describe(`${driverName} - ENCRYPTION write files in a new dir, read metadata, recursively delete`, () => {
+            //     const encryption = {key: rand(32)}
+                // a random directory and file within it
+                const randomParent = `testRPD_${rand(2)}/rand_${rand(4)}`
+                const subdirName = `subdir_` + Date.now()
+                const randomPath = `${randomParent}/${subdirName}/random_file_${Date.now()}`
+                //const fileCount = 3 + Math.floor(Math.random() * 10)
+                const fileCount = 2
+                let fixture
+                beforeEach((done) => {
+                    mobiletto(driverName, config.key, config.secret, config.opts, encryption)
+                        .then(api => { fixture = {api, name: randomPath} })
+                        .catch((err) => { throw err })
+                        .finally(done)
+                })
+                it(`should write ${fileCount} files in a new directory`, async () => {
+                    function* dataGenerator() {
+                        // return one chunk of random data
+                        yield rand(READ_SZ)
+                    }
+
+                    for (let i = 0; i < fileCount; i++) {
+                        const bytesWritten = await fixture.api.write(tempFilename(fixture.name, i), dataGenerator())
+                        if (encryption) {
+                            closeEnough(READ_SZ, bytesWritten)
+                        } else {
+                            expect(bytesWritten).to.equal(READ_SZ, 'expected write API to return correct number of bytes written')
+                        }
+                    }
+                })
+                it("should load metadata for one of the new files", async () => {
+                    await assertMeta(fixture.api, fixture.name, READ_SZ, encryption ? ENC_SIZE_CLOSE_ENOUGH_PERCENT : null)
+                })
+                it("should see correct types on objects returned from a listing of the new directory", async () => {
+                    const objects = await fixture.api.list(randomParent)
+                    expect(objects).to.have.lengthOf(1)
+                    expect(objects[0]).to.have.property('type', M_DIR, `subdir should have type ${M_DIR}`)
+                })
+                it("should see correct types on objects returned from a listing of the subdirectory", async () => {
+                    const objects = await fixture.api.list(`${randomParent}/${subdirName}`)
+                    expect(objects).to.have.lengthOf(fileCount)
+                    for (let i = 0; i < fileCount; i++) {
+                        // we should find all the files, and they should all have the correct type
+                        expect(objects
+                            .find(o => (o.type === M_FILE && o.name === tempFilename(fixture.name, i)))
+                        ).to.not.be.null
+                    }
+                })
+                it("should recursively delete the directory and file we just created", async () => {
+                    const recursive = true
+                    const removed = await fixture.api.remove(randomParent, {recursive})
+                    expect(removed).to.be.true
+                })
+                it("loading metadata on the file we wrote now fails", async () => {
+                    await assertMetaFail(fixture.api, fixture.name)
+                })
+                it("loading metadata on the parent dir we wrote now fails", async () => {
+                    await assertMetaFail(fixture.api, randomParent)
+                })
             })
-            it(`should write ${fileCount} files in a new directory`, async () => {
-                function* dataGenerator() {
-                    // return one chunk of random data
-                    yield rand(READ_SZ)
-                }
-                for (let i = 0; i < fileCount; i++) {
-                    const response = await fixture.api.write(tempFilename(fixture.name, i), dataGenerator())
-                    expect(response).to.equal(READ_SZ, 'expected write API to return correct number of bytes written')
-                }
-            })
-            it("should load metadata for one of the new files", async () => {
-                await assertMeta (fixture.api, fixture.name, READ_SZ)
-            })
-            it("should see correct types on objects returned from a listing of the new directory", async () => {
-                const objects = await fixture.api.list(randomParent)
-                expect(objects).to.have.lengthOf(1)
-                expect(objects[0]).to.have.property('type', M_DIR, `subdir should have type ${M_DIR}`)
-            })
-            it("should see correct types on objects returned from a listing of the subdirectory", async () => {
-                const objects = await fixture.api.list(`${randomParent}/${subdirName}`)
-                expect(objects).to.have.lengthOf(fileCount)
-                for (let i = 0; i < fileCount; i++) {
-                    // we should find all the files, and they should all have the correct type
-                    expect(objects
-                        .find(o => (o.type === M_FILE && o.name === tempFilename(fixture.name, i)))
-                    ).to.not.be.null
-                }
-            })
-            it("should recursively delete the directory and file we just created", async () => {
-                const recursive = true
-                const removed = await fixture.api.remove(randomParent, {recursive})
-                expect(removed).to.be.true
-            })
-            it("loading metadata on the file we wrote now fails", async () => {
-                await assertMetaFail(fixture.api, fixture.name)
-            })
-            it("loading metadata on the parent dir we wrote now fails", async () => {
-                await assertMetaFail(fixture.api, randomParent)
-            })
-        })
+        }
 
         describe(`${driverName} - expect MobilettoNotFoundError when reading nonexistent file `, () => {
             it("should throw MobilettoNotFoundError when trying to read a file that does not exist", async () => {
