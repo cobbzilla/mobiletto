@@ -195,7 +195,8 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             const encDesc = encryption ? '(with encryption)' : '(without encryption)'
             describe(`${driverName} - ${encDesc} write files in a new dir, read metadata, recursively delete`, () => {
             // describe(`${driverName} - ENCRYPTION write files in a new dir, read metadata, recursively delete`, () => {
-            //     const encryption = {key: rand(32)}
+                // const encryption = {key: rand(32)}
+                // const encryption = null
                 // a random directory and file within it
                 const randomParent = `testRPD_${rand(2)}/rand_${rand(4)}`
                 const subdirName = `subdir_` + Date.now()

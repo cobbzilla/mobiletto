@@ -5,6 +5,8 @@ Mobiletto is a JavaScript storage abstraction layer, with optional transparent c
 
 It supports apps that are agnostic to where files are stored.
 
+All drivers are tested for identical behavior with 30 tests for each driver.
+
 # Basic usage
     const { mobiletto, readFile } = require('mobiletto')
 

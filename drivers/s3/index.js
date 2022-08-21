@@ -80,13 +80,13 @@ class StorageClient {
         while (truncated) {
             try {
                 const response = await this.client.send(new ListObjectsCommand(bucketParams))
-                const hasContents = typeof response.Contents !== 'undefined';
+                const hasContents = typeof response.Contents !== 'undefined'
                 if (hasContents) {
                     response.Contents.forEach((item) => {
                         objects.push(item.Key) // todo: transform into standard object
                     })
                 }
-                const hasCommonPrefixes = typeof response.CommonPrefixes !== 'undefined';
+                const hasCommonPrefixes = typeof response.CommonPrefixes !== 'undefined'
                 if (hasCommonPrefixes) {
                     response.CommonPrefixes.forEach((item) => {
                         objects.push(item.Prefix) // todo: transform into standard object
@@ -102,7 +102,6 @@ class StorageClient {
                     }
                     throw new MobilettoNotFoundError(path)
                 }
-                // At end of the list, response.truncated is false, and the function exits the while loop.
             } catch (err) {
                 if (err instanceof MobilettoNotFoundError) {
                     throw err
@@ -225,7 +224,14 @@ class StorageClient {
                 if (!quiet && response.Errors && response.Errors.length > 0) {
                     throw new MobilettoError(`remove(${path}): DeleteObjectsCommand returned Errors: ${JSON.stringify(response.Errors)}`)
                 }
-                objects = await this._list(path, {MaxKeys: DELETE_OBJECTS_MAX_KEYS})
+                try {
+                    objects = await this._list(path, {MaxKeys: DELETE_OBJECTS_MAX_KEYS})
+                } catch (e) {
+                    if (!(e instanceof MobilettoNotFoundError)) {
+                        throw e instanceof MobilettoError ? e : new MobilettoError(`remove(${path}): error listing: ${e}`)
+                    }
+                    objects = null
+                }
             }
         } else {
             const Key = this.normalizeKey(path)
