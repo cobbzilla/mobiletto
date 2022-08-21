@@ -85,6 +85,9 @@ A driver is any JS file that exports a 'storageClient' function with this signat
 
 The object that the storageClient function returns must define these functions:
 
+    // Test the driver before using, ensure proper configuration
+    async testConfig ()
+
     // Find DNS records that match the given domain, type (if provided) and name (if provided)
     async list (path)  // path may be omitted
     

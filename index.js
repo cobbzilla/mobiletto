@@ -1,4 +1,5 @@
 const crypt = require('./util/crypt')
+const {normalizeKey, normalizeIV} = require("./util/crypt");
 
 // adapted from https://stackoverflow.com/a/27724419
 function MobilettoError (message, err) {
@@ -29,33 +30,41 @@ async function mobiletto (driverPath, key, secret, opts, encryptionKey = null, e
     if (!(await client.testConfig())) {
         throw new MobilettoError(`mobiletti(${driverPath}) error: test API call failed`)
     }
-    return encryptionKey === null
-        ? client
-        : {
-            list: async (path) => client.list(path),
-            metadata: async (path) => client.metadata(path),
-            read: async (path, callback) => {
-                const cipher = crypt.startDecryptStream(encryptionKey, encryptionIV)
-                return client.read(path, (chunk) => {
+    if (encryptionKey === null) {
+        return client
+    }
+    const encKey = normalizeKey(encryptionKey)
+    const iv = normalizeIV(encryptionIV, key)
+    return {
+        list: async (path) => client.list(path),
+        metadata: async (path) => client.metadata(path),
+        read: async (path, callback) => {
+            const cipher = crypt.startDecryptStream(encKey, iv)
+            return client.read(path,
+                (chunk) => {
                     return callback(crypt.updateCryptStream(cipher, chunk))
                 }, () => {
-                    return crypt.closeCryptStream(cipher)
+                    return callback(crypt.closeCryptStream(cipher))
                 })
-            },
-            write: async (path, readFunc) => {
-                function* cryptGenerator(plaintextGenerator) {
-                    let chunk = plaintextGenerator.next().value
-                    while (chunk) {
-                        cipher.update(chunk)
-                    }
-                    cipher.final()
+        },
+        write: async (path, readFunc) => {
+            function* cryptGenerator(plaintextGenerator) {
+                let chunk = plaintextGenerator.next().value
+                while (chunk) {
+                    yield cipher.update(chunk)
+                    chunk = plaintextGenerator.next().value
                 }
-                const cipher = crypt.startEncryptStream(encryptionKey, encryptionIV)
-                return client.write(path, cryptGenerator(readFunc))
-            },
-            remove: async (path, {recursive = false, quiet = false}) =>
-                client.remove(path, { recursive, quiet })
+                yield cipher.final()
+            }
+            const cipher = crypt.startEncryptStream(encKey, iv)
+            return client.write(path, cryptGenerator(readFunc))
+        },
+        remove: async (path, options) => {
+            const recursive = (options && options.recursive) || false
+            const quiet = (options && options.quiet) || false
+            return client.remove(path, {recursive, quiet})
         }
+    }
 }
 
 async function readStream(stream, callback, endCallback) {
@@ -69,10 +78,7 @@ async function readStream(stream, callback, endCallback) {
             stream.on('error', reject)
             stream.on('end', () => {
                 if (endCallback) {
-                    const data = endCallback()
-                    if (data) {
-                        callback(data)
-                    }
+                    endCallback()
                 }
                 resolve()
             })
@@ -112,7 +118,7 @@ async function streamReader (stream, callback, endCallback) {
                 callback(data)
             })
             stream.on('error', reject)
-            stream.on('end', () => {
+            stream.on('end', (resolve) => {
                 if (typeof endCallback === 'function') {
                     const endData = endCallback()
                     if (endData) {

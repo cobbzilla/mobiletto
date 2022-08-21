@@ -13,6 +13,7 @@ const {MobilettoNotFoundError, M_FILE, M_DIR} = require("../index")
 // the temp file is also TEMP_SZ_MULTIPLE of this number
 const READ_SZ = 8 * 1024   // xfer data in 8k chunks
 const TEMP_SZ_MULTIPLE = 3 // temp file will be ~24k (READ_SZ * 3)
+const ENC_SIZE_CLOSE_ENOUGH_PERCENT = 0.05;
 
 DRIVER_CONFIG = {
     local: {
@@ -29,11 +30,16 @@ DRIVER_CONFIG = {
     }
 }
 
-async function assertMeta (api, name, expectedSize) {
+async function assertMeta (api, name, expectedSize, closeEnoughPercent = null) {
     const meta = await api.metadata(name)
     should().exist(meta, 'expected return value from metadata call')
-    expect(meta.size).equals(expectedSize, 'expected size of written file to equal size of randomData')
     expect(meta.name).equals(name, 'expected name of written file to be correct')
+    if (closeEnoughPercent) {
+        expect(Math.abs(expectedSize - meta.size)).to.be.lessThan(Math.floor(meta.size * ENC_SIZE_CLOSE_ENOUGH_PERCENT),
+            'expected write API to return within 5% of bytes written (due to encryption)')
+    } else {
+        expect(meta.size).equals(expectedSize, 'expected size of written file to equal size of randomData')
+    }
 }
 
 async function assertMetaFail (api, name) {
@@ -48,8 +54,30 @@ async function assertMetaFail (api, name) {
     }
 }
 
-function rand (count) {
-    return randomstring.generate(count)
+const rand = count => randomstring.generate(count)
+
+async function writeRandomFile(fixture, size) {
+    const data = fixture.randomData
+    function* dataGenerator() {
+        // read in 8k chunks
+        for (let i = 0; i < data.length; i += size) {
+            const end = (i + size) > data.length ? data.length : (i + size)
+            yield data.slice(i, end)
+        }
+    }
+    return await fixture.api.write(fixture.name, dataGenerator())
+}
+
+async function readFile(fixture) {
+    const chunks = []
+    function reader(chunk) {
+        if (chunk) {
+            chunks.push(chunk)
+        }
+    }
+    const response = await fixture.api.read(fixture.name, reader)
+    const data = Buffer.concat(chunks)
+    return { response, data }
 }
 
 // To test a single driver:
@@ -97,26 +125,11 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
                     .finally(done)
             })
             it("should write a file", async () => {
-                const data = fixture.randomData
-                function* dataGenerator() {
-                    // read in 8k chunks
-                    for (let i = 0; i < data.length; i += READ_SZ) {
-                        const end = (i + READ_SZ) > data.length ? data.length : (i + READ_SZ)
-                        yield data.slice(i, end)
-                    }
-                }
-                const response = await fixture.api.write(fixture.name, dataGenerator())
-                expect(response).to.equal(data.length, 'expected write API to return correct number of bytes written')
+                const response = await writeRandomFile(fixture, size)
+                expect(response).to.equal(size, 'expected write API to return correct number of bytes written')
             })
             it("should read the file we just wrote", async () => {
-                const chunks = []
-                function reader(chunk) {
-                    if (chunk) {
-                        chunks.push(chunk)
-                    }
-                }
-                const response = await fixture.api.read(fixture.name, reader)
-                const data = Buffer.concat(chunks)
+                const { response, data } = await readFile(fixture);
                 expect(response).is.equal(data.length, 'expected read API to return correct number of bytes read')
                 expect(data.toString('utf8')).to.equal(fixture.randomData, 'expected to read back the same data we wrote')
             })
@@ -128,6 +141,42 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
                 expect(removed).to.be.true
             })
             it("loading metadata on the file we wrote now fails", async () => {
+                await assertMetaFail(fixture.api, fixture.name)
+            })
+        })
+
+        describe(`${driverName} - write an encrypted file, read file, read metadata, delete file`, () => {
+            // some random data, plus a bit extra
+            const size = (READ_SZ * TEMP_SZ_MULTIPLE) + Math.floor(Math.random() * (READ_SZ/2))
+            const randomData = rand(size)
+            const fileSuffix = '' + Date.now()
+            const encryptionKey = rand(32)
+            let encryptedByteCount = null
+            let fixture
+            beforeEach((done) => {
+                const name = `test_file_${fileSuffix}`
+                mobiletto(driverName, config.key, config.secret, config.opts, encryptionKey)
+                    .then(api => { fixture = {api, name, randomData} })
+                    .finally(done)
+            })
+            it("should write an encrypted file", async () => {
+                encryptedByteCount = await writeRandomFile(fixture, size);
+                expect(Math.abs(encryptedByteCount - size)).to.be.lessThan(Math.floor(size * ENC_SIZE_CLOSE_ENOUGH_PERCENT),
+                    'expected write API to return within 5% of bytes written (due to encryption)')
+            })
+            it("should read the encrypted file we just wrote", async () => {
+                const { response, data } = await readFile(fixture);
+                expect(response).is.equal(encryptedByteCount, 'expected read API to return correct number of bytes read')
+                expect(data.toString('utf8')).to.equal(fixture.randomData, 'expected to read back the same data we wrote')
+            })
+            it("should load metadata on the encrypted file we just wrote", async () => {
+                await assertMeta(fixture.api, fixture.name, fixture.randomData.length, ENC_SIZE_CLOSE_ENOUGH_PERCENT)
+            })
+            it("should delete the encrypted file we just wrote", async () => {
+                const removed = await fixture.api.remove(fixture.name)
+                expect(removed).to.be.true
+            })
+            it("loading metadata on the encrypted file we wrote now fails", async () => {
                 await assertMetaFail(fixture.api, fixture.name)
             })
         })
@@ -231,6 +280,5 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
                 }
             })
         })
-
     })
 }
