@@ -7,6 +7,11 @@ It supports apps that are agnostic to where files are stored.
 
 All drivers are tested for identical behavior with 30 tests for each driver.
 
+Today the supported drivers are:
+
+* `s3`: read/write an Amazon S3 bucket
+* `local`: read/write to local filesystem
+
 # Basic usage
     const { mobiletto, readFile } = require('mobiletto')
 
@@ -107,7 +112,8 @@ effort, discover some or all of the overall hierarchical structure. They would n
 directories/files unless they also knew your encryption key or had otherwise successfully cracked the encryption.
 All bets are off then!
 
-# Alternate usage: import fully scoped module and use `connect`
+# Alternate usage
+Import the fully-scoped module and use the `connect` function:
 
     const storage = require('mobiletto')
     const s3 = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1'})
