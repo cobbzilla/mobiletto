@@ -5,20 +5,20 @@ Mobiletto is a JavaScript storage abstraction layer.
 
 It supports apps that are agnostic to where files are stored.
 
-# Using storage services
+# Basic usage
     const { mobiletto } = require('mobiletto')
 
-    // general usage
+    // General usage
     const api = await mobiletto(driverName, key, secret, opts)
 
-    // to use 'local' driver:
+    // To use 'local' driver:
     //   * key: base directory
     //   * secret: ignored, can be null
     //   * opts object:
     //     * mode: optional, filesystem permissions to set when creating new files and directories, default is 0700
     const local = await mobiletto('local', '/home/ubuntu/tmp', null, {mode: '0700'})
 
-    // to use 's3' driver:
+    // To use 's3' driver:
     //   * key: AWS access key
     //   * secret: AWS secret key
     //   * opts object:
@@ -28,26 +28,26 @@ It supports apps that are agnostic to where files are stored.
     //     * delimiter: optional, directory delimiter, default is '/'
     const s3 = await mobiletto('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1'})
 
-    // list files
+    // List files
     local.list()  // --> returns an array of file objects
     s3.list()     // --> returns an array of file objects
 
-    // list files in a directory
+    // List files in a directory
     const path = 'some/path'
     local.list(path)  // --> returns an array of file objects
     s3.list(path)     // --> returns an array of file objects
     
-    // read metadata for a file
+    // Read metadata for a file
     local.metadata(path)
     s3.metadata(path)
     
-    // read a file
+    // Read a file
     // Provide a callback that writes the data someplace
     const callback = (chunk) => { ... write chunk somewhere ...  } 
     local.read(path, callback)
     s3.read(path, callback)
     
-    // write a file
+    // Write a file
     // Provide a generator function that yields chunks of data 
     const generator = function* () {
       while ( ... more-data-to-return ... ) {
@@ -58,16 +58,31 @@ It supports apps that are agnostic to where files are stored.
     local.write(path, generator)
     s3.write(path, generator)
 
-    // delete a file
+    // Delete a file
     // Quiet param is optional (default false), when set errors will not be thrown if the path does not exist 
     const quiet = true
     local.remove(path, {quiet})
     s3.remove(path, {quiet})
 
-    // recursively delete a directory
+    // Recursively delete a directory
     const recursive = true
     local.remove(path, {recursive, quiet})
     s3.remove(path, {recursive, quiet})
+
+# Transparent Encryption
+Enable transparent client-side encryption:
+
+    // Pass encryption parameters
+    const encryption = {
+      key: randomstring.generate(128), // required, must be >= 16 chars
+      iv: randomstring.generate(128),  // optional
+      algo: 'aes-256-cbc' // optional, aes-256-cbc is the default
+    }
+    const api = await mobiletto(driverName, key, secret, opts, encryption)
+
+    // Subsequent write operations will encrypt data (client side) when writing
+    // Subsequent read operations will decrypt data (client side) when reading
+    // Path names will also be encrypted
 
 # Driver Interface
 A driver is any JS file that exports a 'storageClient' function with this signature:

@@ -1,5 +1,5 @@
 const crypt = require('./util/crypt')
-const {normalizeKey, normalizeIV} = require("./util/crypt");
+const {DEFAULT_CRYPT_ALGO, normalizeKey, normalizeIV} = require("./util/crypt");
 
 // adapted from https://stackoverflow.com/a/27724419
 function MobilettoError (message, err) {
@@ -24,22 +24,33 @@ function MobilettoNotFoundError (message) {
     }
 }
 
-async function mobiletto (driverPath, key, secret, opts, encryptionKey = null, encryptionIV = null) {
+async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     const driver = require(driverPath.includes('/') ? driverPath : `./drivers/${driverPath}/index.js`)
     const client = driver.storageClient(key, secret, opts)
     if (!(await client.testConfig())) {
-        throw new MobilettoError(`mobiletti(${driverPath}) error: test API call failed`)
+        throw new MobilettoError(`mobiletto(${driverPath}) error: test API call failed`)
     }
-    if (encryptionKey === null) {
+    if (encryption === null) {
         return client
     }
-    const encKey = normalizeKey(encryptionKey)
-    const iv = normalizeIV(encryptionIV, key)
+    const encKey = normalizeKey(encryption.key)
+    if (!encKey) {
+        throw new MobilettoError(`mobiletto(${driverPath}): invalid encryption key`)
+    }
+    const iv = normalizeIV(encryption.iv, encKey)
+    if (!iv) {
+        throw new MobilettoError(`mobiletto(${driverPath}): invalid encryption IV`)
+    }
+    const enc = {
+        key: encKey,
+        iv,
+        algo: encryption.algo || DEFAULT_CRYPT_ALGO
+    }
     return {
         list: async (path) => client.list(path),
         metadata: async (path) => client.metadata(path),
         read: async (path, callback) => {
-            const cipher = crypt.startDecryptStream(encKey, iv)
+            const cipher = crypt.startDecryptStream(enc)
             return client.read(path,
                 (chunk) => {
                     return callback(crypt.updateCryptStream(cipher, chunk))
@@ -56,7 +67,7 @@ async function mobiletto (driverPath, key, secret, opts, encryptionKey = null, e
                 }
                 yield cipher.final()
             }
-            const cipher = crypt.startEncryptStream(encKey, iv)
+            const cipher = crypt.startEncryptStream(enc)
             return client.write(path, cryptGenerator(readFunc))
         },
         remove: async (path, options) => {
@@ -131,7 +142,7 @@ async function streamReader (stream, callback, endCallback) {
         })
     }
     await streamHandler(stream).then(() => {
-        console.log('streamhandler ended')
+        // console.log('streamHandler ended')
     })
     return count
 }

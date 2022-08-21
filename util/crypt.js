@@ -4,6 +4,7 @@ const shasum = require('shasum')
 
 const WARN_PLAINTEXT = !process.env.IGNORE_DISABLED_ENCRYPTION
 const MIN_KEY_LEN = 16
+const DEFAULT_CRYPT_ALGO = 'aes-256-cbc';
 
 function normalizeKey (k) {
     return (typeof k === 'string' && k.trim().length > MIN_KEY_LEN)
@@ -31,8 +32,8 @@ function setDefaultIV (iv) {
     CRYPTO_IV = normalizeIV(iv, KEY)
 }
 
-function getCipher(key, iv) {
-    return crypto.createCipheriv('aes-256-cbc', key, iv);
+function getCipher(enc) {
+    return crypto.createCipheriv(enc.algo, enc.key, enc.iv);
 }
 
 function encrypt (plainText, key = KEY, iv = CRYPTO_IV, outputEncoding = 'base64') {
@@ -46,8 +47,8 @@ function encrypt (plainText, key = KEY, iv = CRYPTO_IV, outputEncoding = 'base64
     return Buffer.concat([cipher.update(plainText), cipher.final()]).toString(outputEncoding)
 }
 
-function getDecipher(key, iv) {
-    return crypto.createDecipheriv('aes-256-cbc', key, iv);
+function getDecipher(enc) {
+    return crypto.createDecipheriv(enc.algo, enc.key, enc.iv);
 }
 
 function decrypt (cipherText, key = KEY, iv = CRYPTO_IV, outputEncoding = 'utf8') {
@@ -59,12 +60,14 @@ function decrypt (cipherText, key = KEY, iv = CRYPTO_IV, outputEncoding = 'utf8'
     return Buffer.concat([cipher.update(data), cipher.final()]).toString(outputEncoding)
 }
 
-const startEncryptStream = (key = KEY, iv = CRYPTO_IV) => getCipher(key, iv)
-const startDecryptStream = (key = KEY, iv = CRYPTO_IV) => getDecipher(key, iv)
+const startEncryptStream = (enc) => getCipher(enc)
+const startDecryptStream = (enc) => getDecipher(enc)
 const updateCryptStream = (cipher, data) => cipher.update(data)
 const closeCryptStream = (cipher) => cipher.final()
 
 module.exports = {
+    DEFAULT_CRYPT_ALGO,
+    setDefaultKey, setDefaultIV,
     encrypt, decrypt,
     normalizeKey, normalizeIV,
     startEncryptStream, startDecryptStream, updateCryptStream, closeCryptStream

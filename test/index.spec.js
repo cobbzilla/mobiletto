@@ -155,7 +155,7 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             let fixture
             beforeEach((done) => {
                 const name = `test_file_${fileSuffix}`
-                mobiletto(driverName, config.key, config.secret, config.opts, encryptionKey)
+                mobiletto(driverName, config.key, config.secret, config.opts, {key: encryptionKey})
                     .then(api => { fixture = {api, name, randomData} })
                     .finally(done)
             })
