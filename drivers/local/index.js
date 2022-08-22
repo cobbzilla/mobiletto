@@ -45,9 +45,7 @@ class StorageClient {
         }
         return { path, stat }
     }
-    async testConfig () {
-        return await this.list()
-    }
+    testConfig = async () => await this.list()
     fileType (stat) {
         if (stat.isDirectory()) {
             return M_DIR

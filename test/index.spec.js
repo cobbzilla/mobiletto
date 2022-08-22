@@ -34,20 +34,11 @@ DRIVER_CONFIG = {
     }
 }
 
-function closeEnough (expected, actual, percent = ENC_SIZE_CLOSE_ENOUGH_PERCENT) {
-    expect(Math.abs(expected - actual)).to.be.lessThan(Math.floor(expected * percent),
-        'expected size within 5% of actual (due to encryption)')
-}
-
-async function assertMeta (api, name, expectedSize, closeEnoughPercent = null) {
+async function assertMeta (api, name, expectedSize) {
     const meta = await api.metadata(name)
     should().exist(meta, 'expected return value from metadata call')
     expect(meta.name).equals(name, 'expected name of written file to be correct')
-    if (closeEnoughPercent) {
-        closeEnough(expectedSize, meta.size, closeEnoughPercent)
-    } else {
-        expect(meta.size).equals(expectedSize, 'expected size of written file to equal size of randomData')
-    }
+    expect(meta.size).equals(expectedSize, 'expected size of written file to equal size of randomData')
 }
 
 async function assertMetaFail (api, name) {
@@ -91,7 +82,7 @@ describe('crypto test', () => {
 
 })
 
-const ENC_TESTS = [null, {key: rand(32)}]
+const encryptionTests = () => [null, { key: rand(32) }]
 
 // To test a single driver:
 //  - Uncomment one of the lines below to set driverName to the one you want to test
@@ -158,14 +149,13 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             })
         })
 
-        for (const encryption of ENC_TESTS) {
+        for (const encryption of encryptionTests()) {
             const encDesc = encryption ? '(with encryption)' : '(without encryption)'
             describe(`${driverName} - ${encDesc} fail to write and delete files in readOnly mode`, () => {
                 // some random data, plus a bit extra
                 const size = 16
                 const randomData = rand(size)
                 const fileSuffix = '' + Date.now()
-                const encryption = {key: rand(32)}
                 let fixture
                 beforeEach((done) => {
                     const name = `test_file_${fileSuffix}`
@@ -212,7 +202,6 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             const randomData = rand(size)
             const fileSuffix = '' + Date.now()
             const encryptionKey = rand(32)
-            let encryptedByteCount = null
             let fixture
             beforeEach((done) => {
                 const name = `test_file_${fileSuffix}`
@@ -222,8 +211,8 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
                     .finally(done)
             })
             it("should write an encrypted file", async () => {
-                encryptedByteCount = await writeRandomFile(fixture, size);
-                closeEnough(size, encryptedByteCount)
+                const bytesWritten = await writeRandomFile(fixture, size);
+                expect(bytesWritten).is.equal(size, 'expected write API to return correct number of bytes written')
             })
             it("should read the encrypted file we just wrote", async () => {
                 const data = await fixture.api.readFile(fixture.name);
@@ -242,7 +231,7 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             })
         })
 
-        for (const encryption of ENC_TESTS) {
+        for (const encryption of encryptionTests()) {
             const encDesc = encryption ? '(with encryption)' : '(without encryption)'
             describe(`${driverName} - ${encDesc} write files in a new dir, read metadata, recursively delete`, () => {
             // describe(`${driverName} - ENCRYPTION write files in a new dir, read metadata, recursively delete`, () => {
@@ -269,11 +258,7 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
 
                     for (let i = 0; i < fileCount; i++) {
                         const bytesWritten = await fixture.api.write(tempFilename(fixture.name, i), dataGenerator())
-                        if (encryption) {
-                            closeEnough(READ_SZ, bytesWritten)
-                        } else {
-                            expect(bytesWritten).to.equal(READ_SZ, 'expected write API to return correct number of bytes written')
-                        }
+                        expect(bytesWritten).to.equal(READ_SZ, 'expected write API to return correct number of bytes written')
                     }
                 })
                 it("should load metadata for one of the new files", async () => {

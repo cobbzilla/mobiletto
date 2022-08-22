@@ -32,11 +32,7 @@ function MobilettoNotFoundError (message) {
     }
 }
 
-const reader = (chunks) => (chunk) => {
-    if (chunk) {
-        chunks.push(chunk)
-    }
-}
+const reader = (chunks) => (chunk) => { if (chunk) { chunks.push(chunk) } }
 
 const UTILITY_FUNCTIONS = {
     readFile: (client) => async (path) => {
@@ -103,10 +99,19 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         }
         return newPath + encrypted
     }
+    const metaPath = path => encryptPath(path + ' ~ META')
     const direntDir = dir => encryptPath(dir + DIR_ENT_DIR_SUFFIX)
     const direntFile = (dirent, path) => dirent + '/' + shasum(DIR_ENT_FILE_PREFIX + ' ' + path)
 
     const _metadata = (client) => async (path) => {
+        let metaObj
+        try {
+            let chunks = []
+            await client.read(metaPath(path), reader(chunks))
+            metaObj = JSON.parse(decrypt(Buffer.concat(chunks).toString(), enc))
+        } catch (e) {
+            metaObj = {}
+        }
         let meta
         try {
             meta = await client.metadata(encryptPath(path))
@@ -132,7 +137,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             }
         }
         meta.name = path // rewrite name back to plaintext name
-        return meta
+        return Object.assign({}, meta, metaObj)
     }
 
     const _loadMeta = async (dirent, entries) => {
@@ -152,6 +157,13 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         const df = direntFile(direntDir(dirname(path)), path);
         await client.remove(df, {recursive: false, quiet: true})
         await client.remove(encryptPath(path), {recursive: false, quiet: true})
+        await client.remove(metaPath(path), {recursive: false, quiet: true})
+    }
+
+    function stringGenerator (value, enc) {
+        return function* () {
+            yield encrypt(value, enc)
+        }
     }
 
     const encClient = {
@@ -178,9 +190,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             // if encrypting paths, write dirent file(s) for all parent directories
             let p = path
             while (true) {
-                const direntGenerator = function* () {
-                    yield encrypt(p + enc.encPathPadding(), enc)
-                }
+                const direntGenerator = stringGenerator(p + enc.encPathPadding(), enc)
                 const dir = direntDir(dirname(p))
                 const df = direntFile(dir, p);
                 if (!(await client.write(df, direntGenerator()))) {
@@ -192,9 +202,11 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                 }
             }
 
+            let bytesRead = 0
             function* cryptGenerator(plaintextGenerator) {
                 let chunk = plaintextGenerator.next().value
                 while (chunk) {
+                    bytesRead += chunk.length
                     yield cipher.update(chunk)
                     chunk = plaintextGenerator.next().value
                 }
@@ -202,7 +214,9 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             }
             const cipher = crypt.startEncryptStream(enc)
             const realPath = encryptPath(path)
-            return client.write(realPath, cryptGenerator(readFunc))
+            await client.write(realPath, cryptGenerator(readFunc))
+            await client.write(metaPath(path), stringGenerator(JSON.stringify({ size: bytesRead }), enc)())
+            return bytesRead
         },
         remove: async (path, options) => {
             const recursive = (options && options.recursive) || false

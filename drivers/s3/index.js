@@ -43,9 +43,8 @@ class StorageClient {
         this.client = new S3Client({region: this.region, credentials})
     }
 
-    async testConfig () {
-        return await this._list('', { MaxKeys: 1 })
-    }
+    // noinspection JSUnusedGlobalSymbols -- called by driver init
+    testConfig = async () => await this._list('', { MaxKeys: 1 })
 
     async list (path = '') {
         return (await this._list(path)).map(obj => {
