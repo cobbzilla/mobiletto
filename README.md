@@ -5,7 +5,7 @@ Mobiletto is a JavaScript storage abstraction layer, with optional transparent c
 
 It supports apps that are agnostic to where files are stored.
 
-All drivers are tested for identical behavior with 30 tests for each driver.
+All drivers are tested for identical behavior with over 35 tests for each driver.
 
 Today the supported drivers are:
 
@@ -22,6 +22,7 @@ Today the supported drivers are:
     //   * key: base directory
     //   * secret: ignored, can be null
     //   * opts object:
+    //     * readOnly: optional, never change anything on the filesystem; default is false
     //     * mode: optional, filesystem permissions to set when creating new files and directories, default is 0700
     const local = await mobiletto('local', '/home/ubuntu/tmp', null, {mode: '0700'})
 
@@ -29,6 +30,7 @@ Today the supported drivers are:
     //   * key: AWS access key
     //   * secret: AWS secret key
     //   * opts object:
+    //     * readOnly: optional, never change anything on the bucket; default is false
     //     * bucket: required, name of the S3 bucket
     //     * region: optional, the AWS region to communicate with, default is us-east-1
     //     * prefix: optional, all read/writes within the S3 bucket will be under this prefix

@@ -91,6 +91,8 @@ describe('crypto test', () => {
 
 })
 
+const ENC_TESTS = [null, {key: rand(32)}]
+
 // To test a single driver:
 //  - Uncomment one of the lines below to set driverName to the one you want to test
 //  - Comment out the next `for` line, and its closing curly brace (just before EOF)
@@ -156,6 +158,54 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             })
         })
 
+        for (const encryption of ENC_TESTS) {
+            const encDesc = encryption ? '(with encryption)' : '(without encryption)'
+            describe(`${driverName} - ${encDesc} fail to write and delete files in readOnly mode`, () => {
+                // some random data, plus a bit extra
+                const size = 16
+                const randomData = rand(size)
+                const fileSuffix = '' + Date.now()
+                const encryption = {key: rand(32)}
+                let fixture
+                beforeEach((done) => {
+                    const name = `test_file_${fileSuffix}`
+                    const opts = Object.assign({}, config.opts, {readOnly: true})
+                    connect(driverName, config.key, config.secret, opts, encryption)
+                        .then(api => { fixture = {api, name, randomData} })
+                        .catch(err => { throw err })
+                        .finally(done)
+                })
+                it("should try to write a file and fail", async () => {
+                    const response = await writeRandomFile(fixture, size)
+                    expect(response).to.be.false
+                })
+                it("should fail to read the file we did not write", async () => {
+                    try {
+                        await fixture.api.readFile(fixture.name)
+                        assert.fail('should not have been able to read non-existent file that we did not write')
+                    } catch (e) {
+                        if (!(e instanceof MobilettoNotFoundError)) {
+                            assert.fail(`unexpected error: ${e} trying to read non-existent file`)
+                        }
+                    }
+                })
+                it("should fail to load metadata on the file we did not write", async () => {
+                    try {
+                        await assertMeta(fixture.api, fixture.name, fixture.randomData.length)
+                        assert.fail('should not have been able to read metadata for non-existent file that we did not write')
+                    } catch (e) {
+                        if (!(e instanceof MobilettoNotFoundError)) {
+                            assert.fail(`unexpected error: ${e} trying to read metadata on non-existent file`)
+                        }
+                    }
+                })
+                it("should fail to delete the file we did not write", async () => {
+                    const removed = await fixture.api.remove(fixture.name)
+                    expect(removed).to.be.false
+                })
+            })
+        }
+
         describe(`${driverName} - write an encrypted file, read file, read metadata, delete file`, () => {
             // some random data, plus a bit extra
             const size = (READ_SZ * TEMP_SZ_MULTIPLE) + Math.floor(Math.random() * (READ_SZ/2))
@@ -168,6 +218,7 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
                 const name = `test_file_${fileSuffix}`
                 mobiletto(driverName, config.key, config.secret, config.opts, {key: encryptionKey})
                     .then(api => { fixture = {api, name, randomData} })
+                    .catch((err) => { throw err })
                     .finally(done)
             })
             it("should write an encrypted file", async () => {
@@ -191,7 +242,7 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             })
         })
 
-        for (const encryption of [null, {key: rand(32)}]) {
+        for (const encryption of ENC_TESTS) {
             const encDesc = encryption ? '(with encryption)' : '(without encryption)'
             describe(`${driverName} - ${encDesc} write files in a new dir, read metadata, recursively delete`, () => {
             // describe(`${driverName} - ENCRYPTION write files in a new dir, read metadata, recursively delete`, () => {

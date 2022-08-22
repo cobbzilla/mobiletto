@@ -46,9 +46,17 @@ const UTILITY_FUNCTIONS = {
     }
 }
 
-function addUtilityFunctions (client) {
+function addUtilityFunctions (client, readOnly = false) {
     for (const func of Object.keys(UTILITY_FUNCTIONS)) {
         client[func] = UTILITY_FUNCTIONS[func](client)
+    }
+    if (readOnly) {
+        for (const writeFunc of ['write', 'remove']) {
+            client[writeFunc] = async () => {
+                // console.warn(`${writeFunc} not supported in readOnly mode`)
+                return false
+            }
+        }
     }
     return client
 }
@@ -63,8 +71,9 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     if (!(await client.testConfig())) {
         throw new MobilettoError(`mobiletto(${driverPath}) error: test API call failed`)
     }
+    const readOnly = opts ? !!opts.readOnly : false
     if (encryption === null) {
-        return addUtilityFunctions(client)
+        return addUtilityFunctions(client, readOnly)
     }
     const encKey = normalizeKey(encryption.key)
     if (!encKey) {
@@ -247,7 +256,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             return true
         }
     }
-    return addUtilityFunctions(encClient)
+    return addUtilityFunctions(encClient, readOnly)
 }
 
 async function readStream(stream, callback, endCallback) {
