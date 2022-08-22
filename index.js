@@ -74,12 +74,10 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     if (!iv) {
         throw new MobilettoError(`mobiletto(${driverPath}): invalid encryption IV`)
     }
-    const encryptPaths = encryption.encryptPaths || true;
     const enc = {
         key: encKey,
         iv,
         algo: encryption.algo || DEFAULT_CRYPT_ALGO,
-        encryptPaths,
         dirLevels: encryption.dirLevels || 4,
         encPathPadding: () => ENC_PAD_SEP + randomstring.generate(1 + Math.floor(2*Math.random()))
     }
@@ -92,13 +90,10 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         }
         return newPath + encrypted
     }
-    const direntDir = dir => encryptPaths ? encryptPath(dir + DIR_ENT_DIR_SUFFIX) : null
+    const direntDir = dir => encryptPath(dir + DIR_ENT_DIR_SUFFIX)
     const direntFile = (dirent, path) => dirent + '/' + shasum(DIR_ENT_FILE_PREFIX + ' ' + path)
 
     const _metadata = (client) => async (path) => {
-        if (!encryptPaths) {
-            return client.metadata(path)
-        }
         let meta
         try {
             meta = await client.metadata(encryptPath(path))
@@ -148,9 +143,6 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
 
     const encClient = {
         list: async (path) => {
-            if (!encryptPaths) {
-                return await client.list(path)
-            }
             const dirent = direntDir(path)
             const entries = await client.list(dirent)
             if (!entries || entries.length === 0) {
@@ -160,7 +152,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         },
         metadata: _metadata(client),
         read: async (path, callback) => {
-            const realPath = encryptPaths ? encryptPath(path) : path
+            const realPath = encryptPath(path)
             const cipher = crypt.startDecryptStream(enc)
             return client.read(realPath,
                 (chunk) => {
@@ -171,21 +163,19 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         },
         write: async (path, readFunc) => {
             // if encrypting paths, write dirent file(s) for all parent directories
-            if (encryptPaths) {
-                let p = path
-                while (true) {
-                    const direntGenerator = function* () {
-                        yield encrypt(p + enc.encPathPadding(), enc)
-                    }
-                    const dir = direntDir(dirname(p))
-                    const df = direntFile(dir, p);
-                    if (!(await client.write(df, direntGenerator()))) {
-                        throw new MobilettoError('write: error writing dirent file')
-                    }
-                    p = dirname(p)
-                    if (p === '.' || p === '') {
-                        break
-                    }
+            let p = path
+            while (true) {
+                const direntGenerator = function* () {
+                    yield encrypt(p + enc.encPathPadding(), enc)
+                }
+                const dir = direntDir(dirname(p))
+                const df = direntFile(dir, p);
+                if (!(await client.write(df, direntGenerator()))) {
+                    throw new MobilettoError('write: error writing dirent file')
+                }
+                p = dirname(p)
+                if (p === '.' || p === '') {
+                    break
                 }
             }
 
@@ -203,11 +193,6 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         },
         remove: async (path, options) => {
             const recursive = (options && options.recursive) || false
-            const quiet = (options && options.quiet) || false
-            if (!encryptPaths) {
-                return client.remove(path, {recursive, quiet})
-            }
-
             if (recursive) {
                 // ugh. we have to iterate over all dirent files, and remove each file/subdir one by one
                 async function recRm (path) {
