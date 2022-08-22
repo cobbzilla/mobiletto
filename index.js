@@ -43,6 +43,10 @@ const UTILITY_FUNCTIONS = {
         const chunks = []
         await client.read(path, reader(chunks))
         return Buffer.concat(chunks)
+    },
+    writeFile: (client) => async (path, data) => {
+        const readFunc = function* () { yield data }
+        return await client.write(path, readFunc)
     }
 }
 
@@ -51,7 +55,7 @@ function addUtilityFunctions (client, readOnly = false) {
         client[func] = UTILITY_FUNCTIONS[func](client)
     }
     if (readOnly) {
-        for (const writeFunc of ['write', 'remove']) {
+        for (const writeFunc of ['write', 'remove', 'writeFile']) {
             client[writeFunc] = async () => {
                 // console.warn(`${writeFunc} not supported in readOnly mode`)
                 return false

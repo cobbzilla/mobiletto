@@ -71,6 +71,10 @@ Today the supported drivers are:
     local.write(path, generator)
     s3.write(path, generator)
 
+    // Write an entire file at once (convenience method)
+    await local.writeFile(path, bufferOrString)  // returns count of bytes written
+    await s3.writeFile(path, bufferOrString)      // returns count of bytes written
+
     // Delete a file
     // Quiet param is optional (default false), when set errors will not be thrown if the path does not exist 
     const quiet = true
