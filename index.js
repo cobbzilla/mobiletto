@@ -42,7 +42,7 @@ const UTILITY_FUNCTIONS = {
     },
     writeFile: (client) => async (path, data) => {
         const readFunc = function* () { yield data }
-        return await client.write(path, readFunc)
+        return await client.write(path, readFunc())
     }
 }
 
