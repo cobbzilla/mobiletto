@@ -215,7 +215,8 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             const cipher = crypt.startEncryptStream(enc)
             const realPath = encryptPath(path)
             await client.write(realPath, cryptGenerator(readFunc))
-            await client.write(metaPath(path), stringGenerator(JSON.stringify({ size: bytesRead }), enc)())
+            const meta = { name: path, size: bytesRead }
+            await client.write(metaPath(path), stringGenerator(JSON.stringify(meta), enc)())
             return bytesRead
         },
         remove: async (path, options) => {
