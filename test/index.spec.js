@@ -3,6 +3,7 @@
 require('dotenv').config()
 
 const randomstring = require('randomstring')
+const path = require('path')
 
 const { expect, should, assert } = require('chai')
 
@@ -32,6 +33,18 @@ DRIVER_CONFIG = {
             region: process.env.S3_REGION
         }
     }
+}
+DRIVER_NAMES = Object.keys(DRIVER_CONFIG)
+
+function pickAnotherDriver (notThisOne) {
+    let choice = null
+    while (!choice) {
+        choice = DRIVER_NAMES[Math.floor(Math.random() * DRIVER_NAMES.length)]
+        if (choice === notThisOne) {
+            choice = null
+        }
+    }
+    return choice
 }
 
 async function assertMeta (api, name, expectedSize) {
@@ -96,7 +109,7 @@ const encryptionTests = () => [null, { key: rand(32) }]
 // the same set of tests, with exactly the same inputs/outputs.
 // This greatly supports developer sanity
 
-for (const driverName of Object.keys(DRIVER_CONFIG)) {
+for (const driverName of DRIVER_NAMES) {
     const config = DRIVER_CONFIG[driverName]
     const nonexistentFile = 'random_file_that_does_not_exist_' + rand(100) + '_' + Date.now()
     const tempFilename = (name, i) => name + (i > 0 ? '_' + i : '')
@@ -122,7 +135,7 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             const randomData = rand(size)
             const fileSuffix = '' + Date.now()
             let fixture
-            beforeEach((done) => {
+            before((done) => {
                 const name = `test_file_${fileSuffix}`
                 connect(driverName, config.key, config.secret, config.opts)
                     .then(api => { fixture = {api, name, randomData} })
@@ -152,12 +165,13 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
         for (const encryption of encryptionTests()) {
             const encDesc = encryption ? '(with encryption)' : '(without encryption)'
             describe(`${driverName} - ${encDesc} fail to write and delete files in readOnly mode`, () => {
-                // some random data, plus a bit extra
+            // describe(`${driverName} - ENC fail to write and delete files in readOnly mode`, () => {
+                // const encryption = {key: rand(32)}
                 const size = 16
                 const randomData = rand(size)
                 const fileSuffix = '' + Date.now()
                 let fixture
-                beforeEach((done) => {
+                before((done) => {
                     const name = `test_file_${fileSuffix}`
                     const opts = Object.assign({}, config.opts, {readOnly: true})
                     connect(driverName, config.key, config.secret, opts, encryption)
@@ -203,7 +217,7 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
             const fileSuffix = '' + Date.now()
             const encryptionKey = rand(32)
             let fixture
-            beforeEach((done) => {
+            before((done) => {
                 const name = `test_file_${fileSuffix}`
                 mobiletto(driverName, config.key, config.secret, config.opts, {key: encryptionKey})
                     .then(api => { fixture = {api, name, randomData} })
@@ -233,29 +247,40 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
 
         for (const encryption of encryptionTests()) {
             const encDesc = encryption ? '(with encryption)' : '(without encryption)'
-            describe(`${driverName} - ${encDesc} write files in a new dir, read metadata, recursively delete`, () => {
+            const mirrorDriver = pickAnotherDriver(driverName)
+            const mirrorConfig = DRIVER_CONFIG[mirrorDriver]
+            const mirrorDest = `mirrorDest_${rand(5)}/`
+            describe(`${driverName} - ${encDesc} write files in a new dir, read metadata, mirror to another place (${mirrorDriver}), verify mirror, recursively delete from both`, () => {
             // describe(`${driverName} - ENCRYPTION write files in a new dir, read metadata, recursively delete`, () => {
                 // const encryption = {key: rand(32)}
                 // const encryption = null
                 // a random directory and file within it
                 const randomParent = `testRPD_${rand(2)}/rand_${rand(4)}`
                 const subdirName = `subdir_` + Date.now()
-                const randomPath = `${randomParent}/${subdirName}/random_file_${Date.now()}`
+                const fullSubdirPath = `${randomParent}/${subdirName}`
+                const randomPath = `${fullSubdirPath}/random_file_${Date.now()}`
                 //const fileCount = 3 + Math.floor(Math.random() * 10)
                 const fileCount = 2
                 let fixture
-                beforeEach((done) => {
+                before((done) => {
                     mobiletto(driverName, config.key, config.secret, config.opts, encryption)
-                        .then(api => { fixture = {api, name: randomPath} })
+                        .then(api => {
+                            // const mirrorEnc = { key: rand(32) }
+                            const mirrorEnc = null
+                            mobiletto(mirrorDriver, mirrorConfig.key, mirrorConfig.secret, mirrorConfig.opts, mirrorEnc)
+                                .then(mirrorApi => {
+                                    fixture = {api, mirrorApi, name: randomPath}
+                                })
+                                .catch((err) => {
+                                    throw err
+                                })
+                                .finally(done)
+                        })
                         .catch((err) => { throw err })
-                        .finally(done)
                 })
                 it(`should write ${fileCount} files in a new directory`, async () => {
-                    function* dataGenerator() {
-                        // return one chunk of random data
-                        yield rand(READ_SZ)
-                    }
-
+                    // return one chunk of random data
+                    function* dataGenerator() { yield rand(READ_SZ) }
                     for (let i = 0; i < fileCount; i++) {
                         const bytesWritten = await fixture.api.write(tempFilename(fixture.name, i), dataGenerator())
                         expect(bytesWritten).to.equal(READ_SZ, 'expected write API to return correct number of bytes written')
@@ -279,6 +304,31 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
                         ).to.not.be.null
                     }
                 })
+                it(`should mirror its subdirectory (${driverName}/${randomParent}) to another place (${mirrorDriver}/${mirrorDest})`, async () => {
+                    const results = await fixture.mirrorApi.mirror(fixture.api, mirrorDest, randomParent)
+                    expect(results).to.have.property('errors', 0, 'expected no errors in mirroring')
+                    expect(results).to.have.property('success').greaterThan(0, 'expected some successes in mirroring')
+                })
+                it("should see the same files mirrored both places", async () => {
+                    const originalThings = await fixture.api.list(fullSubdirPath)
+                    const mirrorPath = `${mirrorDest}${subdirName}`
+                    const mirrorThings = await fixture.mirrorApi.list(mirrorPath)
+                    expect(originalThings.length === mirrorThings.length).to.be.true
+
+                    const intersection = originalThings
+                        .filter(orig => mirrorThings
+                            .find(m => path.basename(m.name) === path.basename(orig.name)))
+                    expect(intersection.length === originalThings.length).to.be.true
+                })
+                it("loading metadata on a mirrored file succeeds", async () => {
+                    const destPath = mirrorDest + subdirName + '/' + path.basename(fixture.name)
+                    await assertMeta(fixture.mirrorApi, destPath, READ_SZ)
+                })
+                it("should recursively delete the mirrored data", async () => {
+                    const recursive = true
+                    const removed = await fixture.mirrorApi.remove(mirrorDest, {recursive})
+                    expect(removed).to.be.true
+                })
                 it("should recursively delete the directory and file we just created", async () => {
                     const recursive = true
                     const removed = await fixture.api.remove(randomParent, {recursive})
@@ -286,6 +336,10 @@ for (const driverName of Object.keys(DRIVER_CONFIG)) {
                 })
                 it("loading metadata on the file we wrote now fails", async () => {
                     await assertMetaFail(fixture.api, fixture.name)
+                })
+                it("loading metadata on a mirrored file now fails", async () => {
+                    const destPath = mirrorDest + subdirName + '/' + path.basename(fixture.name)
+                    await assertMetaFail(fixture.mirrorApi, destPath)
                 })
                 it("loading metadata on the parent dir we wrote now fails", async () => {
                     await assertMetaFail(fixture.api, randomParent)

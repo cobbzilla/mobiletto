@@ -44,18 +44,23 @@ class StorageClient {
     }
 
     // noinspection JSUnusedGlobalSymbols -- called by driver init
-    testConfig = async () => await this._list('', { MaxKeys: 1 })
+    testConfig = async () => await this._list('', false, null, { MaxKeys: 1 })
 
-    async list (path = '') {
-        return (await this._list(path)).map(obj => {
-            return {
-                name: obj,
-                type: obj.endsWith(this.delimiter) ? M_DIR : M_FILE
-            }
-        })
+    stripPrefix = (name) => name.startsWith(this.prefix) ? name.substring(this.prefix.length) : name
+
+    nameToObj = (name) => {
+        const relName = this.stripPrefix(name)
+        return {
+            name: relName,
+            type: relName.endsWith(this.delimiter) ? M_DIR : M_FILE
+        }
     }
 
-    async _list (path, params = {}, recursive = false) {
+    async list (path = '', recursive = false, visitor = null) {
+        return await this._list(path, recursive, visitor)
+    }
+
+    async _list (path, recursive = false, visitor = null, params = {}) {
         const logPrefix = `_list(path=${path}):`
 
         // Declare truncated as a flag that the while loop is based on.
@@ -73,6 +78,7 @@ class StorageClient {
             bucketParams.Delimiter = this.delimiter
         }
         const objects = []
+        let objectCount = 0
         // console.log(`${logPrefix} bucketParams=${JSON.stringify(bucketParams)}`)
 
         // while loop that runs until 'response.truncated' is false.
@@ -81,15 +87,25 @@ class StorageClient {
                 const response = await this.client.send(new ListObjectsCommand(bucketParams))
                 const hasContents = typeof response.Contents !== 'undefined'
                 if (hasContents) {
-                    response.Contents.forEach((item) => {
-                        objects.push(item.Key) // todo: transform into standard object
-                    })
+                    for (const item of response.Contents) {
+                        const obj = this.nameToObj(item.Key);
+                        if (visitor) {
+                            await visitor(obj)
+                        }
+                        objects.push(obj)
+                        objectCount++
+                    }
                 }
                 const hasCommonPrefixes = typeof response.CommonPrefixes !== 'undefined'
                 if (hasCommonPrefixes) {
-                    response.CommonPrefixes.forEach((item) => {
-                        objects.push(item.Prefix) // todo: transform into standard object
-                    })
+                    for (const item of response.CommonPrefixes) {
+                        const obj = this.nameToObj(item.Prefix)
+                        if (visitor) {
+                            await visitor(obj)
+                        }
+                        objects.push(obj)
+                        objectCount++
+                    }
                 }
                 truncated = response.IsTruncated
                 // If truncated is true, advance the marker
@@ -108,16 +124,18 @@ class StorageClient {
                 throw new MobilettoError(`${logPrefix} Error: ${err}`)
             }
         }
-        if (recursive && objects.length === 0) {
+        if (recursive && objectCount === 0 && path !== '') {
             throw new MobilettoNotFoundError(path)
         }
         return objects
     }
 
-    normalizeKey = (path) =>
-        path.startsWith(this.prefix)
+    normalizeKey = (path) => {
+        const p = (path.startsWith(this.prefix)
             ? path
-            : this.prefix + (path.startsWith(this.delimiter) ? path.substring(1) : path)
+            : this.prefix + (path.startsWith(this.delimiter) ? path.substring(1) : path))
+        return p.replaceAll(/\/{2,}/g, '/')
+    }
 
     s3error (err, key, path, method) {
         return (err instanceof MobilettoError || err instanceof MobilettoNotFoundError)
@@ -138,7 +156,7 @@ class StorageClient {
         try {
             const head = await this.client.send(new HeadObjectCommand(bucketParams))
             const meta = {
-                name: path,
+                name: this.stripPrefix(path),
                 size: head.ContentLength
             }
             if (head.LastModified) {
@@ -196,14 +214,12 @@ class StorageClient {
         }
     }
 
-    async remove (path, options = null) {
-        const recursive = options && options.recursive
-        const quiet = options && options.quiet
+    async remove (path, recursive, quiet) {
         if (recursive) {
-            let objects = await this._list(path, { MaxKeys: DELETE_OBJECTS_MAX_KEYS }, true)
+            let objects = await this._list(path, true, null, { MaxKeys: DELETE_OBJECTS_MAX_KEYS })
             while (objects && objects.length > 0) {
                 const Delete = {
-                    Objects: objects.map(obj => { return {Key: obj} })
+                    Objects: objects.map(obj => { return {Key: this.normalizeKey(obj.name)} })
                 }
                 if (quiet) {
                     Delete.Quiet = true
@@ -224,7 +240,7 @@ class StorageClient {
                     throw new MobilettoError(`remove(${path}): DeleteObjectsCommand returned Errors: ${JSON.stringify(response.Errors)}`)
                 }
                 try {
-                    objects = await this._list(path, {MaxKeys: DELETE_OBJECTS_MAX_KEYS})
+                    objects = await this._list(path, true, null, {MaxKeys: DELETE_OBJECTS_MAX_KEYS})
                 } catch (e) {
                     if (!(e instanceof MobilettoNotFoundError)) {
                         throw e instanceof MobilettoError ? e : new MobilettoError(`remove(${path}): error listing: ${e}`)

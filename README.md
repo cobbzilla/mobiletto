@@ -41,10 +41,18 @@ Today the supported drivers are:
     local.list()  // --> returns an array of file objects
     s3.list()     // --> returns an array of file objects
 
+    // List files recursively
+    local.list({ recursive: true })
+    s3.list({ recursive: true })
+
     // List files in a directory
     const path = 'some/path'
-    local.list(path)  // --> returns an array of file objects
-    s3.list(path)     // --> returns an array of file objects
+    local.list(path)
+    s3.list(path, { recursive: true }) // also supports recursive flag
+
+    // Visit files in a directory -- visitor function must be async
+    local.list(path, { visitor: myAsyncFunc })
+    s3.list(path, { visitor: myAsyncFunc, recursive: true })
     
     // Read metadata for a file
     local.metadata(path)
@@ -81,12 +89,28 @@ Today the supported drivers are:
     local.remove(path, {quiet})
     s3.remove(path, {quiet})
 
-    // Recursively delete a directory
+    // Recursively delete a directory and do it quietly (do not report errors)
     const recursive = true
+    const quiet = true
     local.remove(path, {recursive, quiet})
     s3.remove(path, {recursive, quiet})
 
-# Alternate usage
+# Mirroring
+
+    // Copy a local filesystem mobiletto to S3
+    s3.mirror(local)
+
+    // Mirror a local subdirectory from one mobiletto to an S3 mobiletto, with it's own subdirectory
+    local.mirror(s3, 'some/local-folder', 'some/s3-folder')
+
+WARNING: Mirroring large data sets can be very time-consuming and bandwidth-intensive
+
+With the `mirror` call semantics it can sometimes be confusing to understand who is the
+reader and who is the writer. Imagine it like an assignment statement: the "left-hand mobiletto"
+is the thing being assigned to (mirrored data written), and the "right-hand mobiletto" (the
+argument to the `mirror` method) is the value being assigned (mirrored data is read).
+
+# Alternate import style
 Import the fully-scoped module and use the `connect` function:
 
     const storage = require('mobiletto')
@@ -124,6 +148,38 @@ some effort, discover some or all of the overall structure of the directory hier
 The adversary would not know the names of the directories/files unless they also knew your encryption
 key or had otherwise successfully cracked the encryption. All bets are off then!
 
+# File metadata
+The `metadata` command returns metadata about a single filesystem entry.
+Likewise, the return value from the `list` command is an array of metadata objects.
+
+A metadata object looks like this:
+
+    {
+      "name": "fully/qualified/path/to/file",
+      "type": "entry-type",
+      "size": size-in-bytes,
+      "ctime": creation-time-epoch-millis,
+      "mtime": modification-time-epoch-millis
+    }
+
+The `type` property can be `file`, `dir`, `link`, or `special`.
+
+Depending on the type of driver, a `list` command may not return all fields. The `name` and `type` properties
+should always be present. A subsequent `metadata` command should return all available properties.
+
+# Key rotation
+Create a mobiletto with your new key, then mirror the old data into it:
+
+    const storage = require('mobiletto')
+
+    const oldEncryption = { key: .... }
+    const oldStorage = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1'}, oldEncryption)
+
+    const newEncryption = { key: .... }
+    const newStorage = await storage.connect('s3', aws_key, aws_secret, {bucket: 'zz', region: 'us-east-1'}, newEncryption)
+
+    newStorage.mirror(oldStorage) // if oldStorage is very large, this may take a looooooong time...
+
 # Driver Interface
 A driver is any JS file that exports a 'storageClient' function with this signature:
 
@@ -143,8 +199,11 @@ The object that the storageClient function returns must define these functions:
     // Test the driver before using, ensure proper configuration
     async testConfig ()
 
-    // Find DNS records that match the given domain, type (if provided) and name (if provided)
-    async list (path)  // path may be omitted
+    // List files in path (or from base-directory)
+    // If recursive is true, list recursively
+    // If visitor is defined, it will be an async function. await the visitor function on each file found
+    // Otherwise, perform the listing and return an array of objects
+    async list (path, recursive = false, visitor = null)  // path may be omitted
     
     // Read metadata for a path
     async metadata (path)
@@ -158,4 +217,4 @@ The object that the storageClient function returns must define these functions:
     async write (path, readFunc)
 
     // Remove a file, or recursively delete a directory
-    async remove (path, {recursive = false, quiet = false})
+    async remove (path, recursive = false, quiet = false)

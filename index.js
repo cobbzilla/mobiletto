@@ -1,3 +1,4 @@
+const fs = require('fs')
 const { basename, dirname } = require('path')
 const shasum = require('shasum')
 const randomstring = require('randomstring')
@@ -8,6 +9,12 @@ const {DEFAULT_CRYPT_ALGO, normalizeKey, normalizeIV, encrypt, decrypt} = requir
 const DIR_ENT_DIR_SUFFIX = '__.dirent'
 const DIR_ENT_FILE_PREFIX = 'dirent__'
 const ENC_PAD_SEP = ' ~ '
+
+const initMobilettoTempDir = () => {
+    const dir = process.env.MOBILETTO_TMP || process.env.TMPDIR || '/tmp'
+    return dir.endsWith('/') ? dir.substring(0, dir.length - 1) : dir
+}
+const MOBILETTO_TMP = initMobilettoTempDir()
 
 // adapted from https://stackoverflow.com/a/27724419
 function MobilettoError (message, err) {
@@ -34,7 +41,23 @@ function MobilettoNotFoundError (message) {
 
 const reader = (chunks) => (chunk) => { if (chunk) { chunks.push(chunk) } }
 
+const isAsyncGenerator = (func) => func[Symbol.toStringTag] === 'AsyncGenerator'
+const isReadable = (thing) => thing instanceof fs.ReadStream
+
 const UTILITY_FUNCTIONS = {
+    list: (client) => async (path, opts) => {
+        const recursive = opts && opts.recursive ? opts.recursive : false
+        const visitor = opts && opts.visitor ? opts.visitor : null
+        if (visitor && typeof visitor !== 'function') {
+            throw new MobilettoError(`list: visitor is not a function: ${typeof visitor}`)
+        }
+        return await client.driver_list(path, recursive, visitor)
+    },
+    remove: (client) => async (path, opts) => {
+        const recursive = opts && opts.recursive ? opts.recursive : false
+        const quiet = opts && opts.quiet ? opts.quiet : false
+        return await client.driver_remove(path, recursive, quiet)
+    },
     readFile: (client) => async (path) => {
         const chunks = []
         await client.read(path, reader(chunks))
@@ -43,11 +66,61 @@ const UTILITY_FUNCTIONS = {
     writeFile: (client) => async (path, data) => {
         const readFunc = function* () { yield data }
         return await client.write(path, readFunc())
+    },
+    mirror: (client) => async (source, clientPath = '', sourcePath = '') => {
+        const results = {
+            success: 0,
+            errors: 0
+        }
+        const visitor = async (obj) => {
+            if (obj.type && obj.type === M_FILE) {
+                const tempPath = `${MOBILETTO_TMP}/mobiletto_${shasum(JSON.stringify(obj))}.${randomstring.generate(10)}`
+                try {
+                    // write from source -> write to temp file
+                    const fd = fs.openSync(tempPath, 'wx', 0o0600)
+                    const writer = fs.createWriteStream(tempPath, {fd, flags: 'wx'})
+                    await source.read(obj.name, async (chunk) => {
+                        if (chunk) { writer.write(chunk) }
+                    }, () => {
+                        writer.close((err) => {
+                            if (err) { throw new MobilettoError(`mirror: error closing temp file: ${err}`) }
+                        })
+                    }).then(async () => {
+                        // read from temp file -> write to mirror
+                        const fd = fs.openSync(tempPath, 'r')
+                        const reader = fs.createReadStream(tempPath, {fd})
+                        const destName = obj.name.startsWith(sourcePath)
+                            ? obj.name.substring(sourcePath.length)
+                            : obj.name
+                        await client.write(clientPath + destName, reader)
+                    })
+                    results.success++
+                } catch (e) {
+                    console.warn(`mirror: error copying file: ${e}`)
+                    results.errors++
+                } finally {
+                    fs.rmSync(tempPath, {force: true})
+                }
+            }
+        }
+        await mirrorDir(source, sourcePath, visitor)
+        return results
+    }
+}
+
+async function mirrorDir (source, sourcePath, visitor) {
+    const listing = await source.list(sourcePath, {recursive: false, visitor})
+    for (const obj of listing) {
+        if (obj.type === M_DIR) {
+            const dir = obj.name.startsWith(sourcePath) ? obj.name : sourcePath + obj.name
+            await mirrorDir(source, dir, visitor)
+        }
     }
 }
 
 function addUtilityFunctions (client, readOnly = false) {
     for (const func of Object.keys(UTILITY_FUNCTIONS)) {
+        client[`driver_${func}`] = client[func] // save previous function, we will need `list` at least
         client[func] = UTILITY_FUNCTIONS[func](client)
     }
     if (readOnly) {
@@ -136,6 +209,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                 throw e
             }
         }
+        meta.type ||= M_FILE
         meta.name = path // rewrite name back to plaintext name
         return Object.assign({}, meta, metaObj)
     }
@@ -155,9 +229,11 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
 
     async function removeDirentFile(path) {
         const df = direntFile(direntDir(dirname(path)), path);
-        await client.remove(df, {recursive: false, quiet: true})
-        await client.remove(encryptPath(path), {recursive: false, quiet: true})
-        await client.remove(metaPath(path), {recursive: false, quiet: true})
+        const recursive = false
+        const quiet = true
+        await client.remove(df, recursive, quiet)
+        await client.remove(encryptPath(path), recursive, quiet)
+        await client.remove(metaPath(path), recursive, quiet)
     }
 
     function stringGenerator (value, enc) {
@@ -167,13 +243,21 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     }
 
     const encClient = {
-        list: async (path) => {
+        list: async (path, recursive, visitor) => {
             const dirent = direntDir(path)
-            const entries = await client.list(dirent)
+            const entries = await client.list(dirent, recursive)
             if (!entries || entries.length === 0) {
                 return []
             }
-            return _loadMeta(dirent, entries)
+            if (visitor) {
+                const objects = await _loadMeta(dirent, entries)
+                for (const obj of objects) {
+                    await visitor(obj)
+                }
+                return objects
+            } else {
+                return _loadMeta(dirent, entries)
+            }
         },
         metadata: _metadata(client),
         read: async (path, callback) => {
@@ -215,12 +299,13 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             const cipher = crypt.startEncryptStream(enc)
             const realPath = encryptPath(path)
             await client.write(realPath, cryptGenerator(readFunc))
-            const meta = { name: path, size: bytesRead }
+            const meta = { name: path, size: bytesRead, type: M_FILE }
             await client.write(metaPath(path), stringGenerator(JSON.stringify(meta), enc)())
             return bytesRead
         },
         remove: async (path, options) => {
-            const recursive = (options && options.recursive) || false
+            const recursive = options === true || (options && options.recursive) || false
+            const quiet = (options && options.quiet) || false
             if (recursive) {
                 // ugh. we have to iterate over all dirent files, and remove each file/subdir one by one
                 async function recRm (path) {
@@ -253,7 +338,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             let parent = path
             let dirent = direntDir(parent)
             const df = direntFile(dirent, path)
-            await client.remove(df, {recursive: false, quiet: true})
+            await client.remove(df, false, true)
             while (true) {
                 try {
                     const entries = await client.list(dirent)
@@ -327,6 +412,7 @@ const M_SPECIAL = 'special'
 
 module.exports = {
     M_FILE, M_DIR, M_LINK, M_SPECIAL,
+    isAsyncGenerator, isReadable,
     mobiletto, connect,
     MobilettoError, MobilettoNotFoundError,
     readStream, writeStream, closeStream

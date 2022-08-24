@@ -1,7 +1,7 @@
 const { dirname } = require('path')
 
 const {
-    M_FILE, M_DIR, M_LINK, M_SPECIAL,
+    M_FILE, M_DIR, M_LINK, M_SPECIAL, isAsyncGenerator, isReadable,
     MobilettoError, MobilettoNotFoundError, readStream, writeStream, closeStream
 } = require('../../index')
 
@@ -9,15 +9,28 @@ const fs = require('fs')
 
 const DEFAULT_MODE = '0700'
 
-const isENOENT = (err) => err.code && err.code === 'ENOENT'
+const isNotExistError = (err) => err.code && (err.code === 'ENOENT' || err.code === 'ENOTDIR')
 
-const ioError = (err, path, method) => isENOENT(err)
+const ioError = (err, path, method) => isNotExistError(err)
     ? err instanceof MobilettoNotFoundError
         ? err
         : new MobilettoNotFoundError(path)
     : err instanceof MobilettoError || err instanceof MobilettoNotFoundError
         ? err
         : new MobilettoError(`${method}(${path}) error: ${err}`, err)
+
+const fileType = (stat) => {
+    if (stat.isDirectory()) {
+        return M_DIR
+    }
+    if (stat.isFile()) {
+        return M_FILE
+    }
+    if (stat.isSymbolicLink()) {
+        return M_LINK
+    }
+    return M_SPECIAL
+}
 
 class StorageClient {
     baseDir
@@ -46,41 +59,63 @@ class StorageClient {
         return { path, stat }
     }
     testConfig = async () => await this.list()
-    fileType (stat) {
-        if (stat.isDirectory()) {
-            return M_DIR
+
+    normalizePath = (path) => path.startsWith(this.baseDir)
+        ? path
+        : this.baseDir + (path.startsWith('/') ? path.substring(1) : path)
+    denormalizePath = (path) => path.startsWith(this.baseDir) ? path.substring(this.baseDir.length) : path
+
+    fileToObject = (dir) => (f) => {
+        const stat = fs.lstatSync(dir + '/' + f)
+        const type = fileType(stat)
+        const entry = {
+            name: this.denormalizePath(dir + '/' + f),
+            type
         }
-        if (stat.isFile()) {
-            return M_FILE
+        if (type === M_LINK) {
+            const resolved = this.resolveSymlinks(dir + '/' + f)
+            entry.link = resolved.path
         }
-        if (stat.isSymbolicLink()) {
-            return M_LINK
-        }
-        return M_SPECIAL
+        return entry
     }
-    normalizePath(path) {
-        if (path.startsWith('/')) {
-            path = path.substring(1)
+
+    readDirFiles = async (dir, recursive, visitor) => {
+        if (!recursive) {
+            return await this.dirFiles(dir, visitor)
         }
-        return this.baseDir + path
+        const files = await this.dirFiles(dir, visitor)
+        for (const file of files) {
+            if (file.type === M_DIR) {
+                await this.readDirFiles(file.name, true, visitor)
+            }
+        }
     }
-    async list (path = '') {
+
+    dirFiles = async (dir, visitor) => {
+        const norm = this.normalizePath(dir);
+        try {
+            let names = fs.readdirSync(norm);
+            const files = names.map(this.fileToObject(norm))
+            for (const f of files) {
+                await visitor(f)
+            }
+            return files
+        } catch (e) {
+            console.error(`dirFiles: ${e}`)
+            throw ioError(e, norm, 'dirFiles')
+        }
+    }
+
+    async list (path = '', recursive = false, visitor = null) {
         const dir = this.normalizePath(path)
         try {
-            const files = fs.readdirSync(dir)
-            return files.map(f => {
-                const stat = fs.lstatSync(dir + '/' + f)
-                const type = this.fileType(stat)
-                const entry = {
-                    name: f,
-                    type
-                }
-                if (type === M_LINK) {
-                    const resolved = this.resolveSymlinks(dir + '/' + f)
-                    entry.link = resolved.path
-                }
-                return entry
-            })
+            if (visitor === null) {
+                const results = []
+                await this.readDirFiles(dir, recursive, (obj) => results.push(obj))
+                return results
+            } else {
+                return await this.readDirFiles(dir, recursive, visitor)
+            }
         } catch (err) {
             throw ioError(err, path, 'list')
         }
@@ -92,7 +127,7 @@ class StorageClient {
             if (!lstat) {
                 throw new MobilettoError('metadata: lstat error')
             }
-            const type = this.fileType(lstat)
+            const type = fileType(lstat)
             if (type === M_DIR && path !== '') {
                 const contents = await this.list(path)
                 if (contents.length === 0) {
@@ -100,7 +135,7 @@ class StorageClient {
                 }
             }
             return {
-                name: file.startsWith(this.baseDir) ? file.substring(this.baseDir.length) : file,
+                name: this.denormalizePath(file),
                 type,
                 size: lstat.size,
                 mtime: lstat.mtimeMs
@@ -119,7 +154,7 @@ class StorageClient {
         }
     }
 
-    async write (path, generator) {
+    async normalizePathAndEnsureParentDirs (path) {
         const file = this.normalizePath(path)
 
         // console.log(`read: reading path: ${path} - ${file}`)
@@ -128,7 +163,7 @@ class StorageClient {
         try {
             dirStat = fs.lstatSync(parent)
         } catch (err) {
-            if (err.code && err.code === 'ENOENT') {
+            if (isNotExistError(err)) {
                 this.mkdirs(parent)
             } else {
                 throw new MobilettoError(`write: lstat error on ${parent}: ${err}`, err)
@@ -139,17 +174,52 @@ class StorageClient {
         } else if (!dirStat.isDirectory()) {
             throw new MobilettoError(`write: not a directory: ${parent} (cannot write file ${file})`)
         }
+        return file
+    }
 
+    async write (path, generatorOrReadableStream) {
+        const file = await this.normalizePathAndEnsureParentDirs(path)
         // console.log(`write: writing path ${path} -> ${file}`)
         const stream = fs.createWriteStream(file, {mode: this.mode})
         const writer = writeStream(stream)
         const closer = closeStream(stream)
         let count = 0
-        let chunk = generator.next().value
-        while (chunk) {
-            count += chunk.length
-            writer(chunk)
-            chunk = generator.next().value
+
+        if (isReadable(generatorOrReadableStream)) {
+            const readable = generatorOrReadableStream
+            const streamHandler = stream =>
+                new Promise((resolve, reject) => {
+                    stream.on('data', (data) => {
+                        if (data) {
+                            writer(data)
+                            count += data.length
+                        }
+                    })
+                    stream.on('error', reject)
+                    stream.on('end', () => {
+                        closer()
+                        resolve()
+                    })
+                })
+            await streamHandler(readable)
+            return count
+        }
+
+        const generator = generatorOrReadableStream
+        let chunk = isAsyncGenerator(generator)
+            ? (await generator.next()).value
+            : generator.next().value
+        let nullCount = 0
+        while (chunk || nullCount < 5) {
+            if (chunk) {
+                count += chunk.length
+                writer(chunk)
+            } else {
+                nullCount++
+            }
+            chunk = isAsyncGenerator(generator)
+                ? (await generator.next()).value
+                : generator.next().value
         }
         closer()
         return Promise.resolve(count)
@@ -166,15 +236,13 @@ class StorageClient {
         }
     }
 
-    async remove (path, options) {
-        const recursive = options && options.recursive ? options.recursive : false
-        const quiet = options && options.quiet ? options.quiet : false
+    async remove (path, recursive, quiet) {
         const file = this.normalizePath(path)
         // console.log(`remove: deleting path: ${path} = ${file}`)
         try {
             fs.rmSync(file, {recursive: recursive, force: quiet, maxRetries: 2})
         } catch (err) {
-            if (isENOENT(err)) {
+            if (isNotExistError(err)) {
                 if (!quiet) {
                     throw new MobilettoNotFoundError(path)
                 }
