@@ -79,6 +79,16 @@ const UTILITY_FUNCTIONS = {
             throw e
         }
     },
+    safeMetadata: (client) => async (path) => {
+        try {
+            return await client.driver_metadata(path)
+        } catch (e) {
+            if (e instanceof MobilettoNotFoundError) {
+                return null
+            }
+            throw e
+        }
+    },
     remove: (client) => async (path, opts) => {
         const recursive = opts && opts.recursive ? opts.recursive : false
         const quiet = opts && opts.quiet ? opts.quiet : false
