@@ -91,6 +91,7 @@ const UTILITY_FUNCTIONS = {
             if (obj.type && obj.type === M_FILE) {
                 logger.verbose(`mirror: mirroring file: ${obj.name}`)
                 const tempPath = `${MOBILETTO_TMP}/mobiletto_${shasum(JSON.stringify(obj))}.${randomstring.generate(10)}`
+                logger.debug(`mirror: writing ${obj.name} to temp file ${tempPath} ...`)
                 try {
                     // write from source -> write to temp file
                     const fd = fs.openSync(tempPath, 'wx', 0o0600)
@@ -100,6 +101,7 @@ const UTILITY_FUNCTIONS = {
                     }, () => {
                         writer.close((err) => {
                             if (err) { throw new MobilettoError(`mirror: error closing temp file: ${err}`) }
+                            logger.debug(`mirror: finished writing ${obj.name} to temp file ${tempPath}`)
                         })
                     }).then(async () => {
                         // read from temp file -> write to mirror
@@ -108,7 +110,9 @@ const UTILITY_FUNCTIONS = {
                         const destName = obj.name.startsWith(sourcePath)
                             ? obj.name.substring(sourcePath.length)
                             : obj.name
+                        logger.debug(`mirror: writing temp file ${tempPath} to destination: ${clientPath + destName}`)
                         await client.write(clientPath + destName, reader)
+                        logger.debug(`mirror: finished writing temp file ${tempPath} to destination: ${clientPath + destName}`)
                     })
                     results.success++
                 } catch (e) {

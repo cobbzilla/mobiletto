@@ -127,7 +127,8 @@ class StorageClient {
         if (recursive && objectCount === 0 && path !== '') {
             throw new MobilettoNotFoundError(path)
         }
-        return objects
+        const filtered = objects.filter(o => o.name !== path)
+        return filtered
     }
 
     normalizeKey = (path) => {
