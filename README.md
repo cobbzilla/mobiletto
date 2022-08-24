@@ -103,6 +103,32 @@ Today the supported drivers are:
     local.remove(path, {recursive, quiet})
     s3.remove(path, {recursive, quiet})
 
+# File metadata
+The `metadata` command returns metadata about a single filesystem entry.
+Likewise, the return value from the `list` command is an array of metadata objects.
+
+A metadata object looks like this:
+
+    {
+      "name": "fully/qualified/path/to/file",
+      "type": "entry-type",
+      "size": size-in-bytes,
+      "ctime": creation-time-epoch-millis,
+      "mtime": modification-time-epoch-millis
+    }
+
+The `type` property can be `file`, `dir`, `link`, or `special`.
+
+Depending on the type of driver, a `list` command may not return all fields. The `name` and `type` properties
+should always be present. A subsequent `metadata` command should return all available properties.
+
+# Alternate import style
+Import the fully-scoped module and use the `connect` function:
+
+    const storage = require('mobiletto')
+    const s3 = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1'})
+    const objectData = await s3.readFile('some/path')
+
 # Mirroring
 
     // Copy a local filesystem mobiletto to S3
@@ -111,19 +137,16 @@ Today the supported drivers are:
     // Mirror a local subdirectory from one mobiletto to an S3 mobiletto, with it's own subdirectory
     local.mirror(s3, 'some/local-folder', 'some/s3-folder')
 
+The `mirror` command performs a one-time copy of all files from one mobiletto to another.
+It does not run any process to maintain the mirror over time. Run the `mirror` command again
+to synchronize any missing files.
+
 WARNING: Mirroring large data sets can be very time-consuming and bandwidth-intensive
 
 With the `mirror` call semantics it can sometimes be confusing to understand who is the
 reader and who is the writer. Imagine it like an assignment statement: the "left-hand mobiletto"
 is the thing being assigned to (mirrored data written), and the "right-hand mobiletto" (the
 argument to the `mirror` method) is the value being assigned (mirrored data is read).
-
-# Alternate import style
-Import the fully-scoped module and use the `connect` function:
-
-    const storage = require('mobiletto')
-    const s3 = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1'})
-    const objectData = await s3.readFile('some/path')
 
 # Transparent Encryption
 Enable transparent client-side encryption:
@@ -161,25 +184,6 @@ some effort, discover some or all of the overall structure of the directory hier
 *Note: Use a relatively flat structure for better security.*
 The adversary would not know the names of the directories/files unless they also knew your encryption
 key or had otherwise successfully cracked the encryption. All bets are off then!
-
-# File metadata
-The `metadata` command returns metadata about a single filesystem entry.
-Likewise, the return value from the `list` command is an array of metadata objects.
-
-A metadata object looks like this:
-
-    {
-      "name": "fully/qualified/path/to/file",
-      "type": "entry-type",
-      "size": size-in-bytes,
-      "ctime": creation-time-epoch-millis,
-      "mtime": modification-time-epoch-millis
-    }
-
-The `type` property can be `file`, `dir`, `link`, or `special`.
-
-Depending on the type of driver, a `list` command may not return all fields. The `name` and `type` properties
-should always be present. A subsequent `metadata` command should return all available properties.
 
 # Key rotation
 Create a mobiletto with your new key, then mirror the old data into it:

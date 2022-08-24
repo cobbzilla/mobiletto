@@ -114,7 +114,30 @@ const UTILITY_FUNCTIONS = {
                 logger.verbose(`mirror: mirroring file: ${obj.name}`)
                 const tempPath = `${MOBILETTO_TMP}/mobiletto_${shasum(JSON.stringify(obj))}.${randomstring.generate(10)}`
                 logger.debug(`mirror: writing ${obj.name} to temp file ${tempPath} ...`)
+                const destName = obj.name.startsWith(sourcePath)
+                    ? obj.name.substring(sourcePath.length)
+                    : obj.name
+                const destFullPath = clientPath + destName;
                 try {
+                    // if dest already exists and is the same size, don't copy it again
+                    let srcSize = null
+                    if (obj.size) {
+                        srcSize = obj.size
+                    } else {
+                        const srcMeta = source.safeMetadata(obj.name)
+                        if (srcMeta && srcMeta.size) {
+                            srcSize = srcMeta.size
+                        }
+                    }
+                    // only continue if we could determine the source size
+                    if (srcSize) {
+                        const destMeta = client.safeMetadata(destFullPath)
+                        if (destMeta && destMeta.size && destMeta.size && destMeta.size === srcSize) {
+                            logger.info(`mirror: dest object (${destFullPath}) has same size (${srcSize}) as src object ${sourcePath}, not copying`)
+                            return
+                        }
+                    }
+
                     // write from source -> write to temp file
                     const fd = fs.openSync(tempPath, 'wx', 0o0600)
                     const writer = fs.createWriteStream(tempPath, {fd, flags: 'wx'})
@@ -129,12 +152,9 @@ const UTILITY_FUNCTIONS = {
                         // read from temp file -> write to mirror
                         const fd = fs.openSync(tempPath, 'r')
                         const reader = fs.createReadStream(tempPath, {fd})
-                        const destName = obj.name.startsWith(sourcePath)
-                            ? obj.name.substring(sourcePath.length)
-                            : obj.name
-                        logger.debug(`mirror: writing temp file ${tempPath} to destination: ${clientPath + destName}`)
-                        await client.write(clientPath + destName, reader)
-                        logger.debug(`mirror: finished writing temp file ${tempPath} to destination: ${clientPath + destName}`)
+                        logger.debug(`mirror: writing temp file ${tempPath} to destination: ${destFullPath}`)
+                        await client.write(destFullPath, reader)
+                        logger.debug(`mirror: finished writing temp file ${tempPath} to destination: ${destFullPath}`)
                     })
                     results.success++
                 } catch (e) {
