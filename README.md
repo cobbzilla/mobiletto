@@ -5,7 +5,7 @@ Mobiletto is a JavaScript storage abstraction layer, with optional transparent c
 
 It supports apps that are agnostic to where files are stored.
 
-All drivers are tested for identical behavior with over 35 tests for each driver.
+All drivers are tested for identical behavior with over 40 tests for each driver.
 
 Today the supported drivers are:
 
@@ -53,10 +53,18 @@ Today the supported drivers are:
     // Visit files in a directory -- visitor function must be async
     local.list(path, { visitor: myAsyncFunc })
     s3.list(path, { visitor: myAsyncFunc, recursive: true })
+
+    // The `list` method throws MobilettoNotFoundError if the path does not exist
+    // When you call `safeList` on a non-existent path, it returns an empty array
+    s3.safeList('/path/that/does/not/exist') // returns []
     
     // Read metadata for a file
     local.metadata(path)
     s3.metadata(path)
+
+    // The `metadata` method throws MobilettoNotFoundError if the path does not exist
+    // When you call `safeMetadata` on a non-existent path, it returns null
+    local.safeMetadata('/tmp/does_not_exist') // returns null
     
     // Read a file
     // Provide a callback that writes the data someplace
