@@ -81,7 +81,7 @@ const UTILITY_FUNCTIONS = {
     },
     safeMetadata: (client) => async (path) => {
         try {
-            return await client.driver_metadata(path)
+            return await client.metadata(path)
         } catch (e) {
             if (e instanceof MobilettoNotFoundError) {
                 return null
