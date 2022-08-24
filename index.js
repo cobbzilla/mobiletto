@@ -67,6 +67,18 @@ const UTILITY_FUNCTIONS = {
         }
         return await client.driver_list(path, recursive, visitor)
     },
+    safeList: (client) => async (path, opts) => {
+        const recursive = opts && opts.recursive ? opts.recursive : false
+        const visitor = opts && opts.visitor ? opts.visitor : null
+        try {
+            return await client.driver_list(path, recursive, visitor)
+        } catch (e) {
+            if (e instanceof MobilettoNotFoundError) {
+                return []
+            }
+            throw e
+        }
+    },
     remove: (client) => async (path, opts) => {
         const recursive = opts && opts.recursive ? opts.recursive : false
         const quiet = opts && opts.quiet ? opts.quiet : false

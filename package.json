@@ -1,6 +1,6 @@
 {
   "name": "mobiletto",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "A storage abstraction layer",
   "main": "index.js",
   "author": "Jonathan Cobb",
