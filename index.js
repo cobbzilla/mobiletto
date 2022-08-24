@@ -1,10 +1,24 @@
 const fs = require('fs')
+const winston = require('winston')
 const { basename, dirname } = require('path')
 const shasum = require('shasum')
 const randomstring = require('randomstring')
 
 const crypt = require('./util/crypt')
-const {DEFAULT_CRYPT_ALGO, normalizeKey, normalizeIV, encrypt, decrypt} = require("./util/crypt");
+const {DEFAULT_CRYPT_ALGO, normalizeKey, normalizeIV, encrypt, decrypt} = require("./util/crypt")
+
+const logger = winston.createLogger({
+    level: process.env.MOBILETTO_LOG_LEVEL || 'warn',
+    format: winston.format.simple(),
+    transports: [ new winston.transports.Console() ]
+})
+
+const setLogLevel = (level) => { logger.level = level }
+
+const setLogTransports = (transports) => {
+    logger.transports.splice(0, logger.transports.length)
+    logger.transports.push(...transports)
+}
 
 const DIR_ENT_DIR_SUFFIX = '__.dirent'
 const DIR_ENT_FILE_PREFIX = 'dirent__'
@@ -68,12 +82,14 @@ const UTILITY_FUNCTIONS = {
         return await client.write(path, readFunc())
     },
     mirror: (client) => async (source, clientPath = '', sourcePath = '') => {
+        logger.info(`mirror: starting, sourcePath=${sourcePath} -> clientPath=${clientPath}`)
         const results = {
             success: 0,
             errors: 0
         }
         const visitor = async (obj) => {
             if (obj.type && obj.type === M_FILE) {
+                logger.verbose(`mirror: mirroring file: ${obj.name}`)
                 const tempPath = `${MOBILETTO_TMP}/mobiletto_${shasum(JSON.stringify(obj))}.${randomstring.generate(10)}`
                 try {
                     // write from source -> write to temp file
@@ -96,9 +112,10 @@ const UTILITY_FUNCTIONS = {
                     })
                     results.success++
                 } catch (e) {
-                    console.warn(`mirror: error copying file: ${e}`)
+                    logger.warn(`mirror: error copying file: ${e}`)
                     results.errors++
                 } finally {
+                    logger.verbose(`mirror: file mirrored successfully: ${obj.name}`)
                     fs.rmSync(tempPath, {force: true})
                 }
             }
@@ -109,6 +126,7 @@ const UTILITY_FUNCTIONS = {
 }
 
 async function mirrorDir (source, sourcePath, visitor) {
+    logger.verbose(`mirrorDir: mirroring dir: ${sourcePath}`)
     const listing = await source.list(sourcePath, {recursive: false, visitor})
     for (const obj of listing) {
         if (obj.type === M_DIR) {
@@ -126,7 +144,7 @@ function addUtilityFunctions (client, readOnly = false) {
     if (readOnly) {
         for (const writeFunc of ['write', 'remove', 'writeFile']) {
             client[writeFunc] = async () => {
-                // console.warn(`${writeFunc} not supported in readOnly mode`)
+                logger.warn(`${writeFunc} not supported in readOnly mode`)
                 return false
             }
         }
@@ -139,22 +157,30 @@ async function connect (driverPath, key, secret, opts, encryption = null) {
 }
 
 async function mobiletto (driverPath, key, secret, opts, encryption = null) {
+    logger.info(`mobiletto: connecting with driver ${driverPath}`)
     const driver = require(driverPath.includes('/') ? driverPath : `./drivers/${driverPath}/index.js`)
     const client = driver.storageClient(key, secret, opts)
     if (!(await client.testConfig())) {
-        throw new MobilettoError(`mobiletto(${driverPath}) error: test API call failed`)
+        const message = `mobiletto(${driverPath}) error: test API call failed`
+        logger.error(message)
+        throw new MobilettoError(message)
     }
     const readOnly = opts ? !!opts.readOnly : false
     if (encryption === null) {
+        logger.info(`mobiletto: successfully connected using driver ${driverPath}, returning client (encryption not enabled)`)
         return addUtilityFunctions(client, readOnly)
     }
     const encKey = normalizeKey(encryption.key)
     if (!encKey) {
-        throw new MobilettoError(`mobiletto(${driverPath}): invalid encryption key`)
+        const message = `mobiletto(${driverPath}): invalid encryption key`
+        logger.error(message)
+        throw new MobilettoError(message)
     }
     const iv = normalizeIV(encryption.iv, encKey)
     if (!iv) {
-        throw new MobilettoError(`mobiletto(${driverPath}): invalid encryption IV`)
+        const message = `mobiletto(${driverPath}): invalid encryption IV`
+        logger.error(message)
+        throw new MobilettoError(message)
     }
     const enc = {
         key: encKey,
@@ -360,6 +386,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             return true
         }
     }
+    logger.info(`mobiletto: successfully connected using driver ${driverPath}, returning client (encryption enabled)`)
     return addUtilityFunctions(encClient, readOnly)
 }
 
@@ -388,7 +415,7 @@ function writeStream (stream) {
         if (chunk) {
             stream.write(chunk, (err) => {
                 if (err) {
-                    console.error(`writeStream: error writing: ${err}`)
+                    logger.error(`writeStream: error writing: ${err}`)
                     throw err
                 }
             })
@@ -399,7 +426,7 @@ function writeStream (stream) {
 function closeStream (stream) {
     return () => stream.close((err) => {
         if (err) {
-            console.error(`closeStream: error closing: ${err}`)
+            logger.error(`closeStream: error closing: ${err}`)
             throw err
         }
     })
@@ -414,6 +441,7 @@ module.exports = {
     M_FILE, M_DIR, M_LINK, M_SPECIAL,
     isAsyncGenerator, isReadable,
     mobiletto, connect,
+    setLogLevel, setLogTransports,
     MobilettoError, MobilettoNotFoundError,
     readStream, writeStream, closeStream
 }

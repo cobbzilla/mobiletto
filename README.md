@@ -122,9 +122,15 @@ Enable transparent client-side encryption:
 
     // Pass encryption parameters
     const encryption = {
-      key: randomstring.generate(128), // required, must be >= 32 chars
-      iv: randomstring.generate(128),  // optional, default is to derive IV from key
-      algo: 'aes-256-cbc'              // optional, aes-256-cbc is the default
+      // key is required, must be >= 16 chars
+      key: randomstring.generate(128),
+
+      // optional, the default is to derive IV from key
+      // when set, IV must be >= 16 chars
+      iv: randomstring.generate(128),
+
+      // optional, the default is aes-256-cbc
+      algo: 'aes-256-cbc'
     }
     const api = await mobiletto(driverName, key, secret, opts, encryption)
 
