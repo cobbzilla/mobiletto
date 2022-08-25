@@ -59,8 +59,8 @@ Today the supported drivers are:
     s3.safeList('/path/that/does/not/exist') // returns []
     
     // Read metadata for a file
-    local.metadata(path)
-    s3.metadata(path)
+    local.metadata(path)    // returns metadata object
+    s3.metadata(path)       // returns metadata object
 
     // The `metadata` method throws MobilettoNotFoundError if the path does not exist
     // When you call `safeMetadata` on a non-existent path, it returns null
@@ -69,12 +69,12 @@ Today the supported drivers are:
     // Read a file
     // Provide a callback that writes the data someplace
     const callback = (chunk) => { ... write chunk somewhere ...  } 
-    local.read(path, callback)
-    s3.read(path, callback)
+    local.read(path, callback)  // returns count of bytes read
+    s3.read(path, callback)     // returns count of bytes read
 
     // Read an entire file at once (convenience method)
     const localData = await local.readFile(path)  // returns a byte Buffer of the file contents
-    const s3Data = await s3.readFile(path)  // returns a byte Buffer of the file contents
+    const s3Data = await s3.readFile(path)        // returns a byte Buffer of the file contents
     
     // Write a file
     // Provide a generator function that yields chunks of data 
@@ -84,18 +84,18 @@ Today the supported drivers are:
         yield data
       }
     } 
-    local.write(path, generator)
-    s3.write(path, generator)
+    local.write(path, generator)  // returns count of bytes written
+    s3.write(path, generator)     // returns count of bytes written
 
     // Write an entire file at once (convenience method)
-    await local.writeFile(path, bufferOrString)  // returns count of bytes written
+    await local.writeFile(path, bufferOrString)   // returns count of bytes written
     await s3.writeFile(path, bufferOrString)      // returns count of bytes written
 
     // Delete a file
     // Quiet param is optional (default false), when set errors will not be thrown if the path does not exist 
     const quiet = true
-    local.remove(path, {quiet})
-    s3.remove(path, {quiet})
+    local.remove(path, {quiet}) // returns true upon success
+    s3.remove(path, {quiet})    // returns true upon success
 
     // Recursively delete a directory and do it quietly (do not report errors)
     const recursive = true
