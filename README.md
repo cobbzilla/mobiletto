@@ -120,7 +120,7 @@ A metadata object looks like this:
 The `type` property can be `file`, `dir`, `link`, or `special`.
 
 Depending on the type of driver, a `list` command may not return all fields. The `name` and `type` properties
-should always be present. A subsequent `metadata` command should return all available properties.
+should always be present. A subsequent `metadata` command will return all available properties.
 
 # Alternate import style
 Import the fully-scoped module and use the `connect` function:
