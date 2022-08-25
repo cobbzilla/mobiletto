@@ -203,7 +203,7 @@ async function mirrorDir (source, sourcePath, visitor) {
 }
 
 function addUtilityFunctions (client, readOnly = false, cacheSize = null) {
-    client.listingCache = cacheSize ? new LRU({ max: cacheSize }) : null
+    client.listingCache = cacheSize && cacheSize > 0 ? new LRU({ max: cacheSize }) : null
     for (const func of Object.keys(UTILITY_FUNCTIONS)) {
         client[`driver_${func}`] = client[func] // save previous function, we will need `list` at least
         client[func] = UTILITY_FUNCTIONS[func](client)
