@@ -66,7 +66,8 @@ const UTILITY_FUNCTIONS = {
             cacheKey = shasum(path + ' ' + (opts ? JSON.stringify(opts) : '~'))
             const results = client.listingCache.get(cacheKey)
             if (results) {
-                return results
+                if (results.cached) { return results }
+                throw results
             }
         }
         const recursive = opts && opts.recursive ? opts.recursive : false
@@ -74,11 +75,19 @@ const UTILITY_FUNCTIONS = {
         if (visitor && typeof visitor !== 'function') {
             throw new MobilettoError(`list: visitor is not a function: ${typeof visitor}`)
         }
-        const results = await client.driver_list(path, recursive, visitor)
-        if (client.listingCache) {
-            client.listingCache.set(cacheKey, results)
+        try {
+            const results = await client.driver_list(path, recursive, visitor)
+            if (client.listingCache) {
+                results.cached = true
+                client.listingCache.set(cacheKey, results)
+            }
+            return results
+        } catch (e) {
+            if (client.listingCache && e instanceof MobilettoNotFoundError) {
+                client.listingCache.set(cacheKey, e)
+            }
+            throw e
         }
-        return results
     },
     safeList: (client) => async (path, opts) => {
         const recursive = opts && opts.recursive ? opts.recursive : false
