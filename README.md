@@ -12,7 +12,44 @@ Today the supported drivers are:
 * `s3`: read/write an Amazon S3 bucket
 * `local`: read/write to local filesystem
 
-# Basic usage
+## TLDR
+A simple CRUD example using the mobiletto S3 driver.
+
+This code would run the same if the driver were `local`.
+
+    const storage = require('mobiletto')
+    const s3 = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1', cacheSize: 100})
+
+    // returns array of metadata objects
+    const listing = await s3.list()
+
+    // write an entire file in one-shot
+    await s3.writeFile('some/path', someBufferOfData)
+
+    // write a stream
+    const bytesWritten = await s3.write('some/path', streamOrGenerator)
+
+    // read an entire file in one-shot
+    const objectData = await s3.readFile('some/path')
+
+    // read a stream
+    const bytesRead = await s3.read('some/path', (chunk) => { ...do something with chunk... } )
+
+    // remove a file, returns true upon success
+    const removed = await s3.remove('some/path')
+
+----
+# Contents
+* [Basic usage](#Basic usage)
+* [Metadata](#Metadata)
+* [Caching](#Caching)
+* [Mirroring](#Caching)
+* [Alternate import style](#Alternate-import-style)
+* [Transparent encryption](#Transparent-encryption)
+* [Key rotation](#Key-rotation)
+* [Driver interface](#Driver-interface)
+----
+## Basic usage
     const { mobiletto } = require('mobiletto')
 
     // General usage
@@ -24,7 +61,8 @@ Today the supported drivers are:
     //   * opts object:
     //     * readOnly: optional, never change anything on the filesystem; default is false
     //     * mode: optional, filesystem permissions to set when creating new files and directories, default is 0700
-    const local = await mobiletto('local', '/home/ubuntu/tmp', null, {mode: '0700'})
+    //     * cacheSize: optional, LRU cache for `list` results
+    const local = await mobiletto('local', '/home/ubuntu/tmp', null, {mode: '0700', cacheSize: 100})
 
     // To use 's3' driver:
     //   * key: AWS access key
@@ -35,7 +73,8 @@ Today the supported drivers are:
     //     * region: optional, the AWS region to communicate with, default is us-east-1
     //     * prefix: optional, all read/writes within the S3 bucket will be under this prefix
     //     * delimiter: optional, directory delimiter, default is '/' (note: always '/' when encryption is enabled)
-    const s3 = await mobiletto('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1'})
+    //     * cacheSize: optional, LRU cache for `list` results
+    const s3 = await mobiletto('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1', cacheSize: 100})
 
     // List files
     local.list()  // --> returns an array of metadata objects
@@ -103,7 +142,7 @@ Today the supported drivers are:
     local.remove(path, {recursive, quiet})
     s3.remove(path, {recursive, quiet})
 
-# File metadata
+## Metadata
 The `metadata` command returns metadata about a single filesystem entry.
 Likewise, the return value from the `list` command is an array of metadata objects.
 
@@ -122,14 +161,22 @@ The `type` property can be `file`, `dir`, `link`, or `special`.
 Depending on the type of driver, a `list` command may not return all fields. The `name` and `type` properties
 should always be present. A subsequent `metadata` command will return all available properties.
 
-# Alternate import style
+## Alternate import style
 Import the fully-scoped module and use the `connect` function:
 
     const storage = require('mobiletto')
-    const s3 = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1'})
+    const opts = {bucket: 'bk', region: 'us-east-1', cacheSize: 100}
+    const s3 = await storage.connect('s3', aws_key, aws_secret, opts)
     const objectData = await s3.readFile('some/path')
 
-# Mirroring
+## Caching
+Many apps, by design, will repeatedly call `list` even though the data the app is listing hasn't changed at all.
+
+Save bandwidth and increase performance by passing a `cacheSize` option in the `opts` object. 
+
+Any `write` or `remove` operation will clear the entire cache.
+
+## Mirroring
 
     // Copy a local filesystem mobiletto to S3
     s3.mirror(local)
@@ -148,7 +195,7 @@ reader and who is the writer. Imagine it like an assignment statement: the "left
 is the thing being assigned to (mirrored data written), and the "right-hand mobiletto" (the
 argument to the `mirror` method) is the value being assigned (mirrored data is read).
 
-# Transparent Encryption
+## Transparent encryption
 Enable transparent client-side encryption:
 
     // Pass encryption parameters
@@ -185,7 +232,7 @@ some effort, discover some or all of the overall structure of the directory hier
 The adversary would not know the names of the directories/files unless they also knew your encryption
 key or had otherwise successfully cracked the encryption. All bets are off then!
 
-# Key rotation
+## Key rotation
 Create a mobiletto with your new key, then mirror the old data into it:
 
     const storage = require('mobiletto')
@@ -198,7 +245,7 @@ Create a mobiletto with your new key, then mirror the old data into it:
 
     newStorage.mirror(oldStorage) // if oldStorage is very large, this may take a looooooong time...
 
-# Driver Interface
+## Driver interface
 A driver is any JS file that exports a 'storageClient' function with this signature:
 
     function storageClient (key, secret, opts)

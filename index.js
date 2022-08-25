@@ -1,5 +1,6 @@
 const fs = require('fs')
 const winston = require('winston')
+const LRU = require('lru-cache')
 const { basename, dirname } = require('path')
 const shasum = require('shasum')
 const randomstring = require('randomstring')
@@ -60,12 +61,24 @@ const isReadable = (thing) => thing instanceof fs.ReadStream
 
 const UTILITY_FUNCTIONS = {
     list: (client) => async (path, opts) => {
+        let cacheKey
+        if (client.listingCache) {
+            cacheKey = shasum(path + ' ' + (opts ? JSON.stringify(opts) : '~'))
+            const results = client.listingCache.get(cacheKey)
+            if (results) {
+                return results
+            }
+        }
         const recursive = opts && opts.recursive ? opts.recursive : false
         const visitor = opts && opts.visitor ? opts.visitor : null
         if (visitor && typeof visitor !== 'function') {
             throw new MobilettoError(`list: visitor is not a function: ${typeof visitor}`)
         }
-        return await client.driver_list(path, recursive, visitor)
+        const results = await client.driver_list(path, recursive, visitor)
+        if (client.listingCache) {
+            client.listingCache.set(cacheKey, results)
+        }
+        return results
     },
     safeList: (client) => async (path, opts) => {
         const recursive = opts && opts.recursive ? opts.recursive : false
@@ -92,12 +105,19 @@ const UTILITY_FUNCTIONS = {
     remove: (client) => async (path, opts) => {
         const recursive = opts && opts.recursive ? opts.recursive : false
         const quiet = opts && opts.quiet ? opts.quiet : false
-        return await client.driver_remove(path, recursive, quiet)
+        const result = await client.driver_remove(path, recursive, quiet)
+        if (client.listingCache) { client.listingCache.clear() }
+        return result
     },
     readFile: (client) => async (path) => {
         const chunks = []
         await client.read(path, reader(chunks))
         return Buffer.concat(chunks)
+    },
+    write: (client) => async (path, data) => {
+        const bytesWritten = await client.driver_write(path, data)
+        if (client.listingCache) { client.listingCache.clear() }
+        return bytesWritten
     },
     writeFile: (client) => async (path, data) => {
         const readFunc = function* () { yield data }
@@ -182,7 +202,8 @@ async function mirrorDir (source, sourcePath, visitor) {
     }
 }
 
-function addUtilityFunctions (client, readOnly = false) {
+function addUtilityFunctions (client, readOnly = false, cacheSize = null) {
+    client.listingCache = cacheSize ? new LRU({ max: cacheSize }) : null
     for (const func of Object.keys(UTILITY_FUNCTIONS)) {
         client[`driver_${func}`] = client[func] // save previous function, we will need `list` at least
         client[func] = UTILITY_FUNCTIONS[func](client)
@@ -212,9 +233,10 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         throw new MobilettoError(message)
     }
     const readOnly = opts ? !!opts.readOnly : false
+    const cacheSize = opts && opts.cacheSize ? opts.cacheSize : null
     if (encryption === null) {
         logger.info(`mobiletto: successfully connected using driver ${driverPath}, returning client (encryption not enabled)`)
-        return addUtilityFunctions(client, readOnly)
+        return addUtilityFunctions(client, readOnly, cacheSize)
     }
     const encKey = normalizeKey(encryption.key)
     if (!encKey) {
@@ -433,7 +455,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         }
     }
     logger.info(`mobiletto: successfully connected using driver ${driverPath}, returning client (encryption enabled)`)
-    return addUtilityFunctions(encClient, readOnly)
+    return addUtilityFunctions(encClient, readOnly, cacheSize)
 }
 
 async function readStream(stream, callback, endCallback) {
