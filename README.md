@@ -40,7 +40,7 @@ This code would run the same if the driver were `local`.
 
 ----
 # Contents
-* [Basic usage](#Basic usage)
+* [Basic usage](#Basic-usage)
 * [Metadata](#Metadata)
 * [Caching](#Caching)
 * [Mirroring](#Caching)
