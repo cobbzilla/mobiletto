@@ -20,19 +20,21 @@ This code would run the same if the driver were `local`.
     const storage = require('mobiletto')
     const s3 = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1', cacheSize: 100})
 
-    // returns array of metadata objects
+    // list objects: returns array of metadata objects
     const listing = await s3.list()
+    const dirList = await s3.list('some/dir/')
+    const everything = await s3.list('', {recursive: true})
 
     // write an entire file in one-shot
-    await s3.writeFile('some/path', someBufferOfData)
+    let bytesWritten = await s3.writeFile('some/path', someBufferOfData)
 
-    // write a stream
-    const bytesWritten = await s3.write('some/path', streamOrGenerator)
+    // write a file from a stream/generator
+    bytesWritten = await s3.write('some/path', streamOrGenerator)
 
     // read an entire file in one-shot
-    const objectData = await s3.readFile('some/path')
+    const byteBuffer = await s3.readFile('some/path')
 
-    // read a stream
+    // read file as a stream using data callback
     const bytesRead = await s3.read('some/path', (chunk) => { ...do something with chunk... } )
 
     // remove a file, returns true upon success
