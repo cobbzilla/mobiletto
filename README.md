@@ -38,8 +38,8 @@ Today the supported drivers are:
     const s3 = await mobiletto('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1'})
 
     // List files
-    local.list()  // --> returns an array of file objects
-    s3.list()     // --> returns an array of file objects
+    local.list()  // --> returns an array of metadata objects
+    s3.list()     // --> returns an array of metadata objects
 
     // List files recursively
     local.list({ recursive: true })
@@ -231,8 +231,8 @@ The object that the storageClient function returns must define these functions:
     async read (path, callback, endCallback = null)
 
     // Write a file
-    // readFunc returns the data you want to write
-    async write (path, readFunc)
+    // driver must be able to handle a generator or a stream
+    async write (path, generatorOrReadableStream)
 
     // Remove a file, or recursively delete a directory
     async remove (path, recursive = false, quiet = false)
