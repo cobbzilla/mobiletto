@@ -66,7 +66,7 @@ const UTILITY_FUNCTIONS = {
             cacheKey = shasum(path + ' ' + (opts ? JSON.stringify(opts) : '~'))
             const results = client.listingCache.get(cacheKey)
             if (results) {
-                if (results.cached) { return results }
+                if (Array.isArray(results)) { return results }
                 throw results
             }
         }
@@ -78,7 +78,6 @@ const UTILITY_FUNCTIONS = {
         try {
             const results = await client.driver_list(path, recursive, visitor)
             if (client.listingCache) {
-                results.cached = true
                 client.listingCache.set(cacheKey, results)
             }
             return results
