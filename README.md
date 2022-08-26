@@ -17,7 +17,7 @@ Today the supported drivers are:
 * [Mobiletto on npm](https://www.npmjs.com/package/mobiletto)
 
 ## TLDR
-A simple CRUD example using the mobiletto S3 driver.
+A simple CRUD example using the mobiletto `s3` driver.
 
 This code would run the same if the driver were `local`.
 
