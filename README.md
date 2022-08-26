@@ -12,6 +12,10 @@ Today the supported drivers are:
 * `s3`: read/write an Amazon S3 bucket
 * `local`: read/write to local filesystem
 
+### Source
+* [Mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
+* [Mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
 ## TLDR
 A simple CRUD example using the mobiletto S3 driver.
 
