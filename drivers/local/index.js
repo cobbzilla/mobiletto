@@ -63,7 +63,10 @@ class StorageClient {
     normalizePath = (path) => path.startsWith(this.baseDir)
         ? path
         : this.baseDir + (path.startsWith('/') ? path.substring(1) : path)
-    denormalizePath = (path) => path.startsWith(this.baseDir) ? path.substring(this.baseDir.length) : path
+    denormalizePath = (path) => {
+        const norm = path.startsWith(this.baseDir) ? path.substring(this.baseDir.length) : path
+        return norm.startsWith('/') ? norm.substring(1) : norm
+    }
 
     fileToObject = (dir) => (f) => {
         const stat = fs.lstatSync(dir + '/' + f)
