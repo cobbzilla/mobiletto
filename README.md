@@ -196,6 +196,14 @@ The `mirror` command performs a one-time copy of all files from one mobiletto to
 It does not run any process to maintain the mirror over time. Run the `mirror` command again
 to synchronize any missing files.
 
+The return value from `mirror` is a simple object with counters for how many files were successfully
+mirrored and how many files had errors:
+
+    {
+      success: count-of-files-mirrored,
+      errors: count-of-files-with-errors
+    }
+
 WARNING: Mirroring large data sets can be very time-consuming and bandwidth-intensive
 
 With the `mirror` call semantics it can sometimes be confusing to understand who is the
