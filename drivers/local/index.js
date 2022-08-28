@@ -11,14 +11,6 @@ const DEFAULT_MODE = '0700'
 
 const isNotExistError = (err) => err.code && (err.code === 'ENOENT' || err.code === 'ENOTDIR')
 
-const ioError = (err, path, method) => isNotExistError(err)
-    ? err instanceof MobilettoNotFoundError
-        ? err
-        : new MobilettoNotFoundError(path)
-    : err instanceof MobilettoError || err instanceof MobilettoNotFoundError
-        ? err
-        : new MobilettoError(`${method}(${path}) error: ${err}`, err)
-
 const fileType = (stat) => {
     if (stat.isDirectory()) {
         return M_DIR
@@ -67,6 +59,14 @@ class StorageClient {
         const norm = path.startsWith(this.baseDir) ? path.substring(this.baseDir.length) : path
         return norm.startsWith('/') ? norm.substring(1) : norm
     }
+    ioError = (err, path, method) => isNotExistError(err)
+        ? err instanceof MobilettoNotFoundError
+            ? err
+            : new MobilettoNotFoundError(this.denormalizePath(path))
+        : err instanceof MobilettoError || err instanceof MobilettoNotFoundError
+            ? err
+            : new MobilettoError(`${method}(${path}) error: ${err}`, err)
+
 
     fileToObject = (dir) => (f) => {
         const stat = fs.lstatSync(dir + '/' + f)
@@ -105,7 +105,7 @@ class StorageClient {
             return files
         } catch (e) {
             console.error(`dirFiles: ${e}`)
-            throw ioError(e, norm, 'dirFiles')
+            throw this.ioError(e, norm, 'dirFiles')
         }
     }
 
@@ -120,7 +120,7 @@ class StorageClient {
                 return await this.readDirFiles(dir, recursive, visitor)
             }
         } catch (err) {
-            throw ioError(err, path, 'list')
+            throw this.ioError(err, path, 'list')
         }
     }
     async metadata (path) {
@@ -144,7 +144,7 @@ class StorageClient {
                 mtime: lstat.mtimeMs
             }
         } catch (err) {
-            throw ioError(err, path, 'metadata')
+            throw this.ioError(err, path, 'metadata')
         }
     }
 
@@ -235,7 +235,7 @@ class StorageClient {
             const stream = fs.createReadStream(file)
             return await readStream(stream, callback, endCallback)
         } catch (err) {
-            throw ioError(err, path, 'read')
+            throw this.ioError(err, path, 'read')
         }
     }
 

@@ -147,7 +147,7 @@ class StorageClient {
         return (err instanceof MobilettoError || err instanceof MobilettoNotFoundError)
             ? err
             : (err instanceof NoSuchKey) || (err.name && err.name === 'NotFound')
-                ? new MobilettoNotFoundError(key)
+                ? new MobilettoNotFoundError(this.denormalizeKey(key))
                 : new MobilettoError(`${method}(${path}) error: ${err}`, err)
     }
 
