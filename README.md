@@ -18,8 +18,8 @@ Mobiletto is intended to be used as a library by other JavaScript code.
 To work with mobiletto at the command-line, use [mobiletto-cli](https://www.npmjs.com/package/mobiletto-cli)
 
 ### Source
-* [Mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
-* [Mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+* [mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
+* [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
 
 ## TLDR
 A simple example using the mobiletto `s3` driver.
