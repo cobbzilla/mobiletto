@@ -155,7 +155,7 @@ for (const driverName of DRIVER_NAMES) {
             })
             it("should delete the file we just wrote", async () => {
                 const removed = await fixture.api.remove(fixture.name)
-                expect(removed).to.be.true
+                expect(!!removed).to.be.true
             })
             it("loading metadata on the file we wrote now fails", async () => {
                 await assertMetaFail(fixture.api, fixture.name)
@@ -205,7 +205,7 @@ for (const driverName of DRIVER_NAMES) {
                 })
                 it("should fail to delete the file we did not write", async () => {
                     const removed = await fixture.api.remove(fixture.name)
-                    expect(removed).to.be.false
+                    expect(!!removed).to.be.false
                 })
             })
         }
@@ -238,7 +238,7 @@ for (const driverName of DRIVER_NAMES) {
             })
             it("should delete the encrypted file we just wrote", async () => {
                 const removed = await fixture.api.remove(fixture.name)
-                expect(removed).to.be.true
+                expect(!!removed).to.be.true
             })
             it("loading metadata on the encrypted file we wrote now fails", async () => {
                 await assertMetaFail(fixture.api, fixture.name)
@@ -327,12 +327,12 @@ for (const driverName of DRIVER_NAMES) {
                 it("should recursively delete the mirrored data", async () => {
                     const recursive = true
                     const removed = await fixture.mirrorApi.remove(mirrorDest, {recursive})
-                    expect(removed).to.be.true
+                    expect(!!removed).to.be.true
                 })
                 it("should recursively delete the directory and file we just created", async () => {
                     const recursive = true
                     const removed = await fixture.api.remove(randomParent, {recursive})
-                    expect(removed).to.be.true
+                    expect(!!removed).to.be.true
                 })
                 it("loading metadata on the file we wrote now fails", async () => {
                     await assertMetaFail(fixture.api, fixture.name)

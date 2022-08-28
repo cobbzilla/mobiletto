@@ -137,6 +137,11 @@ class StorageClient {
             : this.prefix + (path.startsWith(this.delimiter) ? path.substring(1) : path))
         return p.replaceAll(/\/{2,}/g, '/')
     }
+    denormalizeKey = (key) => {
+        return key.startsWith(this.prefix)
+            ? key.substring(this.prefix.length)
+            : key
+    }
 
     s3error (err, key, path, method) {
         return (err instanceof MobilettoError || err instanceof MobilettoNotFoundError)
@@ -217,6 +222,7 @@ class StorageClient {
 
     async remove (path, recursive, quiet) {
         if (recursive) {
+            const removed = []
             let objects = await this._list(path, true, null, { MaxKeys: DELETE_OBJECTS_MAX_KEYS })
             while (objects && objects.length > 0) {
                 const Delete = {
@@ -240,6 +246,9 @@ class StorageClient {
                 if (!quiet && response.Errors && response.Errors.length > 0) {
                     throw new MobilettoError(`remove(${path}): DeleteObjectsCommand returned Errors: ${JSON.stringify(response.Errors)}`)
                 }
+                if (response.Deleted) {
+                    removed.push(...response.Deleted.map(del => this.denormalizeKey(del.Key)))
+                }
                 try {
                     objects = await this._list(path, true, null, {MaxKeys: DELETE_OBJECTS_MAX_KEYS})
                 } catch (e) {
@@ -249,6 +258,7 @@ class StorageClient {
                     objects = null
                 }
             }
+            return removed
         } else {
             const Key = this.normalizeKey(path)
             const bucketParams = {
@@ -272,8 +282,8 @@ class StorageClient {
             } catch (err) {
                 throw this.s3error(err, Key, path, 'remove')
             }
+            return path
         }
-        return true
     }
 }
 

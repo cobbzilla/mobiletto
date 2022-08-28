@@ -405,6 +405,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             await client.write(metaPath(path), stringGenerator(JSON.stringify(meta), enc)())
             return bytesRead
         },
+        // todo: remove should return an array of the paths that were actually removed
         remove: async (path, options) => {
             const recursive = options === true || (options && options.recursive) || false
             const quiet = (options && options.quiet) || false

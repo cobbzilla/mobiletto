@@ -253,7 +253,7 @@ class StorageClient {
                 throw new MobilettoError(`remove(${path}) error: ${err}`, err)
             }
         }
-        return Promise.resolve(true)
+        return path
     }
 }
 

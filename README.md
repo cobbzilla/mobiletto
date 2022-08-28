@@ -137,16 +137,18 @@ This code would run the same if the driver were `local`.
     await s3.writeFile(path, bufferOrString)      // returns count of bytes written
 
     // Delete a file
-    // Quiet param is optional (default false), when set errors will not be thrown if the path does not exist 
+    // Quiet param is optional (default false), when set errors will not be thrown if the path does not exist
+    // Always returns a value or throws an error.
+    // Return value may be a single string of the file removed, or an array of all files removed (driver-dependent)
     const quiet = true
-    local.remove(path, {quiet}) // returns true upon success
-    s3.remove(path, {quiet})    // returns true upon success
+    local.remove(path, {quiet}) // returns single path removed
+    s3.remove(path, {quiet})    // returns single path removed
 
     // Recursively delete a directory and do it quietly (do not report errors)
     const recursive = true
     const quiet = true
-    local.remove(path, {recursive, quiet})
-    s3.remove(path, {recursive, quiet})
+    local.remove(path, {recursive, quiet}) // returns  paths removed
+    s3.remove(path, {recursive, quiet})    // returns array containing all paths removed
 
 ## Metadata
 The `metadata` command returns metadata about a single filesystem entry.
@@ -288,4 +290,5 @@ The object that the storageClient function returns must define these functions:
     async write (path, generatorOrReadableStream)
 
     // Remove a file, or recursively delete a directory
+    // returns a string of a single path removed, or an array of multiple paths removed
     async remove (path, recursive = false, quiet = false)
