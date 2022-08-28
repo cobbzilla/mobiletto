@@ -12,7 +12,7 @@ Today the supported drivers are:
 * `s3`: read/write an Amazon S3 bucket
 * `local`: read/write to local filesystem
 
-## mobiletto-cli
+### mobiletto-cli
 Mobiletto is intended to be used as a library by other JavaScript code.
 
 To work with mobiletto at the command-line, use [mobiletto-cli](https://www.npmjs.com/package/mobiletto-cli)
