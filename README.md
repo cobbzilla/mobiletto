@@ -17,7 +17,7 @@ Today the supported drivers are:
 * [Mobiletto on npm](https://www.npmjs.com/package/mobiletto)
 
 ## TLDR
-A simple CRUD example using the mobiletto `s3` driver.
+A simple example using the mobiletto `s3` driver.
 
 This code would run the same if the driver were `local`.
 
@@ -54,6 +54,7 @@ This code would run the same if the driver were `local`.
 * [Transparent encryption](#Transparent-encryption)
 * [Key rotation](#Key-rotation)
 * [Driver interface](#Driver-interface)
+* [Logging](#Logging)
 ----
 ## Basic usage
     const { mobiletto } = require('mobiletto')
@@ -301,3 +302,10 @@ The object that the storageClient function returns must define these functions:
     // Remove a file, or recursively delete a directory
     // returns a string of a single path removed, or an array of multiple paths removed
     async remove (path, recursive = false, quiet = false)
+
+## Logging
+Mobiletto uses the winston logging library. Set the log level with the `MOBILETTO_LOG_LEVEL` environment variable.
+The default level is `warn`. The most verbose level is `silly`, although currently mobiletto does not log at levels
+below `debug`
+
+    MOBILETTO_LOG_LEVEL=silly
