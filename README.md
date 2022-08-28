@@ -12,6 +12,11 @@ Today the supported drivers are:
 * `s3`: read/write an Amazon S3 bucket
 * `local`: read/write to local filesystem
 
+## mobiletto-cli
+Mobiletto is intended to be used as a library by other JavaScript code.
+
+To work with mobiletto at the command-line, use [mobiletto-cli](https://www.npmjs.com/package/mobiletto-cli)
+
 ### Source
 * [Mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
 * [Mobiletto on npm](https://www.npmjs.com/package/mobiletto)
@@ -69,7 +74,7 @@ This code would run the same if the driver were `local`.
     //     * readOnly: optional, never change anything on the filesystem; default is false
     //     * fileMode: optional, permissions used when creating new files, default is 0600. can be string or integer
     //     * dirMode: optional, permissions used when creating new directories, default is 0700. can be string or integer
-    //     * cacheSize: optional, LRU cache for `list` results
+    //     * cacheSize: optional, LRU cache for `list` results, default is no cache
     const local = await mobiletto('local', '/home/ubuntu/tmp', null, {fileMode: 0o0600, dirMode: '0700', cacheSize: 100})
 
     // To use 's3' driver:
@@ -81,7 +86,7 @@ This code would run the same if the driver were `local`.
     //     * region: optional, the AWS region to communicate with, default is us-east-1
     //     * prefix: optional, all read/writes within the S3 bucket will be under this prefix
     //     * delimiter: optional, directory delimiter, default is '/' (note: always '/' when encryption is enabled)
-    //     * cacheSize: optional, LRU cache for `list` results
+    //     * cacheSize: optional, LRU cache for `list` results, default is no cache
     const s3 = await mobiletto('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1', cacheSize: 100})
 
     // List files
@@ -304,8 +309,25 @@ The object that the storageClient function returns must define these functions:
     async remove (path, recursive = false, quiet = false)
 
 ## Logging
-Mobiletto uses the winston logging library. Set the log level with the `MOBILETTO_LOG_LEVEL` environment variable.
-The default level is `warn`. The most verbose level is `silly`, although currently mobiletto does not log at levels
-below `debug`
+Mobiletto uses the [winston](https://www.npmjs.com/package/winston) logging library.
+
+Logs **will** contain file paths and error messages, but will **never** contain keys, secrets,
+or any other connection configuration information.
+
+### Log level
+Use the `MOBILETTO_LOG_LEVEL` environment variable to set the log level.
+The default level is `warn`. The most verbose level is `silly`, although currently mobiletto
+does not log at levels below `debug`
 
     MOBILETTO_LOG_LEVEL=silly
+
+### Log file
+By default, the logger writes to the console. To send logs to a file, set the `MOBILETTO_LOG_FILE`
+environment variable. When logging to a file, logs will no longer be written to the console.
+
+    MOBILETTO_LOG_FILE=/var/my_mobiletto_log
+
+To turn off logging:
+
+    MOBILETTO_LOG_FILE=/dev/null
+    MOBILETTO_LOG_LEVEL=emerg     # not strictly necessary; minimizes time spent in logging code

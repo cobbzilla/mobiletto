@@ -11,7 +11,9 @@ const {DEFAULT_CRYPT_ALGO, normalizeKey, normalizeIV, encrypt, decrypt} = requir
 const logger = winston.createLogger({
     level: process.env.MOBILETTO_LOG_LEVEL || 'warn',
     format: winston.format.simple(),
-    transports: [ new winston.transports.Console() ]
+    transports: process.env.MOBILETTO_LOG_FILE
+        ? [ new winston.transports.File({ filename: process.env.MOBILETTO_LOG_FILE }) ]
+        : [ new winston.transports.Console() ]
 })
 
 const setLogLevel = (level) => { logger.level = level }
