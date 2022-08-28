@@ -66,9 +66,10 @@ This code would run the same if the driver were `local`.
     //   * secret: ignored, can be null
     //   * opts object:
     //     * readOnly: optional, never change anything on the filesystem; default is false
-    //     * mode: optional, filesystem permissions to set when creating new files and directories, default is 0700
+    //     * fileMode: optional, permissions used when creating new files, default is 0600. can be string or integer
+    //     * dirMode: optional, permissions used when creating new directories, default is 0700. can be string or integer
     //     * cacheSize: optional, LRU cache for `list` results
-    const local = await mobiletto('local', '/home/ubuntu/tmp', null, {mode: '0700', cacheSize: 100})
+    const local = await mobiletto('local', '/home/ubuntu/tmp', null, {fileMode: 0o0600, dirMode: '0700', cacheSize: 100})
 
     // To use 's3' driver:
     //   * key: AWS access key
@@ -269,7 +270,7 @@ A driver is any JS file that exports a 'storageClient' function with this signat
 * `key`: a string, your API key (for the `local` driver this is the base directory)
 * `secret`: a string, your API secret (can be omitted for the `local` driver)
 * `opts`: an object, the properties are per-driver:
-  * For `local`, the `mode` property is the file permissions to set when creating new files and directories
+  * For `local`, the `fileMode` and `dirMode` properties determine how new creating files and directories are created
   * For `s3`, the `bucket` property is required. Optional properties are:
     * `region`: the S3 region, default is us-east-1
     * `prefix`: a prefix to prepend to all S3 paths, default is the empty string

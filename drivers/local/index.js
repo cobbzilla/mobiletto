@@ -7,7 +7,8 @@ const {
 
 const fs = require('fs')
 
-const DEFAULT_MODE = '0700'
+const DEFAULT_FILE_MODE = '0600'
+const DEFAULT_DIR_MODE = '0700'
 
 const isNotExistError = (err) => err.code && (err.code === 'ENOENT' || err.code === 'ENOTDIR')
 
@@ -26,7 +27,8 @@ const fileType = (stat) => {
 
 class StorageClient {
     baseDir
-    mode
+    fileMode
+    dirMode
     constructor(baseDir, opts) {
         const resolved = this.resolveSymlinks(baseDir)
         if (!resolved.stat.isDirectory()) {
@@ -35,7 +37,8 @@ class StorageClient {
         }
         const dir = resolved.path
         this.baseDir = dir.endsWith('/') ? dir : dir + '/'
-        this.mode = opts && opts.mode ? opts.mode : DEFAULT_MODE
+        this.fileMode = opts && opts.fileMode ? opts.fileMode : DEFAULT_FILE_MODE
+        this.dirMode = opts && opts.dirMode ? opts.dirMode : DEFAULT_DIR_MODE
     }
     resolveSymlinks (path) {
         let stat = fs.lstatSync(path)
@@ -151,7 +154,7 @@ class StorageClient {
     mkdirs (path) {
         try {
             // console.log(`mkdirs: creating directory: ${path}`)
-            fs.mkdirSync(path, {recursive: true, mode: this.mode})
+            fs.mkdirSync(path, {recursive: true, mode: this.dirMode})
         } catch (err) {
             throw new MobilettoError(`mkdirs: error creating directory ${path}: ${err}`, err)
         }
@@ -183,7 +186,7 @@ class StorageClient {
     async write (path, generatorOrReadableStream) {
         const file = await this.normalizePathAndEnsureParentDirs(path)
         // console.log(`write: writing path ${path} -> ${file}`)
-        const stream = fs.createWriteStream(file, {mode: this.mode})
+        const stream = fs.createWriteStream(file, {mode: this.fileMode})
         const writer = writeStream(stream)
         const closer = closeStream(stream)
         let count = 0
