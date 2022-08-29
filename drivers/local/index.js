@@ -228,7 +228,7 @@ class StorageClient {
                 : generator.next().value
         }
         closer()
-        return Promise.resolve(count)
+        return count
     }
 
     async read (path, callback, endCallback = null) {

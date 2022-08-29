@@ -390,11 +390,11 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                 }
             }
 
-            let bytesRead = 0
+            let generatorBytes = 0
             function* cryptGenerator(plaintextGenerator) {
                 let chunk = plaintextGenerator.next().value
                 while (chunk) {
-                    bytesRead += chunk.length
+                    generatorBytes += chunk.length
                     yield cipher.update(chunk)
                     chunk = plaintextGenerator.next().value
                 }
@@ -402,10 +402,10 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             }
             const cipher = crypt.startEncryptStream(enc)
             const realPath = encryptPath(path)
-            await client.write(realPath, cryptGenerator(readFunc))
-            const meta = { name: path, size: bytesRead, type: M_FILE }
+            const streamBytes = await client.write(realPath, isReadable(readFunc) ? readFunc : cryptGenerator(readFunc))
+            const meta = { name: path, size: generatorBytes, type: M_FILE }
             await client.write(metaPath(path), stringGenerator(JSON.stringify(meta), enc)())
-            return bytesRead
+            return isReadable(readFunc) ? streamBytes : generatorBytes
         },
         // todo: remove should return an array of the paths that were actually removed
         remove: async (path, options) => {

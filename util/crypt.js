@@ -1,6 +1,7 @@
 // adapted from https://stackoverflow.com/a/64136185
 const crypto = require('crypto')
 const shasum = require('shasum')
+const winston = require("winston");
 
 const WARN_PLAINTEXT = !process.env.IGNORE_DISABLED_ENCRYPTION
 const MIN_KEY_LEN = 16
@@ -13,7 +14,7 @@ function normalizeKey (k) {
 }
 
 function normalizeIV (iv, key) {
-    return (typeof iv === 'string' && iv.trim().length > 16)
+    return (typeof iv === 'string' && iv.trim().length >= 16)
         ? Buffer.from(shasum(iv.trim())).subarray(0, 16)
         : key
             ? Buffer.from(shasum(key)).subarray(0, 16)
@@ -33,7 +34,12 @@ function setDefaultIV (iv) {
 }
 
 function getCipher(enc) {
-    return crypto.createCipheriv(enc.algo, enc.key, enc.iv);
+    try {
+        return crypto.createCipheriv(enc.algo, enc.key, enc.iv);
+    } catch (e) {
+        winston.error(`getCipher(${enc}): ${e}`)
+        throw e
+    }
 }
 
 function encrypt (plainText, encryption, outputEncoding = 'base64') {

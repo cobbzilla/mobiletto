@@ -1,5 +1,6 @@
 // To run the tests, you need a .env file one level above this directory
 // that contains env vars for all the process.env stuff in DRIVER_CONFIG below
+const fs = require('fs')
 require('dotenv').config()
 
 const randomstring = require('randomstring')
@@ -166,7 +167,7 @@ for (const driverName of DRIVER_NAMES) {
             const encDesc = encryption ? '(with encryption)' : '(without encryption)'
             describe(`${driverName} - ${encDesc} fail to write and delete files in readOnly mode`, () => {
             // describe(`${driverName} - ENC fail to write and delete files in readOnly mode`, () => {
-                // const encryption = {key: rand(32)}
+                    // const encryption = {key: rand(32)}
                 const size = 16
                 const randomData = rand(size)
                 const fileSuffix = '' + Date.now()
@@ -252,7 +253,7 @@ for (const driverName of DRIVER_NAMES) {
             const mirrorDest = `mirrorDest_${rand(5)}/`
             describe(`${driverName} - ${encDesc} write files in a new dir, read metadata, mirror to another place (${mirrorDriver}), verify mirror, recursively delete from both`, () => {
             // describe(`${driverName} - ENCRYPTION write files in a new dir, read metadata, recursively delete`, () => {
-                // const encryption = {key: rand(32)}
+            //     const encryption = {key: rand(32)}
                 // const encryption = null
                 // a random directory and file within it
                 const randomParent = `testRPD_${rand(2)}/rand_${rand(4)}`
@@ -285,6 +286,19 @@ for (const driverName of DRIVER_NAMES) {
                         const bytesWritten = await fixture.api.write(tempFilename(fixture.name, i), dataGenerator())
                         expect(bytesWritten).to.equal(READ_SZ, 'expected write API to return correct number of bytes written')
                     }
+                })
+                it('should write a file in a new directory using a stream', async () => {
+                    // create a random temp file, write it
+                    const data = randomstring.generate(READ_SZ)
+                    const tempFile = `/tmp/${randomstring.generate(10)}_cool_${Date.now()}`;
+                    fs.writeFileSync(tempFile, data)
+                    const reader = fs.createReadStream(tempFile)
+                    const streamFile = fixture.name + '_stream';
+                    const bytesWritten = await fixture.api.write(streamFile, reader)
+                    expect(bytesWritten).to.equal(READ_SZ, 'expected write API to return correct number of bytes written for STREAM')
+                    // remove stream file
+                    const removed = await fixture.api.remove(streamFile)
+                    expect(!!removed).to.be.true
                 })
                 it("should load metadata for one of the new files", async () => {
                     await assertMeta(fixture.api, fixture.name, READ_SZ, encryption ? ENC_SIZE_CLOSE_ENOUGH_PERCENT : null)
