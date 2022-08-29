@@ -310,6 +310,14 @@ for (const driverName of DRIVER_NAMES) {
                     expect(baseListing).to.have.lengthOf.greaterThanOrEqual(1)
                     expect(baseListing.find(o => o.name === path.dirname(randomParent))).to.not.be.null
                 })
+                it("should successfully list files in a subdirectory", async () => {
+                    const listing = await fixture.api.list(randomParent)
+                    expect(listing).to.have.lengthOf.greaterThanOrEqual(1)
+                })
+                it("should successfully list files in a subdirectory ending with a slash", async () => {
+                    const listing = await fixture.api.list(randomParent+'/')
+                    expect(listing).to.have.lengthOf.greaterThanOrEqual(1)
+                })
                 it("should load metadata for one of the new files", async () => {
                     await assertMeta(fixture.api, fixture.name, READ_SZ, encryption ? ENC_SIZE_CLOSE_ENOUGH_PERCENT : null)
                 })

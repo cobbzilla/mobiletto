@@ -349,7 +349,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
 
     const encClient = {
         list: async (pth = '', recursive, visitor) => {
-            const p = pth === '' ? '.' : pth
+            const p = pth === '' ? '.' : pth.endsWith('/') ? pth.substring(0, pth.length - 1) : pth
             const dirent = direntDir(p)
             let entries
             try {
