@@ -315,11 +315,13 @@ Logs **will** contain file paths and error messages, but will **never** contain 
 or any other connection configuration information.
 
 ### Log level
-Use the `MOBILETTO_LOG_LEVEL` environment variable to set the log level.
+Use the `MOBILETTO_LOG_LEVEL` environment variable to set the log level, using one
+of the `npm` levels defined in [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
+
 The default level is `warn`. The most verbose level is `silly`, although currently mobiletto
 does not log at levels below `debug`
 
-    MOBILETTO_LOG_LEVEL=silly
+    MOBILETTO_LOG_LEVEL=silly   # maximum logs!
 
 ### Log file
 By default, the logger writes to the console. To send logs to a file, set the `MOBILETTO_LOG_FILE`
@@ -330,4 +332,3 @@ environment variable. When logging to a file, logs will no longer be written to 
 To turn off logging:
 
     MOBILETTO_LOG_FILE=/dev/null
-    MOBILETTO_LOG_LEVEL=emerg     # not strictly necessary; minimizes time spent in logging code
