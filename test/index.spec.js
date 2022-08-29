@@ -167,7 +167,7 @@ for (const driverName of DRIVER_NAMES) {
             const encDesc = encryption ? '(with encryption)' : '(without encryption)'
             describe(`${driverName} - ${encDesc} fail to write and delete files in readOnly mode`, () => {
             // describe(`${driverName} - ENC fail to write and delete files in readOnly mode`, () => {
-                    // const encryption = {key: rand(32)}
+                // const encryption = {key: rand(32)}
                 const size = 16
                 const randomData = rand(size)
                 const fileSuffix = '' + Date.now()
@@ -304,6 +304,11 @@ for (const driverName of DRIVER_NAMES) {
                     const singleFile = await fixture.api.list(fixture.name)
                     expect(singleFile).to.have.lengthOf(1)
                     expect(singleFile[0]).to.have.property('name', fixture.name)
+                })
+                it("should successfully list files in the base directory", async () => {
+                    const baseListing = await fixture.api.list()
+                    expect(baseListing).to.have.lengthOf.greaterThanOrEqual(1)
+                    expect(baseListing.find(o => o.name === path.dirname(randomParent))).to.not.be.null
                 })
                 it("should load metadata for one of the new files", async () => {
                     await assertMeta(fixture.api, fixture.name, READ_SZ, encryption ? ENC_SIZE_CLOSE_ENOUGH_PERCENT : null)

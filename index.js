@@ -348,18 +348,19 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     }
 
     const encClient = {
-        list: async (pth, recursive, visitor) => {
-            const dirent = direntDir(pth)
+        list: async (pth = '', recursive, visitor) => {
+            const p = pth === '' ? '.' : pth
+            const dirent = direntDir(p)
             let entries
             try {
                 entries = await client.list(dirent, recursive)
             } catch (e) {
-                if (e instanceof MobilettoNotFoundError) {
+                if (e instanceof MobilettoNotFoundError && p.includes('/')) {
                     // it might be a single file, try listing the parent dir
-                    const parentDirent = direntDir(path.dirname(pth));
+                    const parentDirent = direntDir(path.dirname(p));
                     entries = await client.list(parentDirent, false)
                     const objects = await _loadMeta(parentDirent, entries)
-                    const found = objects.find(o => o.name === pth)
+                    const found = objects.find(o => o.name === p)
                     if (found) {
                         return [ found ]
                     }
