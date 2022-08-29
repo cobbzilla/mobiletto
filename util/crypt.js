@@ -8,13 +8,13 @@ const DEFAULT_CRYPT_ALGO = 'aes-256-cbc';
 
 function normalizeKey (k) {
     return (typeof k === 'string' && k.trim().length > MIN_KEY_LEN)
-        ? Buffer.from(shasum(k)).subarray(0, 32)
+        ? Buffer.from(shasum(k.trim())).subarray(0, 32)
         : null
 }
 
 function normalizeIV (iv, key) {
-    return (typeof iv === 'string')
-        ? Buffer.from(shasum(iv)).subarray(0, 16)
+    return (typeof iv === 'string' && iv.trim().length > 16)
+        ? Buffer.from(shasum(iv.trim())).subarray(0, 16)
         : key
             ? Buffer.from(shasum(key)).subarray(0, 16)
             : null
