@@ -112,8 +112,8 @@ class StorageClient {
         }
     }
 
-    async list (path = '', recursive = false, visitor = null) {
-        const dir = this.normalizePath(path)
+    async list (pth = '', recursive = false, visitor = null) {
+        const dir = this.normalizePath(pth)
         try {
             if (visitor === null) {
                 const results = []
@@ -123,7 +123,21 @@ class StorageClient {
                 return await this.readDirFiles(dir, recursive, visitor)
             }
         } catch (err) {
-            throw this.ioError(err, path, 'list')
+            if (err instanceof MobilettoNotFoundError && !recursive && pth.includes('/')) {
+                // are we trying to list a single file?
+                const parentDir = this.normalizePath(dirname(pth))
+                const results = []
+                await this.readDirFiles(parentDir, false, (obj) => {
+                    if (obj.name === pth) {
+                        results.push(obj)
+                    }
+                })
+                if (results.length === 0) {
+                    throw err
+                }
+                return results
+            }
+            throw this.ioError(err, pth, 'list')
         }
     }
     async metadata (path) {

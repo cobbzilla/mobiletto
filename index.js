@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 const winston = require('winston')
 const LRU = require('lru-cache')
 const { basename, dirname } = require('path')
@@ -347,9 +348,24 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     }
 
     const encClient = {
-        list: async (path, recursive, visitor) => {
-            const dirent = direntDir(path)
-            const entries = await client.list(dirent, recursive)
+        list: async (pth, recursive, visitor) => {
+            const dirent = direntDir(pth)
+            let entries
+            try {
+                entries = await client.list(dirent, recursive)
+            } catch (e) {
+                if (e instanceof MobilettoNotFoundError) {
+                    // it might be a single file, try listing the parent dir
+                    const parentDirent = direntDir(path.dirname(pth));
+                    entries = await client.list(parentDirent, false)
+                    const objects = await _loadMeta(parentDirent, entries)
+                    const found = objects.find(o => o.name === pth)
+                    if (found) {
+                        return [ found ]
+                    }
+                    throw e
+                }
+            }
             if (!entries || entries.length === 0) {
                 return []
             }

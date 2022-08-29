@@ -3,6 +3,8 @@ const {
     MobilettoError, MobilettoNotFoundError, readStream
 } = require('../../index')
 
+const { dirname } = require('path')
+
 const {
     S3Client,
     ListObjectsCommand,
@@ -57,7 +59,19 @@ class StorageClient {
     }
 
     async list (path = '', recursive = false, visitor = null) {
-        return await this._list(path, recursive, visitor)
+        try {
+            return await this._list(path, recursive, visitor)
+        } catch (e) {
+            if (e instanceof MobilettoNotFoundError && !recursive && path.includes('/')) {
+                // are we trying to list a single file?
+                const objects = await this._list(dirname(path), false)
+                const found = objects.find(o => o.name === path)
+                if (found) {
+                    return [found]
+                }
+                throw e
+            }
+        }
     }
 
     async _list (path, recursive = false, visitor = null, params = {}) {

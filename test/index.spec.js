@@ -149,7 +149,7 @@ for (const driverName of DRIVER_NAMES) {
             it("should read the file we just wrote", async () => {
                 const data = await fixture.api.readFile(fixture.name);
                 expect(data.length).is.equal(size, 'expected read API to return correct number of bytes read')
-                expect(data.toString('utf8')).to.equal(fixture.randomData, 'expected to read back the same data we wrote')
+                expect(data.toString()).to.equal(fixture.randomData, 'expected to read back the same data we wrote')
             })
             it("should load metadata on the file we just wrote", async () => {
                 await assertMeta (fixture.api, fixture.name, fixture.randomData.length)
@@ -253,7 +253,7 @@ for (const driverName of DRIVER_NAMES) {
             const mirrorDest = `mirrorDest_${rand(5)}/`
             describe(`${driverName} - ${encDesc} write files in a new dir, read metadata, mirror to another place (${mirrorDriver}), verify mirror, recursively delete from both`, () => {
             // describe(`${driverName} - ENCRYPTION write files in a new dir, read metadata, recursively delete`, () => {
-            //     const encryption = {key: rand(32)}
+                // const encryption = {key: rand(32)}
                 // const encryption = null
                 // a random directory and file within it
                 const randomParent = `testRPD_${rand(2)}/rand_${rand(4)}`
@@ -299,6 +299,11 @@ for (const driverName of DRIVER_NAMES) {
                     // remove stream file
                     const removed = await fixture.api.remove(streamFile)
                     expect(!!removed).to.be.true
+                })
+                it("should successfully list a file individually", async () => {
+                    const singleFile = await fixture.api.list(fixture.name)
+                    expect(singleFile).to.have.lengthOf(1)
+                    expect(singleFile[0]).to.have.property('name', fixture.name)
                 })
                 it("should load metadata for one of the new files", async () => {
                     await assertMeta(fixture.api, fixture.name, READ_SZ, encryption ? ENC_SIZE_CLOSE_ENOUGH_PERCENT : null)
