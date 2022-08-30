@@ -176,6 +176,16 @@ for (const driverName of DRIVER_NAMES) {
     const nonexistentFile = 'random_file_that_does_not_exist_' + rand(100) + '_' + Date.now()
     const tempFilename = (name, i) => name + (i > 0 ? '_' + i : '')
     describe(`${driverName} test`, () => {
+        beforeEach ((done) => {
+            redis.flushMobiletto().then(
+                () => { logger.info(`${driverName} - flushed redis`) },
+                (e) => {
+                    logger.error(`${driverName} - error flushing redis: ${e}`)
+                    throw e
+                }
+            ).finally(() => done())
+        })
+
         describe(`${driverName} - create api client`, () => {
             it("should validate the config and return an API object", async () => {
                 const api = await mobiletto(driverName, config.key, config.secret, config.opts)
@@ -412,7 +422,6 @@ for (const driverName of DRIVER_NAMES) {
                     }
                 })
                 it(`should mirror its subdirectory (${driverName}/${randomParent}) to another place (${mirrorDriver}/${mirrorDest})`, async () => {
-                    await redis.flushMobiletto()
                     const results = await fixture.mirrorApi.mirror(fixture.api, mirrorDest, randomParent)
                     expect(results).to.have.property('errors', 0, 'expected no errors in mirroring')
                     expect(results).to.have.property('success').greaterThan(0, 'expected some successes in mirroring')
@@ -503,3 +512,14 @@ for (const driverName of DRIVER_NAMES) {
         })
     })
 }
+
+after ((done) => {
+    try {
+        logger.info('all tests finished, tearing down redis...')
+        redis.teardown()
+    } catch (e) {
+        logger.warn(`error calling redis.teardown: ${e}`)
+    } finally {
+        done()
+    }
+})

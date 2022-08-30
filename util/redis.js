@@ -149,7 +149,7 @@ const scopedCache = (name, size = 100) => {
 teardown = () => {
     const redis = getRedis()
     if (redis) {
-        redis.shutdown()
+        redis.disconnect()
     }
 }
 
