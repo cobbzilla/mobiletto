@@ -1,7 +1,9 @@
 const {
-    M_DIR, M_FILE, logger,
+    M_DIR, M_FILE,
     MobilettoError, MobilettoNotFoundError, readStream
 } = require('../../index')
+
+const { logger } = require('../../util/logger')
 
 const { dirname } = require('path')
 

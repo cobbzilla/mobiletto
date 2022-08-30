@@ -1,9 +1,11 @@
 const { dirname } = require('path')
 
 const {
-    M_FILE, M_DIR, M_LINK, M_SPECIAL, isAsyncGenerator, isReadable, logger,
+    M_FILE, M_DIR, M_LINK, M_SPECIAL, isAsyncGenerator, isReadable,
     MobilettoError, MobilettoNotFoundError, readStream, writeStream, closeStream
 } = require('../../index')
+
+const { logger } = require('../../util/logger')
 
 const fs = require('fs')
 

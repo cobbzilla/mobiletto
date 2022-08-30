@@ -1,29 +1,14 @@
 const fs = require('fs')
 const path = require('path')
 const { Readable, Transform } = require('stream')
-const winston = require('winston')
-const LRU = require('lru-cache')
+const { logger } = require('./util/logger')
+const redis = require('./util/redis')
 const { basename, dirname } = require('path')
 const shasum = require('shasum')
 const randomstring = require('randomstring')
 
 const crypt = require('./util/crypt')
 const {DEFAULT_CRYPT_ALGO, normalizeKey, normalizeIV, encrypt, decrypt} = require("./util/crypt")
-
-const logger = winston.createLogger({
-    level: process.env.MOBILETTO_LOG_LEVEL || 'warn',
-    format: winston.format.simple(),
-    transports: process.env.MOBILETTO_LOG_FILE
-        ? [ new winston.transports.File({ filename: process.env.MOBILETTO_LOG_FILE }) ]
-        : [ new winston.transports.Console() ]
-})
-
-const setLogLevel = (level) => { logger.level = level }
-
-const setLogTransports = (transports) => {
-    logger.transports.splice(0, logger.transports.length)
-    logger.transports.push(...transports)
-}
 
 const DIR_ENT_DIR_SUFFIX = '__.dirent'
 const DIR_ENT_FILE_PREFIX = 'dirent__'
@@ -37,12 +22,14 @@ const MOBILETTO_TMP = initMobilettoTempDir()
 
 // adapted from https://stackoverflow.com/a/27724419
 function MobilettoError (message, err) {
-    this.message = `${message}`
+    this.message = `${message}: ${err ? err : ''}`
+    // noinspection JSUnusedGlobalSymbols
     this.err = err
     // Use V8's native method if available, otherwise fallback
     if ('captureStackTrace' in Error) {
         Error.captureStackTrace(this, TypeError)
     } else {
+        // noinspection JSUnusedGlobalSymbols
         this.stack = (new Error(this.message)).stack
     }
 }
@@ -54,6 +41,7 @@ function MobilettoNotFoundError (message) {
     if ('captureStackTrace' in Error) {
         Error.captureStackTrace(this, TypeError)
     } else {
+        // noinspection JSUnusedGlobalSymbols
         this.stack = (new Error(this.message)).stack
     }
 }
@@ -63,16 +51,19 @@ const reader = (chunks) => (chunk) => { if (chunk) { chunks.push(chunk) } }
 const isAsyncGenerator = (func) => func[Symbol.toStringTag] === 'AsyncGenerator'
 const isReadable = (thing) => thing instanceof fs.ReadStream || thing instanceof Transform || thing instanceof Readable
 
+const getMetaCache = (size = 100) => redis.scopedCache('meta', size)
+const getListingCache = (size = 100) => redis.scopedCache('listingCache', size)
+
+const READ_FILE_CACHE_SIZE_THRESHOLD = 128 * 1024 // we can cache files of this size
+
+// noinspection JSUnusedGlobalSymbols,JSUnresolvedFunction
 const UTILITY_FUNCTIONS = {
     list: (client) => async (path, opts) => {
-        let cacheKey
-        if (client.listingCache) {
-            cacheKey = shasum(path + ' ' + (opts ? JSON.stringify(opts) : '~'))
-            const results = client.listingCache.get(cacheKey)
-            if (results) {
-                if (Array.isArray(results)) { return results }
-                throw results
-            }
+        const cache = getListingCache()
+        let cached = cache ? await cache.get(path) : null
+        if (cached) {
+            if (Array.isArray(cached)) { return cached }
+            throw cached
         }
         const recursive = opts && opts.recursive ? opts.recursive : false
         const visitor = opts && opts.visitor ? opts.visitor : null
@@ -80,14 +71,21 @@ const UTILITY_FUNCTIONS = {
             throw new MobilettoError(`list: visitor is not a function: ${typeof visitor}`)
         }
         try {
+            // noinspection JSUnresolvedFunction
             const results = await client.driver_list(path, recursive, visitor)
-            if (client.listingCache) {
-                client.listingCache.set(cacheKey, results)
+            if (cache) {
+                cache.set(path, results).then(
+                    () => { logger.debug(`list(${path}) cached ${results ? results.length : `unknown? ${JSON.stringify(results)}`} results`) },
+                    (err) => { logger.error(`list(${path}) error: ${err}`) }
+                )
             }
             return results
         } catch (e) {
-            if (client.listingCache && e instanceof MobilettoNotFoundError) {
-                client.listingCache.set(cacheKey, e)
+            if (cache && e instanceof MobilettoNotFoundError) {
+                cache.set(path, e).then(
+                    () => { logger.debug(`list(${path}) cached error ${e}`) },
+                    (err) => { logger.error(`list(${path}) error ${err} caching MobilettoNotFoundError`) }
+                )
             }
             throw e
         }
@@ -96,6 +94,7 @@ const UTILITY_FUNCTIONS = {
         const recursive = opts && opts.recursive ? opts.recursive : false
         const visitor = opts && opts.visitor ? opts.visitor : null
         try {
+            // noinspection JSUnresolvedFunction
             return await client.driver_list(path, recursive, visitor)
         } catch (e) {
             if (e instanceof MobilettoNotFoundError) {
@@ -103,6 +102,22 @@ const UTILITY_FUNCTIONS = {
             }
             throw e
         }
+    },
+    metadata: (client) => async (path) => {
+        const cache = getMetaCache()
+        const cached = cache ? await cache.get(path) : null
+        if (cached) {
+            return cached
+        }
+        // noinspection JSUnresolvedFunction
+        const meta = await client.driver_metadata(path);
+        if (cache) {
+            cache.set(path, meta).then(
+                () => { logger.debug(`metadata(${path}) cached meta = ${JSON.stringify(meta)}`) },
+                (err) => { logger.error(`metadata(${path}) error: ${err}`) }
+            )
+        }
+        return meta
     },
     safeMetadata: (client) => async (path) => {
         try {
@@ -117,18 +132,29 @@ const UTILITY_FUNCTIONS = {
     remove: (client) => async (path, opts) => {
         const recursive = opts && opts.recursive ? opts.recursive : false
         const quiet = opts && opts.quiet ? opts.quiet : false
+        // noinspection JSUnresolvedFunction
         const result = await client.driver_remove(path, recursive, quiet)
-        if (client.listingCache) { client.listingCache.clear() }
+        await redis.flushMobiletto()
         return result
     },
     readFile: (client) => async (path) => {
+        const cache = redis.scopedCache('readFile')
+        const cached = cache ? await cache.get(path) : null
+        if (cached) {
+            return Buffer.from(cached, 'base64')
+        }
         const chunks = []
         await client.read(path, reader(chunks))
-        return Buffer.concat(chunks)
+        const data = Buffer.concat(chunks);
+        if (cache && data.length < READ_FILE_CACHE_SIZE_THRESHOLD) {
+            cache.set(path, data.toString('base64'))
+        }
+        return data
     },
     write: (client) => async (path, data) => {
+        // noinspection JSUnresolvedFunction
         const bytesWritten = await client.driver_write(path, data)
-        if (client.listingCache) { client.listingCache.clear() }
+        await redis.flushMobiletto()
         return bytesWritten
     },
     writeFile: (client) => async (path, data) => {
@@ -214,8 +240,7 @@ async function mirrorDir (source, sourcePath, visitor) {
     }
 }
 
-function addUtilityFunctions (client, readOnly = false, cacheSize = null) {
-    client.listingCache = cacheSize && cacheSize > 0 ? new LRU({ max: cacheSize }) : null
+function addUtilityFunctions (client, readOnly = false) {
     for (const func of Object.keys(UTILITY_FUNCTIONS)) {
         client[`driver_${func}`] = client[func] // save previous function, we will need `list` at least
         client[func] = UTILITY_FUNCTIONS[func](client)
@@ -245,10 +270,9 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         throw new MobilettoError(message)
     }
     const readOnly = opts ? !!opts.readOnly : false
-    const cacheSize = opts && opts.cacheSize ? opts.cacheSize : null
     if (encryption === null) {
         logger.info(`mobiletto: successfully connected using driver ${driverPath}, returning client (encryption not enabled)`)
-        return addUtilityFunctions(client, readOnly, cacheSize)
+        return addUtilityFunctions(client, readOnly)
     }
     const encKey = normalizeKey(encryption.key)
     if (!encKey) {
@@ -283,6 +307,11 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     const direntFile = (dirent, path) => dirent + '/' + shasum(DIR_ENT_FILE_PREFIX + ' ' + path)
 
     const _metadata = (client) => async (path) => {
+        const cache = redis.scopedCache('_metadata')
+        const cached = cache ? await cache.get(path) : null
+        if (cached) {
+            return cached
+        }
         let metaObj
         try {
             let chunks = []
@@ -317,7 +346,14 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         }
         meta.type ||= M_FILE
         meta.name = path // rewrite name back to plaintext name
-        return Object.assign({}, meta, metaObj)
+        const finalMeta = Object.assign({}, meta, metaObj);
+        if (cache) {
+            cache.set(path, finalMeta).then(
+                () => { logger.debug(`_metadata(${path}) cached meta = ${JSON.stringify(finalMeta)}`) },
+                (err) => { logger.error(`_metadata(${path}) error: ${err}`) }
+            )
+        }
+        return finalMeta
     }
 
     const _loadMeta = async (dirent, entries) => {
@@ -353,20 +389,45 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             const p = pth === '' ? '.' : pth.endsWith('/') ? pth.substring(0, pth.length - 1) : pth
             const dirent = direntDir(p)
             let entries
-            try {
-                entries = await client.list(dirent, recursive)
-            } catch (e) {
-                if (e instanceof MobilettoNotFoundError && p.includes('/')) {
-                    // it might be a single file, try listing the parent dir
-                    const parentDirent = direntDir(path.dirname(p));
-                    entries = await client.list(parentDirent, false)
-                    const objects = await _loadMeta(parentDirent, entries)
-                    const found = objects.find(o => o.name === p)
-                    if (found) {
-                        return [ found ]
-                    }
-                    throw e
+
+            const cacheKey = `${p} ~ ${recursive}`
+            const cache = visitor ? null : redis.scopedCache('enc_list')
+            const cached = cache && await cache.get(cacheKey)
+
+            function cacheAndReturn (thing) {
+                if (cache) {
+                    cache.set(cacheKey, thing).then(
+                        () => { logger.debug(`enc_list: cached ${p} r=${recursive}`) },
+                        (err) => { logger.error(`enc_list(${p}) error: ${err}`) }
+                    )
                 }
+                return thing
+            }
+
+            if (cached) {
+                entries = cached
+            } else {
+                try {
+                    entries = await client.list(dirent, recursive)
+                } catch (e) {
+                    if (e instanceof MobilettoNotFoundError && p.includes('/')) {
+                        // it might be a single file, try listing the parent dir
+                        const parentDirent = direntDir(path.dirname(p));
+                        entries = await client.list(parentDirent, false)
+                        const objects = await _loadMeta(parentDirent, entries)
+                        const found = objects.find(o => o.name === p)
+                        if (found) {
+                            return cacheAndReturn([found])
+                        }
+                        throw e
+                    }
+                }
+            }
+            if (cache) {
+                cache.set(cacheKey, entries).then(
+                    () => { logger.debug(`enc_list: cached ${p} r=${recursive}`) },
+                    (err) => { logger.error(`enc_list(${p}) error: ${err}`) }
+                )
             }
             if (!entries || entries.length === 0) {
                 return []
@@ -448,7 +509,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         // todo: remove should return an array of the paths that were actually removed
         remove: async (path, options) => {
             const recursive = options === true || (options && options.recursive) || false
-            const quiet = (options && options.quiet) || false
+            // const quiet = (options && options.quiet) || false
             if (recursive) {
                 // ugh. we have to iterate over all dirent files, and remove each file/subdir one by one
                 async function recRm (path) {
@@ -504,7 +565,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         }
     }
     logger.info(`mobiletto: successfully connected using driver ${driverPath}, returning client (encryption enabled)`)
-    return addUtilityFunctions(encClient, readOnly, cacheSize)
+    return addUtilityFunctions(encClient, readOnly)
 }
 
 async function readStream(stream, callback, endCallback) {
@@ -557,8 +618,7 @@ const M_SPECIAL = 'special'
 module.exports = {
     M_FILE, M_DIR, M_LINK, M_SPECIAL,
     isAsyncGenerator, isReadable,
-    mobiletto, connect, logger,
-    setLogLevel, setLogTransports,
+    mobiletto, connect,
     MobilettoError, MobilettoNotFoundError,
     readStream, writeStream, closeStream
 }

@@ -6,6 +6,7 @@ require('dotenv').config()
 
 const randomstring = require('randomstring')
 const crypto = require('crypto')
+const redis = require('../util/redis')
 
 const { expect, should, assert } = require('chai')
 
@@ -20,6 +21,7 @@ const {
     getCipher, getDecipher
 } = require("../util/crypt")
 const crypt = require("../util/crypt");
+const {logger} = require("../util/logger");
 
 // chunk size used by generator function, used by driver's 'write' function
 // the temp file is also TEMP_SZ_MULTIPLE of this number
@@ -74,6 +76,15 @@ async function assertMetaFail (api, name) {
             // MobilettoNotFoundError is expected
             assert.fail(`loading metadata after deletion, got err: ${err}`)
         }
+    }
+}
+
+async function assertSafeMetaNull (api, name) {
+    try {
+        const meta = await api.safeMetadata(name)
+        expect(meta).to.be.null
+    } catch (err) {
+        assert.fail(`loading metadata with safeMetadata should not throw error: ${err}`)
     }
 }
 
@@ -210,6 +221,9 @@ for (const driverName of DRIVER_NAMES) {
             })
             it("loading metadata on the file we wrote now fails", async () => {
                 await assertMetaFail(fixture.api, fixture.name)
+            })
+            it("loading metadata on the file we wrote using safeMeta does not fail but returns null", async () => {
+                await assertSafeMetaNull(fixture.api, fixture.name)
             })
         })
 
@@ -398,6 +412,7 @@ for (const driverName of DRIVER_NAMES) {
                     }
                 })
                 it(`should mirror its subdirectory (${driverName}/${randomParent}) to another place (${mirrorDriver}/${mirrorDest})`, async () => {
+                    await redis.flushMobiletto()
                     const results = await fixture.mirrorApi.mirror(fixture.api, mirrorDest, randomParent)
                     expect(results).to.have.property('errors', 0, 'expected no errors in mirroring')
                     expect(results).to.have.property('success').greaterThan(0, 'expected some successes in mirroring')

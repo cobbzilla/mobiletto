@@ -53,9 +53,9 @@ This code would run the same if the driver were `local`.
 # Contents
 * [Basic usage](#Basic-usage)
 * [Metadata](#Metadata)
-* [Caching](#Caching)
-* [Mirroring](#Caching)
 * [Alternate import style](#Alternate-import-style)
+* [Caching](#Caching)
+* [Mirroring](#Mirroring)
 * [Transparent encryption](#Transparent-encryption)
 * [Key rotation](#Key-rotation)
 * [Driver interface](#Driver-interface)
@@ -74,8 +74,7 @@ This code would run the same if the driver were `local`.
     //     * readOnly: optional, never change anything on the filesystem; default is false
     //     * fileMode: optional, permissions used when creating new files, default is 0600. can be string or integer
     //     * dirMode: optional, permissions used when creating new directories, default is 0700. can be string or integer
-    //     * cacheSize: optional, LRU cache for `list` results, default is no cache
-    const local = await mobiletto('local', '/home/ubuntu/tmp', null, {fileMode: 0o0600, dirMode: '0700', cacheSize: 100})
+    const local = await mobiletto('local', '/home/ubuntu/tmp', null, {fileMode: 0o0600, dirMode: '0700'})
 
     // To use 's3' driver:
     //   * key: AWS access key
@@ -86,8 +85,7 @@ This code would run the same if the driver were `local`.
     //     * region: optional, the AWS region to communicate with, default is us-east-1
     //     * prefix: optional, all read/writes within the S3 bucket will be under this prefix
     //     * delimiter: optional, directory delimiter, default is '/' (note: always '/' when encryption is enabled)
-    //     * cacheSize: optional, LRU cache for `list` results, default is no cache
-    const s3 = await mobiletto('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1', cacheSize: 100})
+    const s3 = await mobiletto('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1'})
 
     // List files
     local.list()  // --> returns an array of metadata objects
@@ -180,16 +178,47 @@ should always be present. A subsequent `metadata` command will return all availa
 Import the fully-scoped module and use the `connect` function:
 
     const storage = require('mobiletto')
-    const opts = {bucket: 'bk', region: 'us-east-1', cacheSize: 100}
+    const opts = {bucket: 'bk', region: 'us-east-1'}
     const s3 = await storage.connect('s3', aws_key, aws_secret, opts)
     const objectData = await s3.readFile('some/path')
 
 ## Caching
-Many apps, by design, will repeatedly call `list` even though the data the app is listing hasn't changed at all.
+Mobiletto works best with a <a href="https://redis.io">redis</a> cache.
 
-Save bandwidth and increase performance by passing a `cacheSize` option in the `opts` object. 
+Mobiletto will attempt to connect to a redis instance on 127.0.0.1:6379
 
-Any `write` or `remove` operation will clear the entire cache.
+You can override either of these:
+* Set the `MOBILETTO_REDIS_HOST` env var, mobiletto connect here instead of localhost
+* Set the `MOBILETTO_REDIS_PORT` env var, this port will be used
+
+Mobiletto will store all of its redis keys with the prefix `_mobiletto__`. You can change this
+by setting the `MOBILETTO_REDIS_PREFIX` env var.
+
+### Turn off redis caching
+To disable redis, you can do either of:
+* Not run a redis server on 127.0.0.1:6379 that allows unauthenticated local connections
+* Set `MOBILETTO_REDIS_HOST` to an empty string or anything that won't resolve as a host, for example:
+  * `MOBILETTO_REDIS_HOST=`
+  * `MOBILETTO_REDIS_HOST=/dev/null`
+  * `MOBILETTO_REDIS_HOST=~invalid~hostname~`
+  * `MOBILETTO_REDIS_HOST=invalid-hostname`   *<-- not this!*
+    * **^^^ NO! that last one is a valid hostname** and depending on the name resolution scheme, it might actually be valid and you'll connect to it!
+
+As discussed below, disabling caching will have an adverse effect on performance and incur more requests
+to storage that you really need to.
+
+### Caching guidance
+**Encrypted storage**: reading/writing encrypted storage is only a little slower than normal,
+but navigating around directories (which some things do) is fairly expensive. Using a redis cache
+will give you a significant performance boost.
+
+The default cache is safe, but doesn't perform well if you have a lot of write/remove operations.
+Any write or remove operation invalidates the entire cache, ensuring subsequent reads will see the
+latest changes.
+
+### CLI tools
+If you're using a CLI tool like [mobiletto-cli](https://www.npmjs.com/package/mobiletto-cli),
+you'll definitely want the redis cache enabled, as it lasts across invocations of the `mo` command.
 
 ## Mirroring
 
