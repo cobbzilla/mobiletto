@@ -49,10 +49,16 @@ class MobilettoCache {
             this.redis = null
         }
         this.prefix = prefix
-        this.flush().then(
-            () => { logger.debug(`redis(${name}): successfully flushed`) },
-            (e) => { logger.error(`redis(${name}): error flushing: ${e}`) }
-        )
+        if (this.redis) {
+            // test connection by flushing
+            this.flush().then(
+                () => { logger.debug(`redis(${name}): successfully flushed`) },
+                (e) => {
+                    logger.error(`redis(${name}): error flushing: ${e}, not using redis!`)
+                    this.redis = null
+                }
+            )
+        }
     }
 
     stats = () => this.counters
@@ -81,11 +87,11 @@ class MobilettoCache {
         }
     }
 
-    get = key => {
+    get = async key => {
         this.counters.get++
-        logger.debug(`redis(${this.name}): get(${key}) starting`)
-        const val = this.doRedis(r => r.get(this.pfx(key)), null)
-        logger.debug(`redis(${this.name}): get(${key}) found value: ${val}`)
+        logger.silly(`redis(${this.name}): get(${key}) starting`)
+        const val = await this.doRedis(r => r.get(this.pfx(key)), null)
+        logger.silly(`redis(${this.name}): get(${key}) found value: ${val}`)
         if (val) {
             this.counters.hit++
         } else {
@@ -100,9 +106,9 @@ class MobilettoCache {
 
     set = async (key, val, expirationMillis = DEFAULT_EXPIRATION_MILLIS) => {
         this.counters.set++
-        logger.debug(`redis(${this.name}): set(${key}, ${val}, ${expirationMillis}) starting`)
+        logger.silly(`redis(${this.name}): set(${key}, ${val}, ${expirationMillis}) starting`)
         await this.doRedisAsync(r => r.set(this.pfx(key), val, 'EX', expirationMillis / 1000))
-        logger.debug(`redis(${this.name}): set(${key}, ${val}, ${expirationMillis}) finished`)
+        logger.silly(`redis(${this.name}): set(${key}, ${val}, ${expirationMillis}) finished`)
     }
 
     del = async key => {
