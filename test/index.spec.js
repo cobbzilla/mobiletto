@@ -1,15 +1,25 @@
 // To run the tests, you need a .env file one level above this directory
 // that contains env vars for all the process.env stuff in DRIVER_CONFIG below
 const fs = require('fs')
+const { basename, dirname } = require('path')
 require('dotenv').config()
 
 const randomstring = require('randomstring')
-const path = require('path')
+const crypto = require('crypto')
 
 const { expect, should, assert } = require('chai')
 
-const { mobiletto, connect, MobilettoNotFoundError, M_FILE, M_DIR } = require("../index")
-const { encrypt, decrypt, normalizeKey, normalizeIV, DEFAULT_CRYPT_ALGO } = require("../util/crypt")
+const {
+    M_DIR, M_FILE,
+    mobiletto, connect, MobilettoNotFoundError, readStream
+} = require("../index")
+const {
+    DEFAULT_CRYPT_ALGO,
+    normalizeKey, normalizeIV,
+    encrypt, decrypt,
+    getCipher, getDecipher
+} = require("../util/crypt")
+const crypt = require("../util/crypt");
 
 // chunk size used by generator function, used by driver's 'write' function
 // the temp file is also TEMP_SZ_MULTIPLE of this number
@@ -82,16 +92,56 @@ async function writeRandomFile(fixture, size) {
 }
 
 describe('crypto test', () => {
-    it("should encrypt and decrypt successfully", async () => {
-        const enc = {
-            key: normalizeKey(randomstring.generate(32)),
-            iv: normalizeIV(randomstring.generate(16)),
-            algo: DEFAULT_CRYPT_ALGO
-        }
-        const plaintext = randomstring.generate(1024 + Math.floor(1024*Math.random()))
+    const enc = {
+        key: normalizeKey(randomstring.generate(32)),
+        iv: normalizeIV(randomstring.generate(16)),
+        algo: DEFAULT_CRYPT_ALGO
+    }
+    it("should encrypt and decrypt a data buffer successfully", async () => {
+        const plaintext = randomstring.generate((64 * 1024) + Math.floor(1024*Math.random()))
         const ciphertext = encrypt(plaintext, enc)
         const decrypted = decrypt(ciphertext, enc)
         expect(decrypted).to.equal(plaintext, 'decrypted data did not match plaintext')
+    })
+    it("should encrypt and decrypt a stream successfully", async () => {
+        const plaintext = crypto.randomBytes(81920)
+        const cipher = getCipher(enc)
+        const updateData = cipher.update(plaintext)
+        const finalData = cipher.final()
+        const encrypted = Buffer.concat([updateData, finalData])
+
+        const decipher = getDecipher(enc)
+        const decryptUpdate = decipher.update(encrypted)
+        const decipherFinal = decipher.final()
+        const decrypted = Buffer.concat([decryptUpdate, decipherFinal])
+        expect(decrypted.length).to.equal(plaintext.length)
+        for (let i = 0; i < decrypted.length; i++ ) {
+            expect(decrypted[i]).to.equal(plaintext[i], `decrypted data did not match plaintext at position ${i}`)
+        }
+    })
+    it("should encrypt and decrypt a stream successfully using readStream", async () => {
+        const plaintext = crypto.randomBytes(81920)
+        const cipher = getCipher(enc)
+        const updateData = cipher.update(plaintext)
+        const finalData = cipher.final()
+        const encrypted = Buffer.concat([updateData, finalData])
+
+        const tempFile = `/tmp/stream_foo_${Date.now}.tmp`
+        fs.writeFileSync(tempFile, encrypted)
+
+        const rs = fs.createReadStream(tempFile)
+        const decipher = getDecipher(enc)
+        const buffers = []
+        await readStream(rs, (chunk) => {
+            buffers.push(decipher.update(chunk))
+        }, () => {
+            buffers.push(decipher.final())
+        })
+        const decrypted = Buffer.concat(buffers)
+        expect(decrypted.length).to.equal(plaintext.length)
+        for (let i = 0; i < decrypted.length; i++ ) {
+            expect(decrypted[i]).to.equal(plaintext[i], `decrypted data did not match plaintext at position ${i}`)
+        }
     })
 
 })
@@ -260,6 +310,8 @@ for (const driverName of DRIVER_NAMES) {
                 const subdirName = `subdir_` + Date.now()
                 const fullSubdirPath = `${randomParent}/${subdirName}`
                 const randomPath = `${fullSubdirPath}/random_file_${Date.now()}`
+                const randomStreamFileSize = READ_SZ * 10;
+                const randomStreamFileData = crypto.randomBytes(randomStreamFileSize)
                 //const fileCount = 3 + Math.floor(Math.random() * 10)
                 const fileCount = 2
                 let fixture
@@ -289,16 +341,21 @@ for (const driverName of DRIVER_NAMES) {
                 })
                 it('should write a file in a new directory using a stream', async () => {
                     // create a random temp file, write it
-                    const data = randomstring.generate(READ_SZ)
                     const tempFile = `/tmp/${randomstring.generate(10)}_cool_${Date.now()}`;
-                    fs.writeFileSync(tempFile, data)
+                    fs.writeFileSync(tempFile, randomStreamFileData)
                     const reader = fs.createReadStream(tempFile)
-                    const streamFile = fixture.name + '_stream';
+                    const streamFile = fixture.name + '_stream'
                     const bytesWritten = await fixture.api.write(streamFile, reader)
-                    expect(bytesWritten).to.equal(READ_SZ, 'expected write API to return correct number of bytes written for STREAM')
-                    // remove stream file
-                    const removed = await fixture.api.remove(streamFile)
-                    expect(!!removed).to.be.true
+                    expect(bytesWritten).to.equal(randomStreamFileSize, 'expected write API to return correct number of bytes written for STREAM')
+                })
+                it("should successfully read the file back that was stream-written", async () => {
+                    const streamFile = fixture.name + '_stream';
+                    const singleFile = (await fixture.api.readFile(streamFile))
+                    expect(singleFile).to.have.lengthOf(randomStreamFileSize)
+                    for (let i = 0; i < singleFile.length; i++) {
+                        expect(singleFile[i]).to.equal(randomStreamFileData[i])
+                    }
+                    expect(!!fixture.api.remove(streamFile)).to.be.true
                 })
                 it("should successfully list a file individually", async () => {
                     const singleFile = await fixture.api.list(fixture.name)
@@ -308,7 +365,7 @@ for (const driverName of DRIVER_NAMES) {
                 it("should successfully list files in the base directory", async () => {
                     const baseListing = await fixture.api.list()
                     expect(baseListing).to.have.lengthOf.greaterThanOrEqual(1)
-                    expect(baseListing.find(o => o.name === path.dirname(randomParent))).to.not.be.null
+                    expect(baseListing.find(o => o.name === dirname(randomParent))).to.not.be.null
                 })
                 it("should successfully list files in a subdirectory, with or without a trailing slash", async () => {
                     const noSlash = await fixture.api.list(randomParent)
@@ -353,11 +410,11 @@ for (const driverName of DRIVER_NAMES) {
 
                     const intersection = originalThings
                         .filter(orig => mirrorThings
-                            .find(m => path.basename(m.name) === path.basename(orig.name)))
+                            .find(m => basename(m.name) === basename(orig.name)))
                     expect(intersection.length === originalThings.length).to.be.true
                 })
                 it("loading metadata on a mirrored file succeeds", async () => {
-                    const destPath = mirrorDest + subdirName + '/' + path.basename(fixture.name)
+                    const destPath = mirrorDest + subdirName + '/' + basename(fixture.name)
                     await assertMeta(fixture.mirrorApi, destPath, READ_SZ)
                 })
                 it("should recursively delete the mirrored data", async () => {
@@ -374,7 +431,7 @@ for (const driverName of DRIVER_NAMES) {
                     await assertMetaFail(fixture.api, fixture.name)
                 })
                 it("loading metadata on a mirrored file now fails", async () => {
-                    const destPath = mirrorDest + subdirName + '/' + path.basename(fixture.name)
+                    const destPath = mirrorDest + subdirName + '/' + basename(fixture.name)
                     await assertMetaFail(fixture.mirrorApi, destPath)
                 })
                 it("loading metadata on the parent dir we wrote now fails", async () => {

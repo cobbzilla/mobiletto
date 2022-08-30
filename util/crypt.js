@@ -35,7 +35,9 @@ function setDefaultIV (iv) {
 
 function getCipher(enc) {
     try {
-        return crypto.createCipheriv(enc.algo, enc.key, enc.iv);
+        let c = crypto.createCipheriv(enc.algo, enc.key, enc.iv);
+        c.setAutoPadding(true)
+        return c
     } catch (e) {
         winston.error(`getCipher(${enc}): ${e}`)
         throw e
@@ -55,7 +57,9 @@ function encrypt (plainText, encryption, outputEncoding = 'base64') {
 }
 
 function getDecipher(enc) {
-    return crypto.createDecipheriv(enc.algo, enc.key, enc.iv);
+    let c = crypto.createDecipheriv(enc.algo, enc.key, enc.iv);
+    c.setAutoPadding(true)
+    return c
 }
 
 function decrypt (cipherText, encryption, outputEncoding = 'utf8', inputEncoding = 'base64') {
@@ -67,15 +71,10 @@ function decrypt (cipherText, encryption, outputEncoding = 'utf8', inputEncoding
     return Buffer.concat([cipher.update(data), cipher.final()]).toString(outputEncoding)
 }
 
-const startEncryptStream = (enc) => getCipher(enc)
-const startDecryptStream = (enc) => getDecipher(enc)
-const updateCryptStream = (cipher, data) => cipher.update(data)
-const closeCryptStream = (cipher) => cipher.final()
-
 module.exports = {
     DEFAULT_CRYPT_ALGO,
     setDefaultKey, setDefaultIV,
     encrypt, decrypt,
     normalizeKey, normalizeIV,
-    startEncryptStream, startDecryptStream, updateCryptStream, closeCryptStream
+    getCipher, getDecipher
 }

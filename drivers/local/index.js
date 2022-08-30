@@ -1,7 +1,7 @@
 const { dirname } = require('path')
 
 const {
-    M_FILE, M_DIR, M_LINK, M_SPECIAL, isAsyncGenerator, isReadable,
+    M_FILE, M_DIR, M_LINK, M_SPECIAL, isAsyncGenerator, isReadable, logger,
     MobilettoError, MobilettoNotFoundError, readStream, writeStream, closeStream
 } = require('../../index')
 
@@ -107,7 +107,7 @@ class StorageClient {
             }
             return files
         } catch (e) {
-            console.error(`dirFiles: ${e}`)
+            logger.error(`dirFiles: ${e}`)
             throw this.ioError(e, norm, 'dirFiles')
         }
     }
@@ -167,7 +167,7 @@ class StorageClient {
 
     mkdirs (path) {
         try {
-            // console.log(`mkdirs: creating directory: ${path}`)
+            logger.debug(`mkdirs: creating directory: ${path}`)
             fs.mkdirSync(path, {recursive: true, mode: this.dirMode})
         } catch (err) {
             throw new MobilettoError(`mkdirs: error creating directory ${path}: ${err}`, err)
@@ -177,7 +177,7 @@ class StorageClient {
     async normalizePathAndEnsureParentDirs (path) {
         const file = this.normalizePath(path)
 
-        // console.log(`read: reading path: ${path} - ${file}`)
+        logger.debug(`read: reading path: ${path} - ${file}`)
         const parent = dirname(file)
         let dirStat
         try {
@@ -199,7 +199,7 @@ class StorageClient {
 
     async write (path, generatorOrReadableStream) {
         const file = await this.normalizePathAndEnsureParentDirs(path)
-        // console.log(`write: writing path ${path} -> ${file}`)
+        logger.debug(`write: writing path ${path} -> ${file}`)
         const stream = fs.createWriteStream(file, {mode: this.fileMode})
         const writer = writeStream(stream)
         const closer = closeStream(stream)
@@ -247,7 +247,7 @@ class StorageClient {
 
     async read (path, callback, endCallback = null) {
         const file = this.normalizePath(path)
-        // console.log(`read: reading path: ${path} - ${file}`)
+        logger.debug(`read: reading path: ${path} - ${file}`)
         try {
             const stream = fs.createReadStream(file)
             return await readStream(stream, callback, endCallback)
@@ -258,7 +258,7 @@ class StorageClient {
 
     async remove (path, recursive, quiet) {
         const file = this.normalizePath(path)
-        // console.log(`remove: deleting path: ${path} = ${file}`)
+        logger.debug(`remove: deleting path: ${path} = ${file}`)
         try {
             fs.rmSync(file, {recursive: recursive, force: quiet, maxRetries: 2})
         } catch (err) {

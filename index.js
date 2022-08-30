@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const { Readable, Transform } = require('stream')
 const winston = require('winston')
 const LRU = require('lru-cache')
 const { basename, dirname } = require('path')
@@ -60,7 +61,7 @@ function MobilettoNotFoundError (message) {
 const reader = (chunks) => (chunk) => { if (chunk) { chunks.push(chunk) } }
 
 const isAsyncGenerator = (func) => func[Symbol.toStringTag] === 'AsyncGenerator'
-const isReadable = (thing) => thing instanceof fs.ReadStream
+const isReadable = (thing) => thing instanceof fs.ReadStream || thing instanceof Transform || thing instanceof Readable
 
 const UTILITY_FUNCTIONS = {
     list: (client) => async (path, opts) => {
@@ -383,12 +384,12 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         metadata: _metadata(client),
         read: async (path, callback) => {
             const realPath = encryptPath(path)
-            const cipher = crypt.startDecryptStream(enc)
-            return client.read(realPath,
+            const cipher = crypt.getDecipher(enc)
+            return await client.read(realPath,
                 (chunk) => {
-                    return callback(crypt.updateCryptStream(cipher, chunk))
+                    return callback(cipher.update(chunk))
                 }, () => {
-                    return callback(crypt.closeCryptStream(cipher))
+                    callback(cipher.final())
                 })
         },
         write: async (path, readFunc) => {
@@ -407,22 +408,45 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                 }
             }
 
-            let generatorBytes = 0
-            function* cryptGenerator(plaintextGenerator) {
-                let chunk = plaintextGenerator.next().value
-                while (chunk) {
-                    generatorBytes += chunk.length
-                    yield cipher.update(chunk)
-                    chunk = plaintextGenerator.next().value
-                }
-                yield cipher.final()
-            }
-            const cipher = crypt.startEncryptStream(enc)
+            const cipher = crypt.getCipher(enc)
             const realPath = encryptPath(path)
-            const streamBytes = await client.write(realPath, isReadable(readFunc) ? readFunc : cryptGenerator(readFunc))
+            let generatorBytes = 0
+
+            function createEncryptStream(input) {
+                return input.pipe(new Transform({
+                    transform(chunk, encoding, callback) {
+                        generatorBytes += chunk.length
+                        this.push(cipher.update(chunk))
+                        callback()
+                    },
+                    flush(callback) {
+                        this.push(cipher.final())
+                        callback()
+                    }
+                }))
+            }
+
+            // If we were passed a Readable, call write with a transform method
+            let streamBytes = -1
+            if (isReadable(readFunc)) {
+                await client.write(realPath, createEncryptStream(readFunc))
+            } else {
+                // If we were passed a generator, wrap it with another generator that encrypts
+                function* cryptGenerator(plaintextGenerator) {
+                    let chunk = plaintextGenerator.next().value
+                    while (chunk) {
+                        generatorBytes += chunk.length
+                        yield cipher.update(chunk)
+                        chunk = plaintextGenerator.next().value
+                    }
+                    yield cipher.final()
+                }
+                await client.write(realPath, cryptGenerator(readFunc))
+            }
+            // write metadata
             const meta = { name: path, size: generatorBytes, type: M_FILE }
             await client.write(metaPath(path), stringGenerator(JSON.stringify(meta), enc)())
-            return isReadable(readFunc) ? streamBytes : generatorBytes
+            return generatorBytes
         },
         // todo: remove should return an array of the paths that were actually removed
         remove: async (path, options) => {
@@ -536,7 +560,7 @@ const M_SPECIAL = 'special'
 module.exports = {
     M_FILE, M_DIR, M_LINK, M_SPECIAL,
     isAsyncGenerator, isReadable,
-    mobiletto, connect,
+    mobiletto, connect, logger,
     setLogLevel, setLogTransports,
     MobilettoError, MobilettoNotFoundError,
     readStream, writeStream, closeStream

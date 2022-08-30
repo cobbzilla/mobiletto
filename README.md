@@ -5,7 +5,7 @@ Mobiletto is a JavaScript storage abstraction layer, with optional transparent c
 
 It supports apps that are agnostic to where files are stored.
 
-All drivers are tested for identical behavior with over 50 tests for each driver.
+All drivers are tested for identical behavior with over 55 tests for each driver.
 
 Today the supported drivers are:
 
