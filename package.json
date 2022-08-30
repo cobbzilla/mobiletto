@@ -1,9 +1,19 @@
 {
   "name": "mobiletto",
-  "version": "1.0.41",
+  "version": "1.0.42",
   "description": "A storage abstraction layer",
   "main": "index.js",
-  "author": "Jonathan Cobb",
+  "keywords": ["storage", "s3", "simple", "filesystem"],
+  "homepage": "https://github.com/cobbzilla/mobiletto",
+  "author": "Jonathan Cobb <bqppl0m2@duck.com> (https://github.com/cobbzilla)",
+  "funding": {
+    "type" : "patreon",
+    "url" : "https://www.patreon.com/cobbzilla"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/cobbzilla/mobiletto"
+  },
   "license": "Apache-2.0",
   "scripts": {
     "test": "mocha --timeout 10000"

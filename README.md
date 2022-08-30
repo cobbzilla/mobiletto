@@ -27,7 +27,7 @@ A simple example using the mobiletto `s3` driver.
 This code would run the same if the driver were `local`.
 
     const storage = require('mobiletto')
-    const s3 = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1', cacheSize: 100})
+    const s3 = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk'})
 
     // list objects: returns array of metadata objects
     const listing = await s3.list()
