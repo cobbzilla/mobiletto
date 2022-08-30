@@ -1,170 +1,192 @@
 const Redis = require('ioredis')
 const generators = require('redis-async-gen')
 const { logger } = require('./logger')
-const LRU = require("lru-cache");
+const LRU = require("lru-cache")
 
 const { DEFAULT_REDIS_OPTIONS } = require('ioredis/built/redis/RedisOptions')
-const REDIS_HOST = process.env.MOBILETTO_REDIS_HOST || '127.0.0.1'
-const REDIS_PORT = process.env.MOBILETTO_REDIS_PORT || 6379
-const REDIS_PREFIX = process.env.MOBILETTO_REDIS_PREFIX || '_mobiletto__'
 
-const prefix = key => REDIS_PREFIX + key
-const unprefix = key => key && key.startsWith(REDIS_PREFIX) ? key.substring(REDIS_PREFIX.length) : key
+let REDIS_CLIENTS = {}
 
-const NO_REDIS = { redis: 'not-found'}
-
-let REDIS_CLIENT = null
-
-const getRedis = () => {
-    if (REDIS_CLIENT === null) {
-        try {
-            REDIS_CLIENT = new Redis(Object.assign({}, DEFAULT_REDIS_OPTIONS, {
-                host: REDIS_HOST,
-                port: REDIS_PORT
-            }))
-            flushMobiletto().then(
-                () => { logger.info(`getRedis: successfully flushed`) },
-                (e) => { logger.error(`getRedis: error flushing: ${e}`) }
-            )
-        } catch (e) {
-            logger.error(`getRedis(host=${REDIS_HOST}, port=${REDIS_PORT}) connection error: ${e}`)
-            REDIS_CLIENT = NO_REDIS
-        }
+const getRedis = (name, host, port, prefix) => {
+    if (typeof REDIS_CLIENTS[name] === 'undefined') {
+        REDIS_CLIENTS[name] = new MobilettoCache(name, host, port, prefix + name + '_')
     }
-    return REDIS_CLIENT
+    return REDIS_CLIENTS[name]
 }
 
 const DEFAULT_EXPIRATION_MILLIS = 1000 * 60 * 60 * 24 // 1 day
 
-const isNoRedis = r => !r || r === NO_REDIS
-
-const doRedisAsync = async (func, defaultValue = null) => {
-    const redis = getRedis()
-    return isNoRedis(redis) ? defaultValue : await func(redis)
+const ZERO_COUNTERS = {
+    get: 0,
+    set: 0,
+    del: 0,
+    flush: 0,
+    hit: 0,
+    miss: 0
 }
 
-const doRedis = (func, defaultValue = null) => {
-    const redis = getRedis()
-    return isNoRedis(redis) ? defaultValue : func(redis)
-}
-
-function get (key) {
-    return doRedis(r => r.get(prefix(key)), null)
-}
-
-async function set (key, val, expirationMillis = DEFAULT_EXPIRATION_MILLIS) {
-    return await doRedisAsync(r => r.set(prefix(key), val, 'EX', expirationMillis / 1000))
-}
-
-async function sadd (key, val) {
-    return await doRedisAsync(r => r.sadd(prefix(key), val))
-}
-
-async function expire (key, expirationMillis) {
-    return await doRedisAsync(r => r.expire(prefix(key), expirationMillis / 1000))
-}
-
-function smembers (key) {
-    return doRedis(r => r.smembers(prefix(key)), [])
-}
-
-async function del (key) {
-    return await doRedisAsync(r => r.del(prefix(key)))
-}
-
-async function flushall () {
-    return await doRedisAsync(r => r.flushall())
-}
-
-async function findMatchingKeys (pattern) {
-    const redis = getRedis();
-    if (isNoRedis(redis)) {
-        return []
-    }
-    const { keysMatching } = generators.using(redis)
-    const keys = []
-    for await (const key of keysMatching(prefix(pattern))) {
-        keys.push(unprefix(key))
-    }
-    return keys
-}
-
-async function removeMatchingKeys (pattern) {
-    return await applyToMatchingKeys(pattern, del)
-}
-
-async function applyToMatchingKeys (pattern, asyncFunc) {
-    const redis = getRedis();
-    if (isNoRedis(redis)) {
-        return []
-    }
-    const { keysMatching } = generators.using(redis)
-    const results = []
-    for await (const key of keysMatching(prefix(pattern))) {
-        results.push(await asyncFunc(unprefix(key)))
-    }
-    return results
-}
-
-const CACHES = {}
-
-const flushMobiletto = async (redis = getRedis()) => {
-    return redis ? await removeMatchingKeys('*') : null
-}
-
-const scopedCache = (name, size = 100) => {
-    if (CACHES[name]) {
-        return CACHES[name]
-    }
-    const redis = getRedis()
-    if (isNoRedis(redis)) {
-        return size && size > 0 ? new LRU({ max: size }) : null
-    }
-    const realKey = k => k ? `${name}_${k}` : null
-    const cache = {
-        get: async key => {
-            const val = await get(realKey(key))
-            if (!val) return null
+class MobilettoCache {
+    name
+    redis
+    prefix
+    scopedCaches = {}
+    counters = Object.assign({}, ZERO_COUNTERS)
+    printStatsInterval = 1000
+    constructor(name,
+                host = '127.0.0.1',
+                port = 6379,
+                prefix = '_mobiletto__') {
+        this.name = name
+        if (host && port) {
             try {
-                return JSON.parse(val)
+                this.redis = new Redis(Object.assign({}, DEFAULT_REDIS_OPTIONS, {host, port}))
             } catch (e) {
-                logger.warn(`get(${key}) error: ${e}`)
-                return null
+                logger.error(`redis(${name}): error connecting to redis, using fallback LRU for scoped caches: ${e}`)
+                this.redis = null
             }
-        },
-        set: async (key, value) => {
-            if (key && value) {
+        } else {
+            logger.warn(`redis(${name}): no host or port provided, using fallback LRU for scoped caches`)
+            this.redis = null
+        }
+        this.prefix = prefix
+        this.flush().then(
+            () => { logger.debug(`redis(${name}): successfully flushed`) },
+            (e) => { logger.error(`redis(${name}): error flushing: ${e}`) }
+        )
+    }
+
+    stats = () => this.counters
+    resetStats = () => { this.counters = Object.assign({}, ZERO_COUNTERS) }
+    hitRate = () => this.counters.get === 0 ? 0 : (100 * this.counters.hit) / this.counters.get
+    toString = () => `MobilettoCache(${this.name}) [${this.counters.hit}/${this.counters.get} = ${this.hitRate()}% hit] stats=${JSON.stringify(this.counters)}`
+
+    pfx = key => this.prefix + key
+    unprefix = key => key && key.startsWith(this.prefix) ? key.substring(this.prefix.length) : key
+
+    doRedisAsync = async (func, defaultValue = null) => {
+        try {
+            return this.redis ? await func(this.redis) : defaultValue
+        } catch (e) {
+            logger.warn(`redis(${this.name}): doRedisAsync(${func}): ${e} (returning default value: ${defaultValue})`)
+            return defaultValue
+        }
+    }
+
+    doRedis = (func, defaultValue = null) => {
+        try {
+            return this.redis ? func(this.redis) : defaultValue
+        } catch (e) {
+            logger.warn(`redis(${this.name}): doRedis(${func}): ${e} (returning default value: ${defaultValue})`)
+            return defaultValue
+        }
+    }
+
+    get = key => {
+        this.counters.get++
+        logger.debug(`redis(${this.name}): get(${key}) starting`)
+        const val = this.doRedis(r => r.get(this.pfx(key)), null)
+        logger.debug(`redis(${this.name}): get(${key}) found value: ${val}`)
+        if (val) {
+            this.counters.hit++
+        } else {
+            this.counters.miss++
+        }
+        if (this.printStatsInterval && this.printStatsInterval > 0 && this.counters.get % this.printStatsInterval === 0) {
+            const message = `${new Date()}: ${this}`;
+            logger.info(message)
+        }
+        return val
+    }
+
+    set = async (key, val, expirationMillis = DEFAULT_EXPIRATION_MILLIS) => {
+        this.counters.set++
+        logger.debug(`redis(${this.name}): set(${key}, ${val}, ${expirationMillis}) starting`)
+        await this.doRedisAsync(r => r.set(this.pfx(key), val, 'EX', expirationMillis / 1000))
+        logger.debug(`redis(${this.name}): set(${key}, ${val}, ${expirationMillis}) finished`)
+    }
+
+    del = async key => {
+        this.counters.del++
+        await this.doRedisAsync(r => r.del(this.pfx(key)))
+    }
+
+    findMatchingKeys = async (pattern) => {
+        if (!this.redis) return []
+        const { keysMatching } = generators.using(this.redis)
+        const keys = []
+        for await (const key of keysMatching(this.pfx(pattern))) {
+            keys.push(this.unprefix(key))
+        }
+        return keys
+    }
+    applyToMatchingKeys = async (pattern, asyncFunc) => {
+        if (!this.redis) return []
+        const { keysMatching } = generators.using(this.redis)
+        const results = []
+        for await (const key of keysMatching(this.pfx(pattern))) {
+            results.push(await asyncFunc(this.unprefix(key)))
+        }
+        return results
+    }
+    removeMatchingKeys = async  (pattern) => await this.applyToMatchingKeys(pattern, this.del)
+
+    flush = async () => {
+        this.counters.flush++
+        await this.removeMatchingKeys('*')
+    }
+
+    scopedCache = (name, size = 100) => {
+        if (this.scopedCaches[name]) {
+            return this.scopedCaches[name]
+        }
+        if (!this.redis) {
+            return size && size > 0 ? new LRU({ max: size }) : null
+        }
+        const realKey = k => k ? `${name}_${k}` : null
+        const cache = {
+            get: async key => {
+                const val = await this.get(realKey(key))
+                if (!val) return null
                 try {
-                    await set(realKey(key), JSON.stringify(value))
+                    return JSON.parse(val)
                 } catch (e) {
-                    logger.warn(`set(${key}) error: ${e}`)
+                    logger.warn(`redis(${this.name}): get(${key}) error: ${e}`)
+                    return null
+                }
+            },
+            set: async (key, value) => {
+                if (key && value) {
+                    try {
+                        await this.set(realKey(key), JSON.stringify(value))
+                    } catch (e) {
+                        logger.warn(`redis(${this.name}): set(${key}) error: ${e}`)
+                    }
                 }
             }
         }
-    }
-    CACHES[name] = cache
-    return cache
-}
-
-teardown = () => {
-    const redis = getRedis()
-    if (redis) {
-        redis.disconnect()
+        this.scopedCaches[name] = cache
+        return cache
     }
 }
 
-module.exports = {
-    get,
-    set,
-    del,
-    expire,
-    sadd,
-    smembers,
-    flushall,
-    findMatchingKeys,
-    removeMatchingKeys,
-    applyToMatchingKeys,
-    scopedCache,
-    flushMobiletto,
-    teardown
+const forAllCaches = async (func) => {
+    const promises = []
+    for (const name of Object.keys(REDIS_CLIENTS)) {
+        promises.push(func(REDIS_CLIENTS[name]))
+    }
+    return Promise.all(promises)
 }
+
+const teardown = async () => await forAllCaches((client) => {
+    try {
+        if (client.redis) {
+            client.redis.disconnect()
+        }
+    } catch (e) {
+        logger.warn(`teardown: error disconnecting from redis(${client.name}): ${e}`)
+    }
+})
+
+const flushAll = async () => await forAllCaches(client => client.flush())
+
+module.exports = { getRedis, flushAll, teardown }

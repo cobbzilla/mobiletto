@@ -14,14 +14,15 @@ const {
     M_DIR, M_FILE,
     mobiletto, connect, MobilettoNotFoundError, readStream
 } = require("../index")
+
 const {
     DEFAULT_CRYPT_ALGO,
     normalizeKey, normalizeIV,
     encrypt, decrypt,
     getCipher, getDecipher
 } = require("../util/crypt")
-const crypt = require("../util/crypt");
-const {logger} = require("../util/logger");
+
+const { logger } = require("../util/logger");
 
 // chunk size used by generator function, used by driver's 'write' function
 // the temp file is also TEMP_SZ_MULTIPLE of this number
@@ -159,41 +160,71 @@ describe('crypto test', () => {
 
 const encryptionTests = () => [null, { key: rand(32) }]
 
-// To test a single driver:
-//  - Uncomment one of the lines below to set driverName to the one you want to test
-//  - Comment out the next `for` line, and its closing curly brace (just before EOF)
+const REDIS_ENABLED = {
+    name: 'redis-enabled',
+    enabled: true,
+    config: cfg => Object.assign({}, cfg)
+}
+const REDIS_DISABLED = {
+    name: 'redis-disabled',
+    enabled: true,
+    config: (cfg) => {
+        const newConfig = Object.assign({}, cfg)
+        if (!newConfig.opts) { newConfig.opts = {} }
+        if (!newConfig.opts.redisConfig) { newConfig.opts.redisConfig = {} }
+        newConfig.opts.redisConfig.enabled = false
+        return newConfig
+    }
+}
+const redisTests = () => [REDIS_ENABLED, REDIS_DISABLED]
 
+// For testing single drivers
+// Comment out the for loop for driver tests, and hard-code one of the drivers below
 // const driverName = 'local'
 // const driverName = 's3'
 
+// For testing single redis setups
+// Comment out the for loop for redis test, and hard-code one of the setups below
+// const redisSetup = REDIS_ENABLED
+// const redisSetup = REDIS_DISABLED
+
 // When you're NOT testing a single driver, it's important that *all* tests remain
-// within the singular 'for' loop below. This ensures that all drivers pass exactly
-// the same set of tests, with exactly the same inputs/outputs.
+// within the various 'for' loops below. This ensures that all drivers pass exactly
+// the same set of tests, with exactly the same inputs/outputs, both with and without
+// redis caching enabled, both with and without encryption enabled.
 // This greatly supports developer sanity
 
+for (const redisSetup of redisTests()) {
+    if (!redisSetup.enabled) continue
+
 for (const driverName of DRIVER_NAMES) {
-    const config = DRIVER_CONFIG[driverName]
+    const driverTest = `${driverName} [${redisSetup.name}]`
+    const config = redisSetup.config(DRIVER_CONFIG[driverName])
     const nonexistentFile = 'random_file_that_does_not_exist_' + rand(100) + '_' + Date.now()
     const tempFilename = (name, i) => name + (i > 0 ? '_' + i : '')
-    describe(`${driverName} test`, () => {
+    describe(`${driverTest} test`, () => {
         beforeEach ((done) => {
-            redis.flushMobiletto().then(
-                () => { logger.info(`${driverName} - flushed redis`) },
+            redis.flushAll().then(
+                () => { logger.info(`${driverTest} - flushed redis`) },
                 (e) => {
-                    logger.error(`${driverName} - error flushing redis: ${e}`)
+                    logger.error(`${driverTest} - error flushing redis: ${e}`)
                     throw e
                 }
             ).finally(() => done())
         })
 
-        describe(`${driverName} - create api client`, () => {
+        describe(`${driverTest} - create api client`, () => {
             it("should validate the config and return an API object", async () => {
-                const api = await mobiletto(driverName, config.key, config.secret, config.opts)
-                should().exist(api, 'expected API object to exist')
+                try {
+                    const api = await mobiletto(driverName, config.key, config.secret, config.opts)
+                    should().exist(api, 'expected API object to exist')
+                } catch (e) {
+                    logger.error(`wtf: ${e}`)
+                }
             })
         })
 
-        describe(`${driverName} - listing with no arguments returns some results`, () => {
+        describe(`${driverTest} - listing with no arguments returns some results`, () => {
             it("should return some results from a default listing", async () => {
                 const api = await mobiletto(driverName, config.key, config.secret, config.opts)
                 const results = await api.list()
@@ -201,7 +232,7 @@ for (const driverName of DRIVER_NAMES) {
             })
         })
 
-        describe(`${driverName} - write a file, read file, read metadata, delete file`, () => {
+        describe(`${driverTest} - write a file, read file, read metadata, delete file`, () => {
             // some random data, plus a bit extra
             const size = (READ_SZ * TEMP_SZ_MULTIPLE) + Math.floor(Math.random() * (READ_SZ/2))
             const randomData = rand(size)
@@ -239,8 +270,8 @@ for (const driverName of DRIVER_NAMES) {
 
         for (const encryption of encryptionTests()) {
             const encDesc = encryption ? '(with encryption)' : '(without encryption)'
-            describe(`${driverName} - ${encDesc} fail to write and delete files in readOnly mode`, () => {
-            // describe(`${driverName} - ENC fail to write and delete files in readOnly mode`, () => {
+            describe(`${driverTest} - ${encDesc} fail to write and delete files in readOnly mode`, () => {
+            // describe(`${driverTest} - ENC fail to write and delete files in readOnly mode`, () => {
                 // const encryption = {key: rand(32)}
                 const size = 16
                 const randomData = rand(size)
@@ -285,7 +316,7 @@ for (const driverName of DRIVER_NAMES) {
             })
         }
 
-        describe(`${driverName} - write an encrypted file, read file, read metadata, delete file`, () => {
+        describe(`${driverTest} - write an encrypted file, read file, read metadata, delete file`, () => {
             // some random data, plus a bit extra
             const size = (READ_SZ * TEMP_SZ_MULTIPLE) + Math.floor(Math.random() * (READ_SZ/2))
             const randomData = rand(size)
@@ -325,8 +356,8 @@ for (const driverName of DRIVER_NAMES) {
             const mirrorDriver = pickAnotherDriver(driverName)
             const mirrorConfig = DRIVER_CONFIG[mirrorDriver]
             const mirrorDest = `mirrorDest_${rand(5)}/`
-            describe(`${driverName} - ${encDesc} write files in a new dir, read metadata, mirror to another place (${mirrorDriver}), verify mirror, recursively delete from both`, () => {
-            // describe(`${driverName} - ENCRYPTION write files in a new dir, read metadata, recursively delete`, () => {
+            describe(`${driverTest} - ${encDesc} write files in a new dir, read metadata, mirror to another place (${mirrorDriver}), verify mirror, recursively delete from both`, () => {
+            // describe(`${driverTest} - ENCRYPTION write files in a new dir, read metadata, recursively delete`, () => {
                 // const encryption = {key: rand(32)}
                 // const encryption = null
                 // a random directory and file within it
@@ -464,7 +495,7 @@ for (const driverName of DRIVER_NAMES) {
             })
         }
 
-        describe(`${driverName} - expect MobilettoNotFoundError when reading nonexistent file `, () => {
+        describe(`${driverTest} - expect MobilettoNotFoundError when reading nonexistent file `, () => {
             it("should throw MobilettoNotFoundError when trying to read a file that does not exist", async () => {
                 const api = await mobiletto(driverName, config.key, config.secret, config.opts)
                 try {
@@ -477,7 +508,7 @@ for (const driverName of DRIVER_NAMES) {
             })
         })
 
-        describe(`${driverName} - expect MobilettoNotFoundError when reading metadata for nonexistent file`, () => {
+        describe(`${driverTest} - expect MobilettoNotFoundError when reading metadata for nonexistent file`, () => {
             it("should throw MobilettoNotFoundError when trying to read metadata for a file that does not exist", async () => {
                 const api = await mobiletto(driverName, config.key, config.secret, config.opts)
                 try {
@@ -489,7 +520,7 @@ for (const driverName of DRIVER_NAMES) {
             })
         })
 
-        describe(`${driverName} - expect MobilettoNotFoundError when removing non-existent file`, () => {
+        describe(`${driverTest} - expect MobilettoNotFoundError when removing non-existent file`, () => {
             it("should throw MobilettoNotFoundError when trying to remove a file that does not exist", async () => {
                 const api = await mobiletto(driverName, config.key, config.secret, config.opts)
                 try {
@@ -502,7 +533,7 @@ for (const driverName of DRIVER_NAMES) {
             })
         })
 
-        describe(`${driverName} - quietly removing non-existent file does not throw MobilettoNotFoundError`, () => {
+        describe(`${driverTest} - quietly removing non-existent file does not throw MobilettoNotFoundError`, () => {
             it("should NOT throw MobilettoNotFoundError when quietly removing a file that does not exist", async () => {
                 const api = await mobiletto(driverName, config.key, config.secret, config.opts)
                 if (!(await api.remove(nonexistentFile, {quiet: true}))) {
@@ -512,14 +543,9 @@ for (const driverName of DRIVER_NAMES) {
         })
     })
 }
+}
 
-after ((done) => {
-    try {
-        logger.info('all tests finished, tearing down redis...')
-        redis.teardown()
-    } catch (e) {
-        logger.warn(`error calling redis.teardown: ${e}`)
-    } finally {
-        done()
-    }
+after ( (done) => {
+    logger.info('all tests finished, tearing down redis...')
+    redis.teardown().finally(done)
 })

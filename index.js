@@ -2,13 +2,14 @@ const fs = require('fs')
 const path = require('path')
 const { Readable, Transform } = require('stream')
 const { logger, setLogLevel: setLoggerLevel } = require('./util/logger')
-const redis = require('./util/redis')
+const { getRedis } = require('./util/redis')
 const { basename, dirname } = require('path')
 const shasum = require('shasum')
 const randomstring = require('randomstring')
 
 const crypt = require('./util/crypt')
 const {DEFAULT_CRYPT_ALGO, normalizeKey, normalizeIV, encrypt, decrypt} = require("./util/crypt")
+const LRU = require("lru-cache");
 
 const DIR_ENT_DIR_SUFFIX = '__.dirent'
 const DIR_ENT_FILE_PREFIX = 'dirent__'
@@ -19,6 +20,10 @@ const initMobilettoTempDir = () => {
     return dir.endsWith('/') ? dir.substring(0, dir.length - 1) : dir
 }
 const MOBILETTO_TMP = initMobilettoTempDir()
+
+const REDIS_HOST = process.env.MOBILETTO_REDIS_HOST || '127.0.0.1'
+const REDIS_PORT = process.env.MOBILETTO_REDIS_PORT || 6379
+const REDIS_PREFIX = process.env.MOBILETTO_REDIS_PREFIX || '_mobiletto__'
 
 // adapted from https://stackoverflow.com/a/27724419
 function MobilettoError (message, err) {
@@ -51,15 +56,52 @@ const reader = (chunks) => (chunk) => { if (chunk) { chunks.push(chunk) } }
 const isAsyncGenerator = (func) => func[Symbol.toStringTag] === 'AsyncGenerator'
 const isReadable = (thing) => thing instanceof fs.ReadStream || thing instanceof Transform || thing instanceof Readable
 
-const getMetaCache = (size = 100) => redis.scopedCache('meta', size)
-const getListingCache = (size = 100) => redis.scopedCache('listingCache', size)
-
 const READ_FILE_CACHE_SIZE_THRESHOLD = 128 * 1024 // we can cache files of this size
+
+class AwaitableLRU {
+    lru
+    constructor(size) {
+        this.lru = new LRU({ max: size })
+    }
+    get = (key) => Promise.resolve(this.lru.get(key))
+    set = (key, value) => Promise.resolve(this.lru.set(key, value))
+}
+
+const CACHE_FUNCTIONS = {
+    redis: (client) => () => {
+        if (typeof client.cache !== 'undefined') return client.cache
+        const redisConfig = client.redisConfig || {}
+        const enabled = redisConfig.enabled !== false
+        if (!enabled) {
+            logger.info(`redis: client.redisConfig.enabled === false, disabling cache`)
+            client.cache = null
+            return client.cache
+        }
+        const host = redisConfig.host || REDIS_HOST
+        const port = redisConfig.port || REDIS_PORT
+        const prefix = redisConfig.prefix || REDIS_PREFIX
+        if (!client.id) {
+            logger.warn(`redis: all nameless connections will share one cache`)
+            client.cache = getRedis('~nameless~', host, port, prefix)
+        } else {
+            client.cache = getRedis(client.id, host, port, prefix)
+        }
+        return client.cache
+    },
+    scopedCache: (client) => (cacheName, size = 100) => {
+        const redis = client.redis()
+        return redis ? redis.scopedCache(cacheName, size) : new AwaitableLRU(size)
+    },
+    flush: (client) => async () => {
+        const redis = client.redis()
+        return redis ? redis.flush() : true
+    }
+}
 
 // noinspection JSUnusedGlobalSymbols,JSUnresolvedFunction
 const UTILITY_FUNCTIONS = {
     list: (client) => async (path, opts) => {
-        const cache = getListingCache()
+        const cache = client.scopedCache('list')
         let cached = cache ? await cache.get(path) : null
         if (cached) {
             if (Array.isArray(cached)) { return cached }
@@ -104,7 +146,7 @@ const UTILITY_FUNCTIONS = {
         }
     },
     metadata: (client) => async (path) => {
-        const cache = getMetaCache()
+        const cache = client.scopedCache('metadata')
         const cached = cache ? await cache.get(path) : null
         if (cached) {
             return cached
@@ -134,11 +176,11 @@ const UTILITY_FUNCTIONS = {
         const quiet = opts && opts.quiet ? opts.quiet : false
         // noinspection JSUnresolvedFunction
         const result = await client.driver_remove(path, recursive, quiet)
-        await redis.flushMobiletto()
+        await client.flush()
         return result
     },
     readFile: (client) => async (path) => {
-        const cache = redis.scopedCache('readFile')
+        const cache = client.scopedCache('readFile')
         const cached = cache ? await cache.get(path) : null
         if (cached) {
             return Buffer.from(cached, 'base64')
@@ -147,14 +189,17 @@ const UTILITY_FUNCTIONS = {
         await client.read(path, reader(chunks))
         const data = Buffer.concat(chunks);
         if (cache && data.length < READ_FILE_CACHE_SIZE_THRESHOLD) {
-            cache.set(path, data.toString('base64'))
+            cache.set(path, data.toString('base64')).then(
+                () => { logger.debug(`readFile(${path}) cached ${data.length} bytes`) },
+                (err) => { logger.error(`readFile(${path}) error: ${err}`) }
+            )
         }
         return data
     },
     write: (client) => async (path, data) => {
         // noinspection JSUnresolvedFunction
         const bytesWritten = await client.driver_write(path, data)
-        await redis.flushMobiletto()
+        await client.flush()
         return bytesWritten
     },
     writeFile: (client) => async (path, data) => {
@@ -240,17 +285,46 @@ async function mirrorDir (source, sourcePath, visitor) {
     }
 }
 
-function addUtilityFunctions (client, readOnly = false) {
-    for (const func of Object.keys(UTILITY_FUNCTIONS)) {
-        client[`driver_${func}`] = client[func] // save previous function, we will need `list` at least
-        client[func] = UTILITY_FUNCTIONS[func](client)
+function utilityFunctionConflict (client, func) {
+    if (typeof client[func] === 'function') {
+        if (typeof client[`driver_${func}`] !== 'undefined') {
+            logger.warn(`utilityFunctionConflict: driver_${func} has already been added`)
+            return false
+        } else {
+            client[`driver_${func}`] = client[func] // save original driver function
+            return true
+        }
+    } else if (typeof client[func] !== 'undefined') {
+        throw new MobilettoError(`utilityFunctionConflict: client defines a property ${func}, mobiletto function would overwrite`)
     }
+}
+
+const addUtilityFunctions = (client, readOnly = false) => {
+    addClientFunctions(client, UTILITY_FUNCTIONS, utilityFunctionConflict)
     if (readOnly) {
         for (const writeFunc of ['write', 'remove', 'writeFile']) {
             client[writeFunc] = async () => {
                 logger.warn(`${writeFunc} not supported in readOnly mode`)
                 return false
             }
+        }
+    }
+    return client
+}
+
+const addCacheFunctions = (client) => addClientFunctions(client, CACHE_FUNCTIONS, (client, func) => {
+    logger.warn(`addCacheFunctions: ${func} already exists, not re-adding`)
+    return false
+})
+
+const addClientFunctions = (client, functions, conflictFunc) => {
+    for (const func of Object.keys(functions)) {
+        let add = true
+        if (client[func]) {
+            add = conflictFunc ? conflictFunc(client, func) : false
+        }
+        if (add) {
+            client[func] = functions[func](client)
         }
     }
     return client
@@ -270,9 +344,18 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         throw new MobilettoError(message)
     }
     const readOnly = opts ? !!opts.readOnly : false
+    client.redisConfig = opts && opts.redisConfig ? opts.redisConfig : {}
+
+    const internalIdForDriver = () =>
+        driverPath + '_' + shasum(`${key}\n${JSON.stringify(opts)}\n${(encryption ? JSON.stringify(encryption) : '')}`)
+
+    // If the driver didn't give the client a name, generate a unique internal name
+    if (!client.id) {
+        client.id = internalIdForDriver()
+    }
     if (encryption === null) {
         logger.info(`mobiletto: successfully connected using driver ${driverPath}, returning client (encryption not enabled)`)
-        return addUtilityFunctions(client, readOnly)
+        return addUtilityFunctions(addCacheFunctions(client), readOnly)
     }
     const encKey = normalizeKey(encryption.key)
     if (!encKey) {
@@ -306,8 +389,9 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     const direntDir = dir => encryptPath(dir + DIR_ENT_DIR_SUFFIX)
     const direntFile = (dirent, path) => dirent + '/' + shasum(DIR_ENT_FILE_PREFIX + ' ' + path)
 
+    const outerClient = addCacheFunctions(client)
     const _metadata = (client) => async (path) => {
-        const cache = redis.scopedCache('_metadata')
+        const cache = outerClient.scopedCache('_metadata')
         const cached = cache ? await cache.get(path) : null
         if (cached) {
             return cached
@@ -385,13 +469,15 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     }
 
     const encClient = {
+        id: internalIdForDriver(),
+        redisConfig: client.redisConfig,
         list: async (pth = '', recursive, visitor) => {
             const p = pth === '' ? '.' : pth.endsWith('/') ? pth.substring(0, pth.length - 1) : pth
             const dirent = direntDir(p)
             let entries
 
             const cacheKey = `${p} ~ ${recursive}`
-            const cache = visitor ? null : redis.scopedCache('enc_list')
+            const cache = visitor ? null : client.scopedCache('enc_list')
             const cached = cache && await cache.get(cacheKey)
 
             function cacheAndReturn (thing) {
@@ -565,7 +651,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         }
     }
     logger.info(`mobiletto: successfully connected using driver ${driverPath}, returning client (encryption enabled)`)
-    return addUtilityFunctions(encClient, readOnly)
+    return addUtilityFunctions(addCacheFunctions(encClient), readOnly)
 }
 
 async function readStream(stream, callback, endCallback) {

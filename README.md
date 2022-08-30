@@ -194,15 +194,19 @@ You can override either of these:
 Mobiletto will store all of its redis keys with the prefix `_mobiletto__`. You can change this
 by setting the `MOBILETTO_REDIS_PREFIX` env var.
 
-### Turn off redis caching
-To disable redis, you can do either of:
-* Not run a redis server on 127.0.0.1:6379 that allows unauthenticated local connections
-* Set `MOBILETTO_REDIS_HOST` to an empty string or anything that won't resolve as a host, for example:
-  * `MOBILETTO_REDIS_HOST=`
-  * `MOBILETTO_REDIS_HOST=/dev/null`
-  * `MOBILETTO_REDIS_HOST=~invalid~hostname~`
-  * `MOBILETTO_REDIS_HOST=invalid-hostname`   *<-- not this!*
-    * **^^^ NO! that last one is a valid hostname** and depending on the name resolution scheme, it might actually be valid and you'll connect to it!
+You can also set per-connection caching with the `opts.redisConfig` object:
+
+    const redisConfig = {
+        enabled: true,     // optional, default is true. if false other props are ignored
+        host: '127.0.0.1',
+        port: 6379,
+        prefix: '_mobiletto__'
+    }
+    const opts = { redisConfig, bucket: 'bk', region: 'us-east-1' }
+    const s3 = await storage.connect('s3', aws_key, aws_secret, opts)
+
+### Don't want redis caching?
+To disable: pass `enabled: false` in your `opts.redisConfig` object when you establish your connection.
 
 As discussed below, disabling caching will have an adverse effect on performance and incur more requests
 to storage that you really need to.
