@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const { Readable, Transform } = require('stream')
-const { logger } = require('./util/logger')
+const { logger, setLogLevel: setLoggerLevel } = require('./util/logger')
 const redis = require('./util/redis')
 const { basename, dirname } = require('path')
 const shasum = require('shasum')
@@ -615,10 +615,13 @@ const M_DIR = 'dir'
 const M_LINK = 'link'
 const M_SPECIAL = 'special'
 
+const setLogLevel = level => setLoggerLevel(level)
+
 module.exports = {
     M_FILE, M_DIR, M_LINK, M_SPECIAL,
     isAsyncGenerator, isReadable,
     mobiletto, connect,
     MobilettoError, MobilettoNotFoundError,
+    setLogLevel,
     readStream, writeStream, closeStream
 }
