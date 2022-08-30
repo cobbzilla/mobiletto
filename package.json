@@ -1,6 +1,6 @@
 {
   "name": "mobiletto",
-  "version": "1.0.42",
+  "version": "1.0.43",
   "description": "A storage abstraction layer",
   "main": "index.js",
   "keywords": ["storage", "s3", "simple", "filesystem"],

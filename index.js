@@ -411,9 +411,8 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             const cipher = crypt.getCipher(enc)
             const realPath = encryptPath(path)
             let generatorBytes = 0
-
-            function createEncryptStream(input) {
-                return input.pipe(new Transform({
+            const createEncryptStream = (input) =>
+                input.pipe(new Transform({
                     transform(chunk, encoding, callback) {
                         generatorBytes += chunk.length
                         this.push(cipher.update(chunk))
@@ -424,10 +423,8 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                         callback()
                     }
                 }))
-            }
 
             // If we were passed a Readable, call write with a transform method
-            let streamBytes = -1
             if (isReadable(readFunc)) {
                 await client.write(realPath, createEncryptStream(readFunc))
             } else {
