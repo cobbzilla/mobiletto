@@ -33,9 +33,9 @@ change storage providers and know that your app's storage layer will behave iden
 
 ### Extensive testing
 All drivers are tested for identical behavior with over 55 tests for each driver.
-Each driver test actually runs *FOUR times*, with every (2x2) combination of:
-* Encryption: test both enabled and disabled
-* Redis cache: test both enabled and disabled
+Each driver test actually runs *four times*, with every (2x2) combination of:
+* Encryption: both enabled and disabled
+* Redis cache: both enabled and disabled
 
 This approach gives us peace-of-mind that mobiletto will behave the same regardless of which driver you use,
 and regardless of whether you enable caching and/or encryption.

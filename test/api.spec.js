@@ -15,7 +15,7 @@ const {
     mobiletto, connect, MobilettoNotFoundError, readStream
 } = require("../index")
 
-const { logger } = require("../util/logger");
+const { logger } = require("../util/logger")
 
 // chunk size used by generator function, used by driver's 'write' function
 // the temp file is also TEMP_SZ_MULTIPLE of this number
@@ -126,7 +126,7 @@ for (const redisSetup of redisTests()) {
 
 for (const driverName of DRIVER_NAMES) {
     // For testing single drivers
-    // if (driverName !== 'b2') continue
+    if (driverName !== 'b2') continue
 
     const driverTest = `${driverName} [${redisSetup.name}]`
     const config = redisSetup.config(DRIVER_CONFIG[driverName])
@@ -180,7 +180,7 @@ for (const driverName of DRIVER_NAMES) {
                 expect(response).to.equal(size, 'expected write API to return correct number of bytes written')
             })
             it("should read the file we just wrote", async () => {
-                const data = await fixture.api.readFile(fixture.name);
+                const data = await fixture.api.readFile(fixture.name)
                 expect(data.length).is.equal(size, 'expected read API to return correct number of bytes read')
                 expect(data.toString()).to.equal(fixture.randomData, 'expected to read back the same data we wrote')
             })
@@ -262,11 +262,11 @@ for (const driverName of DRIVER_NAMES) {
                     .finally(done)
             })
             it("should write an encrypted file", async () => {
-                const bytesWritten = await writeRandomFile(fixture, size);
+                const bytesWritten = await writeRandomFile(fixture, size)
                 expect(bytesWritten).is.equal(size, 'expected write API to return correct number of bytes written')
             })
             it("should read the encrypted file we just wrote", async () => {
-                const data = await fixture.api.readFile(fixture.name);
+                const data = await fixture.api.readFile(fixture.name)
                 expect(data.length).is.equal(size, 'expected read API to return correct number of bytes read')
                 expect(data.toString()).to.equal(fixture.randomData, 'expected to read back the same data we wrote')
             })
@@ -297,12 +297,11 @@ for (const driverName of DRIVER_NAMES) {
                 const subdirName = `subdir_` + Date.now()
                 const fullSubdirPath = `${randomParent}/${subdirName}`
                 const randomPath = `${fullSubdirPath}/random_file_${Date.now()}`
-                const randomStreamFileSize = READ_SZ * 10;
+                const randomStreamFileSize = READ_SZ * 10
                 const randomStreamFileData = crypto.randomBytes(randomStreamFileSize)
                 //const fileCount = 3 + Math.floor(Math.random() * 10)
                 const fileCount = 2
                 let fixture
-                let removal
                 before((done) => {
                     mobiletto(driverName, config.key, config.secret, config.opts, encryption)
                         .then(api => {
@@ -329,7 +328,7 @@ for (const driverName of DRIVER_NAMES) {
                 })
                 it('should write a file in a new directory using a stream', async () => {
                     // create a random temp file, write it
-                    const tempFile = `/tmp/${randomstring.generate(10)}_cool_${Date.now()}`;
+                    const tempFile = `/tmp/${randomstring.generate(10)}_cool_${Date.now()}`
                     fs.writeFileSync(tempFile, randomStreamFileData)
                     const reader = fs.createReadStream(tempFile)
                     const streamFile = fixture.name + '_stream'
@@ -337,25 +336,19 @@ for (const driverName of DRIVER_NAMES) {
                     expect(bytesWritten).to.equal(randomStreamFileSize, 'expected write API to return correct number of bytes written for STREAM')
                 })
                 it("should successfully read the file back that was stream-written", async () => {
-                    const streamFile = fixture.name + '_stream';
+                    const streamFile = fixture.name + '_stream'
                     const singleFile = (await fixture.api.readFile(streamFile))
                     expect(singleFile).to.have.lengthOf(randomStreamFileSize)
                     for (let i = 0; i < singleFile.length; i++) {
                         expect(singleFile[i]).to.equal(randomStreamFileData[i])
                     }
-                    removal = await fixture.api.remove(streamFile);
+                    const removal = await fixture.api.remove(streamFile)
                     expect(removal).to.equal(streamFile, `expected stream file to be deleted, but was: ${removal}`)
                 })
                 it("should successfully list a file individually", async () => {
-                    let singleFile;
-                    try {
-                        singleFile = await fixture.api.list(fixture.name);
-                        expect(singleFile).to.have.lengthOf(1)
-                        expect(singleFile[0]).to.have.property('name', fixture.name)
-                    } catch (e) {
-                        logger.error(`wtf: ${e}, removal was ${JSON.stringify(removal)}`)
-                        throw e
-                    }
+                    const singleFile = await fixture.api.list(fixture.name)
+                    expect(singleFile).to.have.lengthOf(1)
+                    expect(singleFile[0]).to.have.property('name', fixture.name)
                 })
                 it("should successfully list files in the base directory", async () => {
                     const baseListing = await fixture.api.list()

@@ -331,7 +331,7 @@ class StorageClient {
             meta = await (this.b2_meta(path))
         } catch (e) {
             if (quiet) {
-                logger.debug(`b2.remove(${path}) quietly returning, not reporting error fetching metadata for ${path}: ${e}: ${JSON.stringify(e)}`)
+                logger.debug(`b2.remove(${path}) quietly returning, not reporting error fetching metadata for ${path}: ${e}`)
                 return path
             }
             if (e instanceof MobilettoError || e instanceof MobilettoNotFoundError) {

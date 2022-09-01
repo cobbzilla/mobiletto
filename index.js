@@ -38,6 +38,7 @@ function MobilettoError (message, err) {
         this.stack = (new Error(this.message)).stack
     }
 }
+MobilettoError.prototype.toString = () => JSON.stringify(this)
 
 // adapted from https://stackoverflow.com/a/27724419
 function MobilettoNotFoundError (message) {
@@ -50,6 +51,7 @@ function MobilettoNotFoundError (message) {
         this.stack = (new Error(this.message)).stack
     }
 }
+MobilettoNotFoundError.prototype.toString = () => JSON.stringify(this)
 
 const reader = (chunks) => (chunk) => { if (chunk) { chunks.push(chunk) } }
 
