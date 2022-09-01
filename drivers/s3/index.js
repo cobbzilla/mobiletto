@@ -30,7 +30,7 @@ class StorageClient {
     delimiter
     constructor(key, secret, opts) {
         if (!key || !secret || !opts || !opts.bucket) {
-            throw new MobilettoError('key, secret, and opts.bucket are required')
+            throw new MobilettoError('s3.StorageClient: key, secret, and opts.bucket are required')
         }
         this.bucket = opts.bucket
         const delim = this.delimiter = opts.delimiter || DEFAULT_DELIMITER
@@ -305,9 +305,9 @@ class StorageClient {
 
 function storageClient (key, secret, opts) {
     if (!key || !secret || !opts || !opts.bucket) {
-        throw new MobilettoError('key, secret, and opts.bucket are required')
+        throw new MobilettoError('s3.storageClient: key, secret, and opts.bucket are required')
     }
     return new StorageClient(key, secret, opts)
 }
 
-module.exports = {storageClient}
+module.exports = { storageClient }

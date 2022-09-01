@@ -3,28 +3,64 @@ Mobiletto
 
 Mobiletto is a JavaScript storage abstraction layer, with optional transparent client-side encryption.
 
-It supports apps that are agnostic to where files are stored.
+# Contents
+* [Why Mobiletto?](#Why-Mobiletto?)
+* [Quick start](#Quick-start)
+* [Mobiletto CLI](#mobiletto-cli)
+* [Source](#Source)
+* [Basic usage](#Basic-usage)
+* [Metadata](#Metadata)
+* [Alternate import style](#Alternate-import-style)
+* [Caching](#Caching)
+* [Mirroring](#Mirroring)
+* [Transparent encryption](#Transparent-encryption)
+* [Key rotation](#Key-rotation)
+* [Driver interface](#Driver-interface)
+* [Logging](#Logging)
 
+## Why Mobiletto?
+
+### Goodbye vendor lock-in!
+The various cloud storage providers have incompatible APIs. Even those that strive for "S3 compatibility"
+have idiosyncratic behaviors.
+
+When you choose a particular storage vendor for your app, if you code directly to their API, your app
+is now dependent on that service. As time goes by and code accumulates, changing vendors becomes
+increasingly untenable. Welcome to the fun world of vendor lock-in!
+
+Mobiletto was designed to solve this problem. By coding your app to mobiletto's API, you can easily
+change storage providers and know that your app's storage layer will behave identically.
+
+### Extensive testing
 All drivers are tested for identical behavior with over 55 tests for each driver.
+Each driver test actually runs *FOUR times*, with every (2x2) combination of:
+* Encryption: test both enabled and disabled
+* Redis cache: test both enabled and disabled
 
-Today the supported drivers are:
+This approach gives us peace-of-mind that mobiletto will behave the same regardless of which driver you use,
+and regardless of whether you enable caching and/or encryption.
 
-* `s3`: read/write an Amazon S3 bucket
-* `local`: read/write to local filesystem
+### Driver support
+Current Mobiletto storage drivers:
+* `s3`: Amazon S3
+* `b2`: Backblaze B2
+* `local`: local filesystem
 
-### mobiletto-cli
+*Contributions to support more cloud storage providers are very welcome!*
+
+## mobiletto-cli
 Mobiletto is intended to be used as a library by other JavaScript code.
 
 To work with mobiletto at the command-line, use [mobiletto-cli](https://www.npmjs.com/package/mobiletto-cli)
 
-### Source
+## Source
 * [mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
 * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
 
-## TLDR
+## Quick Start
 A simple example using the mobiletto `s3` driver.
 
-This code would run the same if the driver were `local`.
+This code would run the same if the driver were `b2` or `local`.
 
     const storage = require('mobiletto')
     const s3 = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk'})
@@ -46,20 +82,12 @@ This code would run the same if the driver were `local`.
     // read file as a stream using data callback
     const bytesRead = await s3.read('some/path', (chunk) => { ...do something with chunk... } )
 
-    // remove a file, returns true upon success
-    const removed = await s3.remove('some/path')
+    // remove a file, returns the path removed
+    let removed = await s3.remove('some/path')
 
-----
-# Contents
-* [Basic usage](#Basic-usage)
-* [Metadata](#Metadata)
-* [Alternate import style](#Alternate-import-style)
-* [Caching](#Caching)
-* [Mirroring](#Mirroring)
-* [Transparent encryption](#Transparent-encryption)
-* [Key rotation](#Key-rotation)
-* [Driver interface](#Driver-interface)
-* [Logging](#Logging)
+    // remove a directory, returns array of paths removed
+    removed = await s3.remove('some/directory', {recursive: true})
+
 ----
 ## Basic usage
     const { mobiletto } = require('mobiletto')
@@ -87,44 +115,50 @@ This code would run the same if the driver were `local`.
     //     * delimiter: optional, directory delimiter, default is '/' (note: always '/' when encryption is enabled)
     const s3 = await mobiletto('s3', aws_key, aws_secret, {bucket: 'bk', region: 'us-east-1'})
 
+    // To use 'b2' driver:
+    //   * key: Backblaze Key ID
+    //   * secret: Backblaze Application Key
+    //   * opts object:
+    //     * readOnly: optional, never change anything on the bucket; default is false
+    //     * bucket: required, the ID (**not the name**) of the B2 bucket
+    //     * prefix: optional, all read/writes within the B2 bucket will be under this prefix
+    //     * delimiter: optional, directory delimiter, default is '/' (note: always '/' when encryption is enabled)
+    //     * partSize: optional, large files will be split into chunks of this size when uploading
+    const b3 = await mobiletto('b2', b2_key_id, b2_app_key, {bucket: 'bk', partSize: 10000000})
+
     // List files
-    local.list()  // --> returns an array of metadata objects
-    s3.list()     // --> returns an array of metadata objects
+    api.list()  // --> returns an array of metadata objects
 
     // List files recursively
-    local.list({ recursive: true })
-    s3.list({ recursive: true })
+    api.list({ recursive: true })
 
     // List files in a directory
     const path = 'some/path'
-    local.list(path)
-    s3.list(path, { recursive: true }) // also supports recursive flag
+    api.list(path)
+    api.list(path, { recursive: true }) // also supports recursive flag
 
     // Visit files in a directory -- visitor function must be async
-    local.list(path, { visitor: myAsyncFunc })
-    s3.list(path, { visitor: myAsyncFunc, recursive: true })
+    api.list(path, { visitor: myAsyncFunc })
+    api.list(path, { visitor: myAsyncFunc, recursive: true })
 
     // The `list` method throws MobilettoNotFoundError if the path does not exist
     // When you call `safeList` on a non-existent path, it returns an empty array
-    s3.safeList('/path/that/does/not/exist') // returns []
+    api.safeList('/path/that/does/not/exist') // returns []
     
     // Read metadata for a file
-    local.metadata(path)    // returns metadata object
-    s3.metadata(path)       // returns metadata object
+    api.metadata(path)    // returns metadata object
 
     // The `metadata` method throws MobilettoNotFoundError if the path does not exist
     // When you call `safeMetadata` on a non-existent path, it returns null
-    local.safeMetadata('/tmp/does_not_exist') // returns null
+    api.safeMetadata('/tmp/does_not_exist') // returns null
     
     // Read a file
     // Provide a callback that writes the data someplace
     const callback = (chunk) => { ... write chunk somewhere ...  } 
-    local.read(path, callback)  // returns count of bytes read
-    s3.read(path, callback)     // returns count of bytes read
+    api.read(path, callback)  // returns count of bytes read
 
     // Read an entire file at once (convenience method)
-    const localData = await local.readFile(path)  // returns a byte Buffer of the file contents
-    const s3Data = await s3.readFile(path)        // returns a byte Buffer of the file contents
+    const data = await api.readFile(path)  // returns a byte Buffer of the file contents
     
     // Write a file
     // Provide a generator function that yields chunks of data 
@@ -134,26 +168,22 @@ This code would run the same if the driver were `local`.
         yield data
       }
     } 
-    local.write(path, generator)  // returns count of bytes written
-    s3.write(path, generator)     // returns count of bytes written
+    local.api(path, generator)  // returns count of bytes written
 
     // Write an entire file at once (convenience method)
-    await local.writeFile(path, bufferOrString)   // returns count of bytes written
-    await s3.writeFile(path, bufferOrString)      // returns count of bytes written
+    await api.writeFile(path, bufferOrString)   // returns count of bytes written
 
     // Delete a file
     // Quiet param is optional (default false), when set errors will not be thrown if the path does not exist
     // Always returns a value or throws an error.
     // Return value may be a single string of the file removed, or an array of all files removed (driver-dependent)
     const quiet = true
-    local.remove(path, {quiet}) // returns single path removed
-    s3.remove(path, {quiet})    // returns single path removed
+    api.remove(path, {quiet}) // returns single path removed
 
     // Recursively delete a directory and do it quietly (do not report errors)
     const recursive = true
     const quiet = true
-    local.remove(path, {recursive, quiet}) // returns  paths removed
-    s3.remove(path, {recursive, quiet})    // returns array containing all paths removed
+    api.remove(path, {recursive, quiet}) // returns array of paths removed
 
 ## Metadata
 The `metadata` command returns metadata about a single filesystem entry.
@@ -351,7 +381,7 @@ or any other connection configuration information.
 Use the `MOBILETTO_LOG_LEVEL` environment variable to set the log level, using one
 of the `npm` levels defined in [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
 
-The default level is `warn`. The most verbose level is `silly`, although currently mobiletto
+The default level is `error`. The most verbose level is `silly`, although currently mobiletto
 does not log at levels below `debug`
 
     MOBILETTO_LOG_LEVEL=silly   # maximum logs!

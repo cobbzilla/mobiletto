@@ -173,6 +173,7 @@ const UTILITY_FUNCTIONS = {
     },
     remove: (client) => async (path, opts) => {
         const recursive = opts && opts.recursive ? opts.recursive : false
+        // noinspection JSUnresolvedVariable
         const quiet = opts && opts.quiet ? opts.quiet : false
         // noinspection JSUnresolvedFunction
         const result = await client.driver_remove(path, recursive, quiet)
@@ -197,9 +198,11 @@ const UTILITY_FUNCTIONS = {
         return data
     },
     write: (client) => async (path, data) => {
+        logger.debug(`util.write(${path}) starting ...`)
         // noinspection JSUnresolvedFunction
         const bytesWritten = await client.driver_write(path, data)
         await client.flush()
+        logger.debug(`util.write(${path}) wrote ${bytesWritten} bytes`)
         return bytesWritten
     },
     writeFile: (client) => async (path, data) => {
@@ -220,7 +223,8 @@ const UTILITY_FUNCTIONS = {
                 const destName = obj.name.startsWith(sourcePath)
                     ? obj.name.substring(sourcePath.length)
                     : obj.name
-                const destFullPath = clientPath + destName;
+                const destFullPath = (clientPath.endsWith('/') ? clientPath : clientPath + '/') +
+                    (destName.startsWith('/') ? destName.substring(1) : destName)
                 try {
                     // if dest already exists and is the same size, don't copy it again
                     let srcSize = null
@@ -338,8 +342,9 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     logger.info(`mobiletto: connecting with driver ${driverPath}`)
     const driver = require(driverPath.includes('/') ? driverPath : `./drivers/${driverPath}/index.js`)
     const client = driver.storageClient(key, secret, opts)
-    if (!(await client.testConfig())) {
-        const message = `mobiletto(${driverPath}) error: test API call failed`
+    const configValue = await client.testConfig();
+    if (!configValue) {
+        const message = `mobiletto(${driverPath}) error: test API call failed: ${configValue}`
         logger.error(message)
         throw new MobilettoError(message)
     }
@@ -457,8 +462,14 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         const df = direntFile(direntDir(dirname(path)), path);
         const recursive = false
         const quiet = true
+
+        logger.debug(`removeDirentFile(${path}) removing df=${df}`)
         await client.remove(df, recursive, quiet)
+
+        logger.debug(`removeDirentFile(${path}) removing encryptPath(path)=${encryptPath(path)}`)
         await client.remove(encryptPath(path), recursive, quiet)
+
+        logger.debug(`removeDirentFile(${path}) removing metaPath(path)=${metaPath(path)}`)
         await client.remove(metaPath(path), recursive, quiet)
     }
 
@@ -468,6 +479,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         }
     }
 
+    // noinspection JSUnusedGlobalSymbols
     const encClient = {
         id: internalIdForDriver(),
         redisConfig: client.redisConfig,
@@ -490,6 +502,23 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                 return thing
             }
 
+            async function tryParentDirForSingleFile (path, visitor, e) {
+                // it might be a single file, try listing the parent dir
+                const parentDirent = direntDir(path.dirname(p));
+                entries = await client.list(parentDirent, false)
+                const objects = await _loadMeta(parentDirent, entries)
+                const found = objects.find(o => o.name === p)
+                if (found) {
+                    if (visitor) {
+                        await visitor(found)
+                    }
+                    logger.debug(`tryParentDirForSingleFile(${path}) found ${found.name}`)
+                    return cacheAndReturn([found])
+                }
+                logger.debug(`tryParentDirForSingleFile(${path}) nothing found! e=${e}`)
+                throw e === null ? new MobilettoNotFoundError(path) : e
+            }
+
             if (cached) {
                 entries = cached
             } else {
@@ -497,17 +526,12 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                     entries = await client.list(dirent, recursive)
                 } catch (e) {
                     if (e instanceof MobilettoNotFoundError && p.includes('/')) {
-                        // it might be a single file, try listing the parent dir
-                        const parentDirent = direntDir(path.dirname(p));
-                        entries = await client.list(parentDirent, false)
-                        const objects = await _loadMeta(parentDirent, entries)
-                        const found = objects.find(o => o.name === p)
-                        if (found) {
-                            return cacheAndReturn([found])
-                        }
-                        throw e
+                        return await tryParentDirForSingleFile(path, visitor, e)
                     }
                 }
+            }
+            if (entries.length === 0 && p.includes('/')) {
+                return await tryParentDirForSingleFile(path, visitor, null)
             }
             if (cache) {
                 cache.set(cacheKey, entries).then(
@@ -592,12 +616,14 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             await client.write(metaPath(path), stringGenerator(JSON.stringify(meta), enc)())
             return generatorBytes
         },
-        // todo: remove should return an array of the paths that were actually removed
+
         remove: async (path, options) => {
+            logger.debug(`enc.remove(${path}) starting`)
             const recursive = options === true || (options && options.recursive) || false
             // const quiet = (options && options.quiet) || false
             if (recursive) {
                 // ugh. we have to iterate over all dirent files, and remove each file/subdir one by one
+                const removed = []
                 async function recRm (path) {
                     const dirent = direntDir(path)
                     let entries
@@ -616,13 +642,15 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                             await recRm(f.name)
                         }
                     }
-                    await removeDirentFile(path);
+                    await removeDirentFile(path)
+                    removed.push(path)
                 }
                 await recRm(path)
+                return removed
             }
 
             // remove the single file/dir
-            await removeDirentFile(path);
+            await removeDirentFile(path)
 
             // if we were the last dirent file, then also remove dirent directory, and recursively upwards
             let parent = path
@@ -647,7 +675,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                 parent = dirname(parent)
                 dirent = direntDir(parent)
             }
-            return true
+            return path
         }
     }
     logger.info(`mobiletto: successfully connected using driver ${driverPath}, returning client (encryption enabled)`)

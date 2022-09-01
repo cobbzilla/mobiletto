@@ -1,7 +1,7 @@
 {
   "name": "mobiletto",
-  "version": "1.0.48",
-  "description": "A storage abstraction layer",
+  "version": "1.1.0",
+  "description": "A storage layer that presents a uniform interface to Amazon S3, Backblaze B2, and local storage",
   "main": "index.js",
   "keywords": [
     "storage",
@@ -21,7 +21,7 @@
   },
   "license": "Apache-2.0",
   "scripts": {
-    "test": "mocha --timeout 10000"
+    "test": "mocha --timeout 60000 ./test/*.spec.js"
   },
   "devDependencies": {
     "@babel/core": "^7.18.10",
@@ -35,6 +35,8 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.150.0",
     "@aws-sdk/lib-storage": "^3.150.0",
+    "@gideo-llc/backblaze-b2-upload-any": "^0.1.4",
+    "backblaze-b2": "^1.7.0",
     "ioredis": "^5.2.3",
     "lru-cache": "^7.14.0",
     "node-fetch-commonjs": "^3.1.1",

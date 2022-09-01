@@ -32,10 +32,13 @@ class StorageClient {
     fileMode
     dirMode
     constructor(baseDir, opts) {
+        if (!baseDir) {
+            throw new MobilettoError('local.StorageClient: key (baseDir) is required')
+        }
         const resolved = this.resolveSymlinks(baseDir)
         if (!resolved.stat.isDirectory()) {
             const dest = resolved.path === baseDir ? null : resolved.path
-            throw new MobilettoError(`local.storageClient: not a directory: ${baseDir}${dest ? ` (resolved to ${dest})` : ''}`)
+            throw new MobilettoError(`local.StorageClient: not a directory: ${baseDir}${dest ? ` (resolved to ${dest})` : ''}`)
         }
         const dir = resolved.path
         this.baseDir = dir.endsWith('/') ? dir : dir + '/'
@@ -109,7 +112,7 @@ class StorageClient {
             }
             return files
         } catch (e) {
-            logger.error(`dirFiles: ${e}`)
+            logger.warn(`dirFiles: ${e}`)
             throw this.ioError(e, norm, 'dirFiles')
         }
     }
@@ -283,4 +286,4 @@ function storageClient (key, secret, opts) {
     return new StorageClient(key, opts)
 }
 
-module.exports = {storageClient}
+module.exports = { storageClient }
