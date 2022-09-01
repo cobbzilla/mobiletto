@@ -37,8 +37,8 @@ function MobilettoError (message, err) {
         // noinspection JSUnusedGlobalSymbols
         this.stack = (new Error(this.message)).stack
     }
+    MobilettoError.prototype.toString = () => JSON.stringify(this)
 }
-MobilettoError.prototype.toString = () => JSON.stringify(this)
 
 // adapted from https://stackoverflow.com/a/27724419
 function MobilettoNotFoundError (message) {
@@ -50,8 +50,8 @@ function MobilettoNotFoundError (message) {
         // noinspection JSUnusedGlobalSymbols
         this.stack = (new Error(this.message)).stack
     }
+    MobilettoNotFoundError.prototype.toString = () => JSON.stringify(this)
 }
-MobilettoNotFoundError.prototype.toString = () => JSON.stringify(this)
 
 const reader = (chunks) => (chunk) => { if (chunk) { chunks.push(chunk) } }
 
