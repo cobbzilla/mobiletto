@@ -199,6 +199,14 @@ const UTILITY_FUNCTIONS = {
         }
         return data
     },
+    safeReadFile: (client) => async (path) => {
+        try {
+            return await client.readFile(path)
+        } catch (e) {
+            logger.info(`safeReadFile(${path}): ${e}`)
+            return null
+        }
+    },
     write: (client) => async (path, data) => {
         logger.debug(`util.write(${path}) starting ...`)
         // noinspection JSUnresolvedFunction

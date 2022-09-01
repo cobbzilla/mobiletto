@@ -58,38 +58,41 @@ To work with mobiletto at the command-line, use [mobiletto-cli](https://www.npmj
 * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
 
 ## Quick Start
-A simple example using the mobiletto `s3` driver.
+A short example using the mobiletto `s3` driver.
 
 This code would run the same if the driver were `b2` or `local`.
 
     const storage = require('mobiletto')
-    const s3 = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk'})
+    const bucket = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk'})
 
     // list objects: returns array of metadata objects
-    const listing = await s3.list()
-    const dirList = await s3.list('some/dir/')
-    const everything = await s3.list('', {recursive: true})
+    const listing = await bucket.list()
+    const dirList = await bucket.list('some/dir/')
+    const everything = await bucket.list('', {recursive: true})
 
     // write an entire file in one-shot
-    let bytesWritten = await s3.writeFile('some/path', someBufferOfData)
+    let bytesWritten = await bucket.writeFile('some/path', someBufferOfData)
 
     // write a file from a stream/generator
-    bytesWritten = await s3.write('some/path', streamOrGenerator)
+    bytesWritten = await bucket.write('some/path', streamOrGenerator)
 
     // read an entire file in one-shot
-    const byteBuffer = await s3.readFile('some/path')
+    // returns null if an exception would otherwise be thrown
+    const bufferOrNull = await bucket.safeReadFile('some/path')
 
-    // read file as a stream using data callback
-    const bytesRead = await s3.read('some/path', (chunk) => { ...do something with chunk... } )
+    // stream-read a file, passing data to callback
+    const bytesRead = await bucket.read('some/path', (chunk) => { ...do something with chunk... } )
 
     // remove a file, returns the path removed
-    let removed = await s3.remove('some/path')
+    let removed = await bucket.remove('some/path')  // removed is a string
 
     // remove a directory, returns array of paths removed
-    removed = await s3.remove('some/directory', {recursive: true})
+    removed = await bucket.remove('some/directory', {recursive: true})  // removed is now an array!
 
 ----
 ## Basic usage
+A much more extensive example, showing most of the features offered:
+
     const { mobiletto } = require('mobiletto')
 
     // General usage
@@ -105,8 +108,8 @@ This code would run the same if the driver were `b2` or `local`.
     const local = await mobiletto('local', '/home/ubuntu/tmp', null, {fileMode: 0o0600, dirMode: '0700'})
 
     // To use 's3' driver:
-    //   * key: AWS access key
-    //   * secret: AWS secret key
+    //   * key: AWS Access Key ID
+    //   * secret: AWS Secret Key
     //   * opts object:
     //     * readOnly: optional, never change anything on the bucket; default is false
     //     * bucket: required, name of the S3 bucket
