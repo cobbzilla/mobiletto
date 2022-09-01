@@ -12,7 +12,7 @@ const { expect, should, assert } = require('chai')
 
 const {
     M_DIR, M_FILE,
-    mobiletto, connect, MobilettoNotFoundError, readStream
+    mobiletto, connect, MobilettoNotFoundError, closeRedis
 } = require("../index")
 
 const { logger } = require("../util/logger")
@@ -481,5 +481,5 @@ for (const driverName of DRIVER_NAMES) {
 
 after ( (done) => {
     logger.info('all tests finished, tearing down redis...')
-    redis.teardown().finally(done)
+    closeRedis().finally(done)
 })
