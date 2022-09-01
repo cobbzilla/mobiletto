@@ -1,11 +1,12 @@
 {
   "name": "mobiletto",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A storage layer that presents a uniform interface to Amazon S3, Backblaze B2, and local storage",
   "main": "index.js",
   "keywords": [
     "storage",
     "s3",
+    "b2",
     "simple",
     "filesystem"
   ],
