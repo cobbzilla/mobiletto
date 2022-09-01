@@ -187,6 +187,7 @@ const teardown = async () => await forAllCaches((client) => {
     try {
         if (client.redis) {
             client.redis.disconnect()
+            client.redis = null
         }
     } catch (e) {
         logger.warn(`teardown: error disconnecting from redis(${client.name}): ${e}`)
