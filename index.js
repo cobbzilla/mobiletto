@@ -209,10 +209,14 @@ const UTILITY_FUNCTIONS = {
     },
     write: (client) => async (path, data) => {
         logger.debug(`util.write(${path}) starting ...`)
+        const p = path.startsWith(this.delimiter) ? path.substring(1) : path
+        if (p !== path) {
+            logger.debug(`util.write(${path}) removed leading ${this.delimiter}`)
+        }
         // noinspection JSUnresolvedFunction
-        const bytesWritten = await client.driver_write(path, data)
+        const bytesWritten = await client.driver_write(p, data)
         await client.flush()
-        logger.debug(`util.write(${path}) wrote ${bytesWritten} bytes`)
+        logger.debug(`util.write(${p}) wrote ${bytesWritten} bytes`)
         return bytesWritten
     },
     writeFile: (client) => async (path, data) => {
@@ -584,7 +588,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                     throw new MobilettoError('write: error writing dirent file')
                 }
                 p = dirname(p)
-                if (p === '.' || p === '' || p === '/') {
+                if (p === '.' || p === '') {
                     break
                 }
             }

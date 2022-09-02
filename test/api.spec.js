@@ -119,14 +119,17 @@ const REDIS_DISABLED = {
         return newConfig
     }
 }
+
 const redisTests = () => [REDIS_ENABLED, REDIS_DISABLED]
+// const redisTests = () => [REDIS_ENABLED]
+// const redisTests = () => [REDIS_DISABLED]
 
 for (const redisSetup of redisTests()) {
     if (!redisSetup.enabled) continue
 
 for (const driverName of DRIVER_NAMES) {
     // For testing single drivers
-    if (driverName !== 'b2') continue
+    // if (driverName !== 'b2') continue
 
     const driverTest = `${driverName} [${redisSetup.name}]`
     const config = redisSetup.config(DRIVER_CONFIG[driverName])
@@ -284,8 +287,8 @@ for (const driverName of DRIVER_NAMES) {
 
         for (const encryption of encryptionTests()) {
             const encDesc = encryption ? '(with encryption)' : '(without encryption)'
-            // const mirrorDriver = pickAnotherDriver(driverName)
-            const mirrorDriver = 'local'  // for hard-coding the mirror driver
+            const mirrorDriver = pickAnotherDriver(driverName)
+            // const mirrorDriver = 'local'  // for hard-coding the mirror driver
             const mirrorConfig = DRIVER_CONFIG[mirrorDriver]
             const mirrorDest = `mirrorDest_${rand(5)}/`
             describe(`${driverTest} - ${encDesc} write files in a new dir, read metadata, mirror to another place (${mirrorDriver}), verify mirror, recursively delete from both`, () => {

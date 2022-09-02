@@ -32,8 +32,8 @@ Mobiletto was designed to solve this problem. By coding your app to mobiletto's 
 change storage providers and know that your app's storage layer will behave identically.
 
 ### Extensive testing
-All drivers are tested for identical behavior with over 55 tests for each driver.
-Each driver test actually runs *four times*, with every (2x2) combination of:
+All drivers are tested for identical behavior with 60+ tests for each driver.
+Each test actually runs *four times* with every (2x2) combination of:
 * Encryption: both enabled and disabled
 * Redis cache: both enabled and disabled
 

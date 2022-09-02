@@ -26,6 +26,7 @@ class StorageClient {
     absoluteMinimumPartSize
     recommendedPartSize
     configuredPartSize
+    normalizeRegex
     constructor(keyId, appKey, opts) {
         if (!keyId || !appKey || !opts.bucket) throw new MobilettoError(`b2.StorageClient: key, secret and opts.bucket are required`)
         this.b2 = new B2({
@@ -36,6 +37,7 @@ class StorageClient {
         this.configuredPartSize = opts.partSize ? opts.partSize : -1
         this.bucket = opts.bucket
         this.delimiter = opts.delimiter || '/'
+        this.normalizeRegex = new RegExp(`${this.delimiter}{2,}`, 'g')
         this.prefix = opts.prefix
             ? opts.prefix.endsWith(this.delimiter)
                 ? opts.prefix
@@ -67,10 +69,12 @@ class StorageClient {
 
     testConfig = async () => await this.b2_list('', false, null, {max: 1})
 
-    normalizePath = (path) => path.length === 0 ? this.prefix :
-        path.startsWith(this.prefix)
+    normalizePath = (path) => {
+        const p = (path.startsWith(this.prefix)
             ? path
-            : this.prefix + (path.startsWith(this.delimiter) ? path.substring(1) : path)
+            : this.prefix + (path.startsWith(this.delimiter) ? path.substring(1) : path))
+        return p.replaceAll(this.normalizeRegex, this.delimiter)
+    }
     denormalizePath = (path) => {
         const norm = path.startsWith(this.prefix) ? path.substring(this.prefix.length) : path
         return norm.startsWith(this.delimiter) ? norm.substring(1) : norm
@@ -91,7 +95,7 @@ class StorageClient {
             name: this.denormalizePath(f.fileName),
             size: f.contentLength,
             type: this.b2type(f),
-            bb2id: f.fileId
+            b2id: f.fileId
         }
     }
 
@@ -135,7 +139,7 @@ class StorageClient {
                 const list = await this.processList(pth, response, visitor)
                 if (!optsDir && !firstResult && list.length > 0) {
                     firstResult = list[0]
-                    if (list[0].name.endsWith('/')) {
+                    if (list[0].name.endsWith(this.delimiter)) {
                         dirDiscovered = true
                     } else if (!dirDiscovered && list.length > 1 && list[1].name.startsWith(list[0].name)) {
                         files.push(list[0])
@@ -266,7 +270,7 @@ class StorageClient {
         try {
             const stream = await this.b2.downloadFileById({
                 bucketId: this.bucket,
-                fileId: meta.bb2id,
+                fileId: meta.b2id,
                 responseType: 'stream'
             })
             return await readStream(stream.data, callback, endCallback)
@@ -344,7 +348,7 @@ class StorageClient {
                 const response = await this.b2.listFileVersions({
                     bucketId: this.bucket,
                     startFileName: normPath,
-                    startFileId: meta.bb2id,
+                    startFileId: meta.b2id,
                     prefix: this.prefix,
                     delimiter: this.delimiter,
                     maxFileCount: 1000

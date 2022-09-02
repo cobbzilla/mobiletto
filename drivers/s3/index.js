@@ -28,12 +28,14 @@ class StorageClient {
     bucket
     prefix
     delimiter
+    normalizeRegex
     constructor(key, secret, opts) {
         if (!key || !secret || !opts || !opts.bucket) {
             throw new MobilettoError('s3.StorageClient: key, secret, and opts.bucket are required')
         }
         this.bucket = opts.bucket
         const delim = this.delimiter = opts.delimiter || DEFAULT_DELIMITER
+        this.normalizeRegex = new RegExp(`${this.delimiter}{2,}`, 'g')
         this.prefix = opts.prefix || DEFAULT_PREFIX
             ? opts.prefix.endsWith(delim)
                 ? opts.prefix
@@ -64,7 +66,7 @@ class StorageClient {
         try {
             return await this._list(path, recursive, visitor)
         } catch (e) {
-            if (e instanceof MobilettoNotFoundError && !recursive && path.includes('/')) {
+            if (e instanceof MobilettoNotFoundError && !recursive && path.includes(this.delimiter)) {
                 // are we trying to list a single file?
                 const objects = await this._list(dirname(path), false)
                 const found = objects.find(o => o.name === path)
@@ -151,7 +153,7 @@ class StorageClient {
         const p = (path.startsWith(this.prefix)
             ? path
             : this.prefix + (path.startsWith(this.delimiter) ? path.substring(1) : path))
-        return p.replaceAll(/\/{2,}/g, '/')
+        return p.replaceAll(this.normalizeRegex, this.delimiter)
     }
     denormalizeKey = (key) => {
         return key.startsWith(this.prefix)
