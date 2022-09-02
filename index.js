@@ -209,7 +209,7 @@ const UTILITY_FUNCTIONS = {
     },
     write: (client) => async (path, data) => {
         logger.debug(`util.write(${path}) starting ...`)
-        const p = path.startsWith(this.delimiter) ? path.substring(1) : path
+        const p = path.startsWith('/') ? path.substring(1) : path
         if (p !== path) {
             logger.debug(`util.write(${path}) removed leading ${this.delimiter}`)
         }
