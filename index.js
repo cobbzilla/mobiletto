@@ -584,7 +584,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                     throw new MobilettoError('write: error writing dirent file')
                 }
                 p = dirname(p)
-                if (p === '.' || p === '') {
+                if (p === '.' || p === '' || p === '/') {
                     break
                 }
             }
