@@ -1,0 +1,16 @@
+{
+  "inputLanguage": "en",
+  "languages": "all",
+  "hokey": [
+    {
+      "name": "README",
+      "infile": "README.md",
+      "outfile": "docs/LANG/",
+      "excludes": ["docs/", "node_modules/", "\\.git/", "tmp/"],
+      "filter": "relativizeMarkdownLinks docs",
+      "force": true,
+      "markdown": true,
+      "index": "docs/README.md"
+    }
+  ]
+}

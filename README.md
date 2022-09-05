@@ -18,6 +18,50 @@ Mobiletto is a JavaScript storage abstraction layer, with optional transparent c
 * [Driver interface](#Driver-interface)
 * [Logging](#Logging)
 
+# Read this in another language
+This README.md document has been translated, via [hokeylization](https://github.com/cobbzilla/hokeylization), into
+**[every language supported by Google Translate](https://cloud.google.com/translate/docs/languages)!**
+
+I'm certain it's not perfect, but I hope it's better than nothing!
+
+&nbsp;&nbsp;&nbsp;[🇸🇦 Arabic](docs/ar/README.md)
+&nbsp;&nbsp;&nbsp;[🇧🇩 Bengali](docs/bn/README.md)
+&nbsp;&nbsp;&nbsp;[🇩🇪 German](docs/de/README.md)
+&nbsp;&nbsp;&nbsp;[🇺🇸 English](docs/en/README.md)
+&nbsp;&nbsp;&nbsp;[🇪🇸 Spanish](docs/es/README.md)
+&nbsp;&nbsp;&nbsp;[🇫🇷 French](docs/fr/README.md)
+&nbsp;&nbsp;&nbsp;[🇹🇩 Hausa](docs/ha/README.md)
+&nbsp;&nbsp;&nbsp;[🇮🇳 Hindi](docs/hi/README.md)
+&nbsp;&nbsp;&nbsp;[🇮🇩 Indonesian](docs/id/README.md)
+&nbsp;&nbsp;&nbsp;[🇮🇹 Italian](docs/it/README.md)
+&nbsp;&nbsp;&nbsp;[🇯🇵 Japanese](docs/ja/README.md)
+&nbsp;&nbsp;&nbsp;[🇰🇷 Korean](docs/ko/README.md)
+&nbsp;&nbsp;&nbsp;[🇮🇳 Maranthi](docs/mr/README.md)
+&nbsp;&nbsp;&nbsp;[🇵🇱 Polish](docs/pl/README.md)
+&nbsp;&nbsp;&nbsp;[🇧🇷 Portuguese](docs/pt/README.md)
+&nbsp;&nbsp;&nbsp;[🇷🇺 Russian](docs/ru/README.md)
+&nbsp;&nbsp;&nbsp;[🇰🇪 Swahili](docs/sw/README.md)
+&nbsp;&nbsp;&nbsp;[🇵🇭 Tagalog](docs/tl/README.md)
+&nbsp;&nbsp;&nbsp;[🇹🇷 Turkish](docs/tr/README.md)
+&nbsp;&nbsp;&nbsp;[🇵🇰 Urdu](docs/ur/README.md)
+&nbsp;&nbsp;&nbsp;[🇻🇳 Vietnamese](docs/vi/README.md)
+&nbsp;&nbsp;&nbsp;[🇨🇳 Chinese](docs/zh/README.md)
+<br/>
+&nbsp;&nbsp;&nbsp;**[📚 ... All Languages ...](docs/README.md)**
+----
+
+### Is there a problem with this translation of the README?
+This particular translation of the original [README](https://github.com/cobbzilla/mobiletto/blob/master/README.md)
+may be flawed -- *corrections are very welcome!* Please send a [pull request on GitHub](https://github.com/cobbzilla/mobiletto/pulls),
+or if you're not comfortable doing that, [open an issue](https://github.com/cobbzilla/mobiletto/issues)
+
+When you create a new GitHub issue about a translation, please do:
+* include the page URL (copy/paste from browser address bar)
+* include the exact text that is wrong (copy/paste from browser)
+* please describe what is wrong -- is the translation incorrect? is the formatting broken somehow?
+* kindly offer a suggestion of a better translation, or how the text should be properly formatted
+* **Thank you!**
+
 ## Why Mobiletto?
 
 ### Goodbye vendor lock-in!
@@ -324,6 +368,10 @@ some effort, discover some or all of the overall structure of the directory hier
 *Note: Use a relatively flat structure for better security.*
 The adversary would not know the names of the directories/files unless they also knew your encryption
 key or had otherwise successfully cracked the encryption. All bets are off then!
+
+### Performance and caching
+Operations on encrypted storage can be slow. Recursive listings and removals can be very slow.
+Caching via redis helps tremendously, but note that the cache is flushed upon any writes or removes.
 
 ## Key rotation
 Create a mobiletto with your new key, then mirror the old data into it:
