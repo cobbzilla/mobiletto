@@ -539,8 +539,13 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                 try {
                     entries = await _loadMeta(dirent, await client.list(dirent))
                 } catch (e) {
-                    if (e instanceof MobilettoNotFoundError && p.includes('/')) {
-                        return await tryParentDirForSingleFile(p, visitor, e)
+                    if (e instanceof MobilettoNotFoundError) {
+                        if (p.includes('/')) {
+                            return await tryParentDirForSingleFile(p, visitor, e)
+                        }
+                        throw e
+                    } else {
+                        throw new MobilettoError(`encClient.list(${p}): ${e}`, e)
                     }
                 }
                 if (recursive) {

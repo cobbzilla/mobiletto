@@ -129,7 +129,7 @@ if (!redisSetup.enabled) continue
 
 for (const driverName of DRIVER_NAMES) {
 // For testing single drivers
-// if (driverName !== 'local') continue
+// if (driverName !== 'b2') continue
 
 const driverTest = `${driverName} [${redisSetup.name}]`
 const config = redisSetup.config(DRIVER_CONFIG[driverName])
@@ -373,8 +373,9 @@ describe(`${driverTest} test`, () => {
             })
             it("should successfully recursively list files and see all correct subdirectories and files", async () => {
                 const allFiles = await fixture.api.list(randomParent, { recursive: true })
-                expect(allFiles).to.have.lengthOf(fileCount + 1)
-                expect(allFiles.find(f => f.name === fullSubdirPath && f.type === M_DIR)).to.not.be.null
+                expect(allFiles).to.have.lengthOf.greaterThanOrEqual(fileCount)
+                // Not all drivers return "dir" entries when recursively listing. We should see all the files though
+                // expect(allFiles.find(f => f.name === fullSubdirPath && f.type === M_DIR)).to.not.be.null
                 expect(allFiles.find(f => f.name === fixture.name && f.type === M_FILE)).to.not.be.null
                 for (let i = 0; i < fileCount; i++) {
                     expect(allFiles.find(f => f.name === tempFilename(fixture.name, i) && f.type === M_FILE)).to.not.be.null
@@ -389,7 +390,7 @@ describe(`${driverTest} test`, () => {
                 expect(objects[0]).to.have.property('type', M_DIR, `subdir should have type ${M_DIR}`)
             })
             it("should see correct types on objects returned from a listing of the subdirectory", async () => {
-                const objects = await fixture.api.list(`${randomParent}/${subdirName}`)
+                const objects = await fixture.api.list(`${randomParent}/${subdirName}/`)
                 expect(objects).to.have.lengthOf(fileCount)
                 for (let i = 0; i < fileCount; i++) {
                     // we should find all the files, and they should all have the correct type
@@ -404,15 +405,17 @@ describe(`${driverTest} test`, () => {
                 expect(results).to.have.property('success').greaterThan(0, 'expected some successes in mirroring')
             })
             it("should see the same files mirrored both places", async () => {
-                const originalThings = await fixture.api.list(fullSubdirPath)
+                const originalThings = await fixture.api.list(fullSubdirPath, { recursive: true })
                 const mirrorPath = `${mirrorDest}${subdirName}`
-                const mirrorThings = await fixture.mirrorApi.list(mirrorPath)
+                const mirrorThings = await fixture.mirrorApi.list(mirrorPath, { recursive: true })
                 expect(originalThings.length === mirrorThings.length).to.be.true
 
-                const intersection = originalThings
-                    .filter(orig => mirrorThings
+                const originalFiles = originalThings.filter(o => o.type === M_FILE)
+                const mirrorFiles = mirrorThings.filter(o => o.type === M_FILE)
+                const intersection = originalFiles
+                    .filter(orig => mirrorFiles
                         .find(m => basename(m.name) === basename(orig.name)))
-                expect(intersection.length === originalThings.length).to.be.true
+                expect(intersection.length === originalFiles.length).to.be.true
             })
             it("loading metadata on a mirrored file succeeds", async () => {
                 const destPath = mirrorDest + subdirName + '/' + basename(fixture.name)

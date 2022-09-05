@@ -54,7 +54,7 @@ class MobilettoCache {
             this.flush().then(
                 () => { logger.debug(`redis(${name}): successfully flushed`) },
                 (e) => {
-                    logger.error(`redis(${name}): error flushing: ${e}, not using redis!`)
+                    logger.warn(`redis(${name}): error flushing: ${e}, disabling redis`)
                     this.redis = null
                 }
             )

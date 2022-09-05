@@ -125,7 +125,7 @@ class StorageClient {
             const files = []
             await this.auth()
             const hasMax = opts && opts.max
-            const maxFileCount = hasMax ? opts.max : 100
+            const maxFileCount = hasMax ? opts.max : 1000
             const pfx = (this.prefix.length === 0 || this.prefix.endsWith(this.delimiter) ? this.prefix : this.prefix + this.delimiter) +
                 (pth.startsWith(this.delimiter) ? pth.substring(0) : pth)
 
@@ -137,13 +137,31 @@ class StorageClient {
             })
             const handleResponse = async (files, pth, response, visitor) => {
                 const list = await this.processList(pth, response, visitor)
+                if (list.length === 0) {
+                    return true
+                }
                 if (!optsDir && !firstResult && list.length > 0) {
                     firstResult = list[0]
-                    if (list[0].name.endsWith(this.delimiter)) {
-                        dirDiscovered = true
-                    } else if (!dirDiscovered && list.length > 1 && list[1].name.startsWith(list[0].name)) {
-                        files.push(list[0])
-                        return true
+                    const exact = firstResult.name === pth || firstResult.name === pth + this.delimiter
+                    if (exact) {
+                        // we found exactly what we were looking for
+                        // if the next thing in the list starts with it plus delimiter,
+                        // it is a directory, return the contents as long as they match
+                        if (list.length > 1 && list[1].name.startsWith(pth + this.delimiter)) {
+                            const dirEntries = list.filter(o => o.name.startsWith(pth));
+                            files.push(...dirEntries)
+                            return false
+                        } else if (firstResult.name.endsWith(this.delimiter)) {
+                            const dirEntries = list.filter(o => o.name.startsWith(pth));
+                            files.push(...dirEntries)
+                            dirDiscovered = true
+                            return true
+
+                        } else {
+                            // it's an exact file-match, return it
+                            files.push(list[0])
+                            return true
+                        }
                     }
                 }
                 if (hasMax && files.length + list.length >= maxFileCount) {
