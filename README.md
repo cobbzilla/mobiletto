@@ -8,6 +8,7 @@ Mobiletto is a JavaScript storage abstraction layer, with optional transparent c
 * [Quick start](#Quick-start)
 * [Mobiletto CLI](#mobiletto-cli)
 * [Source](#Source)
+* [Installation](#Installation)
 * [Basic usage](#Basic-usage)
 * [Metadata](#Metadata)
 * [Alternate import style](#Alternate-import-style)
@@ -17,6 +18,10 @@ Mobiletto is a JavaScript storage abstraction layer, with optional transparent c
 * [Key rotation](#Key-rotation)
 * [Driver interface](#Driver-interface)
 * [Logging](#Logging)
+
+### This is mobiletto-lite
+In order to lighten the weight of this npm package, this branch does not include any localized translations
+of the mobiletto documentation. It otherwise works the same as the regular `mobiletto` software.
 
 # Read this in another language
 This README.md document has been translated, via [hokeylization](https://github.com/cobbzilla/hokeylization), into
@@ -100,6 +105,18 @@ To work with mobiletto at the command-line, use [mobiletto-cli](https://www.npmj
 ## Source
 * [mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
 * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+## Installation
+Install using `npm` or `yarn`. You probably want the `lite` version that does not include all the
+translated README files:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+If you really want the README files in every language, get the full version:
+
+    npm install mobiletto
+    yarn add mobiletto
 
 ## Quick Start
 A short example using the mobiletto `s3` driver.
