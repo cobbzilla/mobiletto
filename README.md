@@ -33,7 +33,7 @@ change storage providers and know that your app's storage layer will behave iden
 
 ### Extensive testing
 All drivers are tested for identical behavior with 60+ tests for each driver.
-Each test actually runs *four times* with every (2x2) combination of:
+We test all drivers with every combination of:
 * Encryption: both enabled and disabled
 * Redis cache: both enabled and disabled
 
@@ -70,13 +70,13 @@ This code would run the same if the driver were `b2` or `local`.
     const dirList = await bucket.list('some/dir/')
     const everything = await bucket.list('', {recursive: true})
 
-    // write an entire file in one-shot
+    // write an entire file
     let bytesWritten = await bucket.writeFile('some/path', someBufferOfData)
 
     // write a file from a stream/generator
     bytesWritten = await bucket.write('some/path', streamOrGenerator)
 
-    // read an entire file in one-shot
+    // read an entire file
     // returns null if an exception would otherwise be thrown
     const bufferOrNull = await bucket.safeReadFile('some/path')
 
@@ -160,9 +160,13 @@ A much more extensive example, showing most of the features offered:
     const callback = (chunk) => { ... write chunk somewhere ...  } 
     api.read(path, callback)  // returns count of bytes read
 
-    // Read an entire file at once (convenience method)
+    // Read an entire file at once
     const data = await api.readFile(path)  // returns a byte Buffer of the file contents
     
+    // Read an entire file at once
+    // returns null if an exception would otherwise be thrown
+    const bufferOrNull = await bucket.safeReadFile('some/path')
+
     // Write a file
     // Provide a generator function that yields chunks of data 
     const generator = function* () {

@@ -1,6 +1,6 @@
 {
   "name": "mobiletto",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "description": "A storage layer that presents a uniform interface to Amazon S3, Backblaze B2, and local storage",
   "main": "index.js",
   "keywords": [
@@ -8,7 +8,8 @@
     "s3",
     "b2",
     "simple",
-    "filesystem"
+    "filesystem",
+    "mobiletto"
   ],
   "homepage": "https://github.com/cobbzilla/mobiletto",
   "author": "Jonathan Cobb <bqppl0m2@duck.com> (https://github.com/cobbzilla)",

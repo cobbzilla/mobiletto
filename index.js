@@ -9,7 +9,7 @@ const randomstring = require('randomstring')
 
 const crypt = require('./util/crypt')
 const {DEFAULT_CRYPT_ALGO, normalizeKey, normalizeIV, encrypt, decrypt} = require("./util/crypt")
-const LRU = require("lru-cache");
+const LRU = require("lru-cache")
 
 const DIR_ENT_DIR_SUFFIX = '__.dirent'
 const DIR_ENT_FILE_PREFIX = 'dirent__'
@@ -516,36 +516,50 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                 return thing
             }
 
-            async function tryParentDirForSingleFile (path, visitor, e) {
+            async function tryParentDirForSingleFile (p, visitor, e) {
                 // it might be a single file, try listing the parent dir
-                const parentDirent = direntDir(path.dirname(p));
-                entries = await client.list(parentDirent, false)
+                const parentDirent = direntDir(dirname(p))
+                entries = await client.list(parentDirent)
                 const objects = await _loadMeta(parentDirent, entries)
                 const found = objects.find(o => o.name === p)
                 if (found) {
                     if (visitor) {
                         await visitor(found)
                     }
-                    logger.debug(`tryParentDirForSingleFile(${path}) found ${found.name}`)
+                    logger.debug(`tryParentDirForSingleFile(${p}) found ${found.name}`)
                     return cacheAndReturn([found])
                 }
-                logger.debug(`tryParentDirForSingleFile(${path}) nothing found! e=${e}`)
-                throw e === null ? new MobilettoNotFoundError(path) : e
+                logger.debug(`tryParentDirForSingleFile(${p}) nothing found! e=${e}`)
+                throw e === null ? new MobilettoNotFoundError(p) : e
             }
 
             if (cached) {
                 entries = cached
             } else {
                 try {
-                    entries = await client.list(dirent, recursive)
+                    entries = await _loadMeta(dirent, await client.list(dirent))
                 } catch (e) {
                     if (e instanceof MobilettoNotFoundError && p.includes('/')) {
-                        return await tryParentDirForSingleFile(path, visitor, e)
+                        return await tryParentDirForSingleFile(p, visitor, e)
+                    }
+                }
+                if (recursive) {
+                    const dirs = entries.filter(obj => obj.type === M_DIR)
+                    while (dirs.length > 0) {
+                        const dir = dirs.shift()
+                        const subdir = direntDir(dir.name)
+                        const subdirListing = await client.list(subdir)
+                        if (subdirListing && subdirListing.length > 0) {
+                            const subdirEntries = await _loadMeta(subdir, subdirListing)
+                            entries.push(...subdirEntries)
+                            const moreDirs = subdirEntries.filter(obj => obj.type === M_DIR)
+                            dirs.unshift(...moreDirs)
+                        }
                     }
                 }
             }
             if (entries.length === 0 && p.includes('/')) {
-                return await tryParentDirForSingleFile(path, visitor, null)
+                return await tryParentDirForSingleFile(p, visitor, null)
             }
             if (cache) {
                 cache.set(cacheKey, entries).then(
@@ -557,14 +571,11 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                 return []
             }
             if (visitor) {
-                const objects = await _loadMeta(dirent, entries)
-                for (const obj of objects) {
+                for (const obj of entries) {
                     await visitor(obj)
                 }
-                return objects
-            } else {
-                return _loadMeta(dirent, entries)
             }
+            return entries
         },
         metadata: _metadata(client),
         read: async (path, callback) => {
