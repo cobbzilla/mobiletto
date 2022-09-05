@@ -8,6 +8,8 @@ Mobiletto
  * [Mimitian Gancang](#Mimitian Gancang)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Sumber](#Sumber)
+ * [Pamasangan](#Pasang)
+ * [Rojongan sareng Pembiayaan](#Rojongan-sareng-Dana)
  * [Pamakéan Dasar](#Pamakéan Dasar)
  * [Metadata](#Metadata)
  * [Gaya impor alternatip](#gaya-impor alternatif)
@@ -101,6 +103,30 @@ Mobiletto
  ## Sumber
  * [mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Rojongan sareng Pembiayaan
+ Kuring nyobian janten pamekar software open source profésional. Kuring geus digawé di
+ industri software salila sababaraha taun, Kuring geus dimimitian pausahaan suksés jeung dijual ka pausahaan umum.
+ Anyar-anyar ieu kuring kaleungitan padamelan, sareng kuring henteu ngagaduhan padamelan anu sanés
+
+ Janten kuring badé nyobian nyerat parangkat lunak anu mangpaat sareng ningali upami éta jalanna
+
+ Upami anjeun resep nganggo parangkat lunak ieu, kuring bakal nganuhunkeun pisan pikeun malah
+ pangleutikna [kontribusi bulanan via Patreon](https://www.patreon.com/cobbzilla)
+
+ *Hatur nuhun!*
+
+ ## Pamasangan
+ Pasang nganggo `npm` atawa `yarn` . Anjeun panginten hoyong versi `lite` anu henteu kalebet sadayana
+ file README ditarjamahkeun:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Upami anjeun hoyong file README dina unggal basa, pasang versi lengkepna:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Mimitian Gancang
  Conto pondok nganggo supir `s3` .
@@ -371,7 +397,7 @@ Mobiletto
  konci atawa geus disebutkeun hasil retakan enkripsi. Kabéh bets pareum lajeng!
 
  ### Kinerja sareng cache
- Operasi dina neundeun énkripsi tiasa laun. Listing rekursif sareng panyabutan tiasa lambat pisan.
+ Operasi dina panyimpenan énkripsi tiasa laun. Listing rekursif sareng panyabutan tiasa lambat pisan.
  Caching via redis mantuan tremendously, tapi perhatikeun yén cache ieu flushed kana sagala nyerat atanapi ngahapus.
 
  ## Rotasi konci

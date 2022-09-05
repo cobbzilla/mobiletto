@@ -8,6 +8,8 @@ Mobiletto
  * [Hitri začetek](#Hitri začetek)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Vir](#Vir)
+ * [Namestitev](#Namestitev)
+ * [Podpora in financiranje](#Podpora-in-financiranje)
  * [Osnovna uporaba](#Basic-usage)
  * [Metapodatki](#Metapodatki)
  * [Nadomestni slog uvoza](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Vir
  * [mobiletto na GitHubu](https://github.com/cobbzilla/mobiletto)
  * [mobiletto na npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Podpora in financiranje
+ Poskušam biti profesionalni razvijalec odprtokodne programske opreme. Delal sem v
+ v industriji programske opreme že vrsto let ustanavljam uspešna podjetja in jih prodajam javnim podjetjem.
+ Pred kratkim sem izgubil službo in pravzaprav nimam nobenega drugega dela
+
+ Zato bom poskusil napisati uporabno programsko opremo in preveril, ali deluje
+
+ Če radi uporabljate to programsko opremo, vam bom zelo hvaležen celo za
+ najmanjši [mesečni prispevek prek Patreona](https://www.patreon.com/cobbzilla)
+
+ *Hvala vam!*
+
+ ## Namestitev
+ Namestite z uporabo `npm` ali `yarn` . Verjetno želite `lite` različico, ki ne vključuje vseh
+ prevedene datoteke README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Če res želite datoteke README v vseh jezikih, namestite polno različico:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Hiter začetek
  Kratek primer uporabe gonilnika mobiletto `s3` .
@@ -443,7 +469,7 @@ Mobiletto
     MOBILETTO_LOG_LEVEL=silly # maximum logs!
 
  ### Dnevniška datoteka
- Zapisovalnik privzeto piše v konzolo. Za pošiljanje dnevnikov v datoteko nastavite `MOBILETTO_LOG_FILE`
+ Privzeto beležnik piše v konzolo. Za pošiljanje dnevnikov v datoteko nastavite `MOBILETTO_LOG_FILE`
  spremenljivka okolja. Ko se prijavite v datoteko, se dnevniki ne bodo več zapisovali v konzolo.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log

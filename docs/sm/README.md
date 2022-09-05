@@ -8,6 +8,8 @@ Mobiletto
  * [Amata vave](#Amata vave)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Source](#Source)
+ * [Fa'apipi'i](#Fa'apipi'i)
+ * [Lagolago ma le Faatupeina](#Support-and-Funding)
  * [Fa'aoga masani](#Fa'aoga-fa'aoga)
  * [Metadata](#Metadata)
  * [Sui fa'aulufale mai](#Alternate-import-style)
@@ -66,7 +68,7 @@ Mobiletto
  ## Aisea Mobiletto?
 
  ### Tofa le tagata faatau loka-i totonu!
- O 'au'aunaga teu oloa eseese e iai API e le fetaui. E oʻo lava ia i latou o loʻo taumafai mo le "S3 compatibility"
+ O le tele o mea e teu ai ao e iai API e le fetaui. E oʻo lava ia i latou o loʻo taumafai mo le "S3 compatibility"
  e iai uiga fa'apitoa.
 
  A e filifilia se fa'atau oloa teu mo lau app, pe a e fa'ailoga sa'o i la latou API, lau app
@@ -78,7 +80,7 @@ Mobiletto
 
  ### Su'ega tele
  O aveta'avale uma e fa'ata'ita'iina mo uiga tutusa ma le 60+ su'ega mo ta'avale ta'itasi.
- Matou te faʻataʻitaʻiina avetaavale uma i tuʻufaʻatasiga uma o:
+ Matou te suʻeina avetaʻavale uma i tuʻufaʻatasiga uma o:
  * Fa'ailoga: e mafai uma ma fa'aletonu
  * Redis cache: mafai uma ma le le atoatoa
 
@@ -89,7 +91,7 @@ Mobiletto
  Avetaavale teuina Mobiletto nei:
  * `s3` : Amazon S3
  * `b2` : Backblaze B2
- * `local` : faiga faila i le lotoifale
+ * `local` : faiga faila fa'apitonu'u
 
  *O sao e lagolago ai le tele o kamupani e teu ai ao e matua talia!*
 
@@ -101,6 +103,30 @@ Mobiletto
  ## Punavai
  * [mobiletto i luga ole GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Lagolago ma Faatupeina
+ O lo'o ou taumafai e avea a'u ma se tagata fa'apolofesa fa'apolofesa fa'apolofesa matala. Sa ou galue i totonu
+ le pisinisi faakomepiuta mo le tele o tausaga, ua ou amataina kamupani manuia ma faatau atu i kamupani lautele.
+ Talu ai nei na ou leiloa ai laʻu galuega, ma e leai lava se isi galuega o loʻo faʻatulagaina
+
+ O lea o le a ou taumafai e tusi le polokalama fesoasoani ma vaai pe aoga
+
+ Afai e te fiafia e faʻaaoga lenei polokalama, ou te matua faʻafetai lava mo le
+ aupito itiiti [saomea faalemasina e ala i Patreon](https://www.patreon.com/cobbzilla)
+
+ *Faafetai!*
+
+ ## Fa'apipi'i
+ Fa'apipi'i fa'aaoga `npm` po'o `yarn` . Atonu e te mana'o i le `lite` version e le aofia uma ai
+ fa'aliliu faila README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Afai e te manaʻo moni i faila README i gagana uma, faʻapipiʻi le faʻasologa atoa:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Amata vave
  O se fa'ata'ita'iga pu'upu'u e fa'aaoga ai le aveta'avale mobiletto `s3` .
@@ -374,7 +400,7 @@ Mobiletto
  E mafai ona faagesegese le fa'agaioiga i luga o le teuina fa'ailoga. E mafai ona telegese le fa'asologa o lisi ma aveese.
  E fesoasoani tele le fa'asaoina e ala i le redis, ae ia maitauina o lo'o fa'afefe le cache i luga o so'o se tusitusiga pe aveese.
 
- ## Ki suiga
+ ## Fa'aliliuga ki
  Fausia se mobiletto i lau ki fou, ona faʻataʻitaʻi lea o faʻamaumauga tuai i totonu:
 
     const storage = require('mobiletto')
@@ -437,7 +463,7 @@ Mobiletto
  Fa'aoga le suiga ole siosiomaga `MOBILETTO_LOG_LEVEL` e seti ai le maualuga o ogalaau, fa'aaoga le tasi
  o tulaga `npm` o lo'o fa'amatalaina i le [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
 
- Ole tulaga fa'aletonu ole `error` . Ole la'asaga pito sili ona tautala ole `silly` , e ui o le taimi nei o mobiletto
+ Ole tulaga fa'aletonu ole `error` . Ole la'asaga pito sili ona tautala ole `silly` , e ui o le taimi nei o le mobiletto
  e le fa'amauina i tulaga i lalo ole `debug`
 
     MOBILETTO_LOG_LEVEL=silly # maximum logs!

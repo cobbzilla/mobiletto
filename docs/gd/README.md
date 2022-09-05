@@ -8,6 +8,8 @@ gluasadach
  * [Tòiseachadh luath](#Tòiseachadh luath)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Stòr](#Stòr)
+ * [Stàladh](#Stàladh)
+ * [Taic is Maoineachadh](#Taic-is-Maoineachadh)
  * [Cleachdadh bunaiteach](#Basic-use)
  * [Metadata](#Metadata)
  * [Stoidhle in-mhalairt eile](#Alternate-import-style)
@@ -101,6 +103,30 @@ gluasadach
  ## Stòr
  * [mobiletto air GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto air npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Taic agus Maoineachadh
+ Tha mi a’ feuchainn ri bhith nam leasaiche bathar-bog còd fosgailte proifeasanta. Tha mi air a bhith ag obair ann
+ ann an gnìomhachas bathar-bog airson grunn bhliadhnaichean, tha mi air companaidhean soirbheachail a thòiseachadh agus air an reic ri companaidhean poblach.
+ O chionn ghoirid chaill mi an obair agam, agus gu dearbh chan eil obair sam bith eile agam
+
+ Mar sin tha mi a’ dol a dh’fheuchainn ri bathar-bog feumail a sgrìobhadh agus faicinn a bheil sin ag obair
+
+ Ma tha e a’ còrdadh riut a bhith a’ cleachdadh a’ bhathar-bog seo, bhithinn fada taingeil airson eadhon an
+ as lugha [tabhartas mìosail tro Patreon](https://www.patreon.com/cobbzilla)
+
+ *Tapadh leat!*
+
+ ## Stàladh
+ Stàlaich a’ cleachdadh `npm` no `yarn` . Is dòcha gu bheil thu ag iarraidh an dreach `lite` nach eil a’ toirt a-steach na h-uile
+ faidhlichean README eadar-theangaichte:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Ma tha thu dha-rìribh ag iarraidh na faidhlichean README anns a h-uile cànan, stàlaich an dreach slàn:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Tòiseachadh luath
  Eisimpleir ghoirid a’ cleachdadh an draibhear mobiletto `s3` .
@@ -437,7 +463,7 @@ gluasadach
  Cleachd caochladair àrainneachd `MOBILETTO_LOG_LEVEL` gus an ìre loga a shuidheachadh, a' cleachdadh aon
  de na h-ìrean `npm` a tha air am mìneachadh ann an [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
 
- Is e an ìre bunaiteach `error` . Is e an ìre as `silly` , ged a tha e mobiletto an-dràsta
+ Is e an ìre bunaiteach `error` . Tha an ìre as gnìomhaiche ‘gòrach’, ged a tha e `silly` an-dràsta
  na logadh aig ìrean fo `debug`
 
     MOBILETTO_LOG_LEVEL=silly # maximum logs!

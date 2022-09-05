@@ -8,6 +8,8 @@ Mobiletto
  * [Hurtig start](#Hurtigstart)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Kilde](#Kilde)
+ * [Installation](#Installation)
+ * [Support and Funding](#Support-and-Funding)
  * [Grundlæggende brug](#Basis-brug)
  * [Metadata](#Metadata)
  * [Alternativ import-stil](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Kilde
  * [mobiletto på GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto på npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Støtte og finansiering
+ Jeg forsøger at være en professionel open source softwareudvikler. Jeg har arbejdet i
+ softwareindustrien i mange år, har jeg startet succesrige virksomheder og solgt dem til offentlige virksomheder.
+ For nylig mistede jeg mit job, og jeg har ikke rigtig noget andet arbejde i kø
+
+ Så jeg vil prøve at skrive nyttig software og se om det virker
+
+ Hvis du kan lide at bruge denne software, ville jeg være meget taknemmelig for selv
+ mindste [månedligt bidrag via Patreon](https://www.patreon.com/cobbzilla)
+
+ *Tak skal du have!*
+
+ ## Installation
+ Installer med `npm` eller `yarn` . Du vil sandsynligvis have `lite` versionen, der ikke inkluderer alle
+ oversatte README-filer:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Hvis du virkelig vil have README-filerne på alle sprog, skal du installere den fulde version:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Hurtig start
  Et kort eksempel ved hjælp af mobiletto `s3` driveren.
@@ -371,7 +397,7 @@ Mobiletto
  nøgle eller på anden måde havde knækket krypteringen. Så er alle væddemål slået fra!
 
  ### Ydeevne og cachelagring
- Operationer på krypteret lagring kan være langsomme. Rekursive lister og fjernelser kan være meget langsomme.
+ Operationer på krypteret lager kan være langsomme. Rekursive lister og fjernelser kan være meget langsomme.
  Caching via redis hjælper enormt, men bemærk, at cachen tømmes ved enhver skrivning eller fjernelse.
 
  ## Nøglerotation

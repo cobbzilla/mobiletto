@@ -8,6 +8,8 @@ Mobiletto
  * [התחלה מהירה](#Quick-start)
  * [Mobiletto CLI](#mobiletto-cli)
  * [מקור](#מקור)
+ * [התקנה](#התקנה)
+ * [תמיכה ומימון](#Support-and-Funding)
  * [שימוש בסיסי](#שימוש בסיסי)
  * [Metadata](#Metadata)
  * [סגנון ייבוא חלופי](#סגנון ייבוא חלופי)
@@ -101,6 +103,30 @@ Mobiletto
  ## מקור
  * [mobiletto ב-GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto ב-npm](https://www.npmjs.com/package/mobiletto)
+
+ ## תמיכה ומימון
+ אני מנסה להיות מפתח תוכנה מקצועי בקוד פתוח. עבדתי ב
+ בתעשיית התוכנה במשך שנים רבות, הקמתי חברות מצליחות ומכרתי אותן לחברות ציבוריות.
+ לאחרונה איבדתי את עבודתי, ואין לי באמת עבודה אחרת
+
+ אז אני הולך לנסות לכתוב תוכנה מועילה ולראות אם זה עובד
+
+ אם אתה נהנה להשתמש בתוכנה זו, אני אודה מאוד אפילו על
+ הקטן ביותר [תרומה חודשית דרך Patreon](https://www.patreon.com/cobbzilla)
+
+ *תודה!*
+
+ ## התקנה
+ התקן באמצעות `npm` או `yarn` . אתה בטח רוצה את גרסת `lite` שאינה כוללת את כל ה
+ קובצי README מתורגמים:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ אם אתה באמת רוצה את קבצי README בכל שפה, התקן את הגרסה המלאה:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## התחלה מהירה
  דוגמה קצרה באמצעות מנהל ההתקן של `s3` .

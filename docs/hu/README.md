@@ -8,6 +8,8 @@ Mobiletto
  * [Gyors indítás](#Gyorsindítás)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Forrás](#Forrás)
+ * [Telepítés](#Telepítés)
+ * [Támogatás és finanszírozás](#Support-and-Funding)
  * [Alaphasználat](#Basic-usage)
  * [Metaadatok](#Metadata)
  * [Alternatív importstílus](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Forrás
  * [mobiletto a GitHubon](https://github.com/cobbzilla/mobiletto)
  * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Támogatás és finanszírozás
+ Megpróbálok professzionális nyílt forráskódú szoftverfejlesztő lenni. ben dolgoztam
+ A szoftveriparban évek óta sikeres cégeket alapítottam, amelyeket állami cégeknek adtam el.
+ Nemrég elvesztettem a munkámat, és nem igazán van más dolgom
+
+ Tehát megpróbálok hasznos szoftvereket írni, és megnézem, működik-e
+
+ Ha szívesen használja ezt a szoftvert, nagyon hálás lennék még a
+ legkisebb [havi hozzájárulás a Patreonon keresztül](https://www.patreon.com/cobbzilla)
+
+ *Köszönöm!*
+
+ ## Telepítés
+ Telepítés az `npm` vagy a `yarn` . Valószínűleg a `lite` verziót szeretné, amely nem tartalmazza az összes
+ lefordított README fájlok:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Ha valóban szeretné a README fájlokat minden nyelven, telepítse a teljes verziót:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Gyors indítás
  Egy rövid példa a mobiletto `s3` illesztőprogram használatára.

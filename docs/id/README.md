@@ -8,6 +8,8 @@ Mobiletto
  * [Mulai cepat](#Mulai cepat)
  * [Mobiletto CLI](#mobileto-cli)
  * [Sumber](#Sumber)
+ * [Pemasangan](#Pemasangan)
+ * [Dukungan dan Pendanaan](#Dukungan-dan-Pendanaan)
  * [Penggunaan dasar](#Penggunaan dasar)
  * [Metadata](#Metadata)
  * [Gaya impor alternatif](#Gaya impor alternatif)
@@ -66,7 +68,7 @@ Mobiletto
  ## Mengapa Mobiletto?
 
  ### Selamat tinggal vendor lock-in!
- Berbagai penyedia penyimpanan cloud memiliki API yang tidak kompatibel. Bahkan mereka yang berjuang untuk "kompatibilitas S3"
+ Berbagai penyedia penyimpanan cloud memiliki API yang tidak kompatibel. Bahkan mereka yang berusaha keras untuk "kompatibilitas S3"
  memiliki perilaku idiosinkratik.
 
  Saat Anda memilih vendor penyimpanan tertentu untuk aplikasi Anda, jika Anda membuat kode langsung ke API mereka, aplikasi Anda
@@ -101,6 +103,30 @@ Mobiletto
  ## Sumber
  * [mobiletto di GitHub](https://github.com/cobbzilla/mobileto)
  * [mobiletto di npm](https://www.npmjs.com/package/mobileto)
+
+ ## Dukungan dan Pendanaan
+ Saya mencoba menjadi pengembang perangkat lunak sumber terbuka profesional. Saya telah bekerja di
+ industri perangkat lunak selama bertahun-tahun, saya telah memulai perusahaan yang sukses dan menjualnya ke perusahaan publik.
+ Baru-baru ini saya kehilangan pekerjaan saya, dan saya tidak memiliki pekerjaan lain yang menunggu
+
+ Jadi saya akan mencoba menulis perangkat lunak yang bermanfaat dan melihat apakah itu berhasil
+
+ Jika Anda menikmati menggunakan perangkat lunak ini, saya akan sangat berterima kasih bahkan untuk
+ terkecil [kontribusi bulanan melalui Patreon](https://www.patreon.com/cobbzilla)
+
+ *Terima kasih!*
+
+ ## Instalasi
+ Instal menggunakan `npm` atau `yarn` . Anda mungkin menginginkan versi `lite` yang tidak menyertakan semua
+ file README yang diterjemahkan:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Jika Anda benar-benar menginginkan file README dalam setiap bahasa, instal versi lengkapnya:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Mulai cepat
  Contoh singkat menggunakan driver `s3` .

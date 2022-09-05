@@ -8,6 +8,8 @@ Mobiletto is a JavaScript storage abstraction layer, with optional transparent c
 * [Quick start](#Quick-start)
 * [Mobiletto CLI](#mobiletto-cli)
 * [Source](#Source)
+* [Installation](#Installation)
+* [Support and Funding](#Support-and-Funding)
 * [Basic usage](#Basic-usage)
 * [Metadata](#Metadata)
 * [Alternate import style](#Alternate-import-style)
@@ -100,6 +102,30 @@ To work with mobiletto at the command-line, use [mobiletto-cli](https://www.npmj
 ## Source
 * [mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
 * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+## Support and Funding
+I am attempting to be a professional open source software developer. I have been working in
+the software industry for many years, I have started successful companies and sold them to public companies.
+Recently I lost my job, and I don't really have any other work lined up
+
+So I'm going to try writing helpful software and see if that works
+
+If you enjoy using this software, I would be very thankful for even the
+smallest [monthly contribution via Patreon](https://www.patreon.com/cobbzilla)
+
+*Thank you!*
+
+## Installation
+Install using `npm` or `yarn`. You probably want the `lite` version that does not include all the
+translated README files:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+If you really want the README files in every language, install the full version:
+
+    npm install mobiletto
+    yarn add mobiletto
 
 ## Quick Start
 A short example using the mobiletto `s3` driver.

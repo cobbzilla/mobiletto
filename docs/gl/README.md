@@ -8,6 +8,8 @@ Mobiletto
  * [Inicio rápido](#Inicio rápido)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Fonte](#Fonte)
+ * [Instalación](#Instalación)
+ * [Apoio e financiamento](#Support-and-Funding)
  * [Uso básico](#Uso básico)
  * [Metadatos](#Metadatos)
  * [Estilo de importación alternativo](#Estilo de importación alternativo)
@@ -101,6 +103,30 @@ Mobiletto
  ## Fonte
  * [mobiletto en GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto en npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Apoio e financiamento
+ Estou tentando ser un programador profesional de software de código aberto. Estiven traballando
+ da industria do software durante moitos anos, comecei empresas exitosas e vendínllas a empresas públicas.
+ Recentemente perdín o meu traballo, e realmente non teño ningún outro traballo preparado
+
+ Entón, vou tentar escribir un software útil e ver se funciona
+
+ Se che gusta usar este software, estaríalle moi agradecido
+ máis pequena [contribución mensual a través de Patreon](https://www.patreon.com/cobbzilla)
+
+ *Grazas!*
+
+ ## Instalación
+ Instale usando `npm` ou `yarn` . Probablemente queira a versión `lite` que non inclúa todos os
+ ficheiros README traducidos:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Se realmente queres os ficheiros README en todos os idiomas, instala a versión completa:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Inicio rápido
  Un pequeno exemplo usando o controlador mobiletto `s3` .
@@ -355,7 +381,7 @@ Mobiletto
 
  Que pasa? Un directorio separado de "entrada de directorio" (directorio) (cifrado) rastrexa os ficheiros que hai nel
  directorio (tamén coñecido como o directorio dirent).
- * O comando `list` le os ficheiros de entrada do directorio, descifra cada ruta listada; despois devolve os metadatos de cada ficheiro
+ * O comando `list` le os ficheiros de entrada do directorio, descifra cada ruta listada; despois devolve os metadatos para cada ficheiro
  * Os comandos `list` son máis ineficientes, especialmente para directorios con gran número de ficheiros
  * O comando `write` escribe ficheiros dirent no directorio dirent de cada pai, de forma recursiva; despois escribe o ficheiro
  * Os comandos `write` incorrerán en escrituras O(N), con N = profundidade na xerarquía de directorios

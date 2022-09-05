@@ -8,6 +8,8 @@ Mobiletto
  * [Bidu ta' malajr](#Bidu ta' malajr)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Sors](#Sors)
+ * [Installazzjoni](#Installazzjoni)
+ * [Appoġġ u Finanzjament](#Appoġġ-u-Finanzjament)
  * [Użu Bażiku](#Użu Bażiku)
  * [Metadata](#Metadata)
  * [Stil ta' importazzjoni alternattiv](#Stil ta' importazzjoni alternattiv)
@@ -101,6 +103,30 @@ Mobiletto
  ## Sors
  * [mobiletto fuq GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto fuq npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Appoġġ u Finanzjament
+ Qed nipprova nkun żviluppatur professjonali ta' software open source. Ilni naħdem fiha
+ l-industrija tas-softwer għal ħafna snin, bdejt kumpaniji ta 'suċċess u biegħhom lil kumpaniji pubbliċi.
+ Dan l-aħħar tlift ix-xogħol tiegħi, u ma tantx għandi xogħol ieħor imħejji
+
+ Allura jien ser nipprova nikteb softwer utli u nara jekk dan jaħdem
+
+ Jekk inti tgawdi tuża dan is-software, inkun ferm thankful anke għall-
+ l-iżgħar [kontribuzzjoni ta' kull xahar permezz ta' Patreon](https://www.patreon.com/cobbzilla)
+
+ *Grazzi!*
+
+ ## Installazzjoni
+ Installa bl-użu ta `npm` " jew `yarn` . Probabilment trid il-verżjoni `lite` li ma tinkludix il-
+ fajls README tradotti:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Jekk verament trid il-fajls README f'kull lingwa, installa l-verżjoni sħiħa:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Quick Start
  Eżempju qasir bl-użu tas-sewwieq tal-mobiletto `s3` .

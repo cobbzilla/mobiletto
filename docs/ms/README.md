@@ -8,6 +8,8 @@ Mobiletto
  * [Quick start](#Quick-start)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Sumber](#Source)
+ * [Pemasangan](#Pemasangan)
+ * [Sokongan dan Pembiayaan](#Sokongan-dan-Pembiayaan)
  * [Penggunaan asas](#Penggunaan Asas)
  * [Metadata](#Metadata)
  * [Gaya import ganti](gaya import-ganti)
@@ -101,6 +103,30 @@ Mobiletto
  ## Sumber
  * [mobiletto di GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Sokongan dan Pembiayaan
+ Saya cuba menjadi pembangun perisian sumber terbuka profesional. Saya telah bekerja di
+ industri perisian selama bertahun-tahun, saya telah memulakan syarikat yang berjaya dan menjualnya kepada syarikat awam.
+ Baru-baru ini saya kehilangan pekerjaan, dan saya tidak mempunyai sebarang kerja lain yang disediakan
+
+ Jadi saya akan cuba menulis perisian yang berguna dan melihat sama ada ia berfungsi
+
+ Jika anda gemar menggunakan perisian ini, saya akan sangat berterima kasih kerana
+ terkecil [sumbangan bulanan melalui Patreon](https://www.patreon.com/cobbzilla)
+
+ *Terima kasih!*
+
+ ## Pemasangan
+ Pasang menggunakan `npm` atau `yarn` . Anda mungkin mahu versi `lite` yang tidak termasuk semua
+ fail README yang diterjemahkan:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Jika anda benar-benar mahukan fail README dalam setiap bahasa, pasang versi penuh:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Permulaan pantas
  Contoh ringkas menggunakan pemacu `s3` .
@@ -396,7 +422,7 @@ Mobiletto
  * `secret` : rentetan, rahsia API anda (boleh ditinggalkan untuk pemacu `local` )
  * `opts` : objek, sifatnya adalah per-driver:
  * Untuk `local` , sifat `fileMode` dan `dirMode` menentukan cara membuat fail dan direktori baharu dicipta
- * Untuk `s3` , sifat `bucket` diperlukan. Sifat pilihan ialah:
+ * Untuk `s3` , sifat `bucket` diperlukan. Ciri-ciri pilihan ialah:
     * `region`: the S3 region, default is us-east-1
     * `prefix`: a prefix to prepend to all S3 paths, default is the empty string
     * `delimiter`: the directory delimiter, default is '/'

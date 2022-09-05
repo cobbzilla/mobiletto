@@ -8,6 +8,8 @@ Mobiletto
  * [Farawa cikin sauri](#Farawa da sauri)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Madogararsa](#Source)
+ * [Shigarwa](#Shigarwa)
+ * [Tallafawa da Kuɗi](#Taimako-da-Kudade)
  * [Amfani na asali](#Basic-amfani)
  * [Metadata](#Metadata)
  * [Salon shigo da na dabam](#Salo-Salo-Salo-Salo)
@@ -89,7 +91,7 @@ Mobiletto
  Direbobin ajiya na Mobiletto na yanzu:
  * `s3` : Amazon S3
  * `b2` : Bakin baya B2
- * `local` na gida': tsarin fayil na gida
+ * `local` : tsarin fayil na gida
 
  *Taimako don tallafawa ƙarin masu samar da ajiyar girgije ana maraba da su!*
 
@@ -101,6 +103,30 @@ Mobiletto
  ## Source
  * [mobiletto akan GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto akan npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Tallafi da Kudi
+ Ina ƙoƙari in zama ƙwararren mai haɓaka tushen software. Na kasance ina aiki a ciki
+ masana'antar software tsawon shekaru da yawa, na fara kamfanoni masu nasara kuma na sayar da su ga kamfanonin jama'a.
+ Kwanan nan na rasa aiki, kuma ba ni da wani aiki a layi daya
+
+ Don haka zan gwada rubuta software mai taimako don ganin ko hakan yana aiki
+
+ Idan kuna jin daɗin amfani da wannan software, zan yi godiya sosai don har ma da
+ mafi ƙanƙanta [gudunmawar wata-wata ta hanyar Patreon](https://www.patreon.com/cobbzilla)
+
+ *Na gode!*
+
+ ## Shigarwa
+ Shigar ta amfani da `npm` ko `yarn` . Wataƙila kuna son sigar `lite` ba ta haɗa da duka ba
+ Fassarar README fayiloli:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Idan da gaske kuna son fayilolin README a kowane harshe, shigar da cikakken sigar:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Gaggauta Farawa
  Wani ɗan gajeren misali ta amfani da direban mobiletto `s3` .
@@ -334,7 +360,7 @@ Mobiletto
  hujja ga hanyar `mirror` ) shine ƙimar da ake sanyawa (ana karanta bayanan madubi).
 
  ## boye boye boye
- Kunna ɓoye ɓoyayyen gefen abokin ciniki:
+ Kunna ɓoyayyen ɓoyayyen abokin ciniki:
 
     // Pass encryption parameters
     const encryption = {
@@ -371,7 +397,7 @@ Mobiletto
  maɓalli ko kuma an sami nasarar fashe ɓoyayyen ɓoyayyen. An kashe duk fare to!
 
  ### Aiki da caching
- Ayyuka akan rufaffiyar ma'ajiyar na iya zama a hankali. Lissafin maimaitawa da cirewa na iya zama a hankali.
+ Ayyuka akan ma'ajiyar rufaffiyar na iya zama a hankali. Lissafin maimaitawa da cirewa na iya zama a hankali.
  Caching ta hanyar redis yana taimakawa sosai, amma lura cewa cache ɗin yana goge akan kowane rubutu ko cirewa.
 
  ## Juyawa Maɓalli

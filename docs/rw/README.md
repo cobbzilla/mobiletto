@@ -8,6 +8,8 @@ Mobiletto
  * [Gutangira vuba](# Byihuse-gutangira)
  * [Mobiletto CLI](# mobiletto-umukiriya)
  * [Inkomoko](# Inkomoko)
+ * [Kwinjiza](# Kwinjiza)
+ * [Inkunga n'inkunga](# Inkunga-na-Inkunga)
  * [Ikoreshwa ryibanze](# Shingiro-imikoreshereze)
  * [Metadata](# Metadata)
  * [Ubundi buryo bwo gutumiza mu mahanga](# Ubundi buryo-bwo gutumiza mu mahanga)
@@ -101,6 +103,30 @@ Mobiletto
  ## Inkomoko
  * [mobiletto kuri GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto kuri npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Inkunga ninkunga
+ Ndagerageza kuba umuhanga ufungura isoko yumwuga. Nakoraga
+ inganda za software imyaka myinshi, natangiye ibigo byatsinze ndabigurisha mubigo bya leta.
+ Mperutse kubura akazi, kandi rwose nta kindi gikorwa mfite ku murongo
+
+ Ngiye rero kugerageza kwandika software ifasha ndebe niba ibyo bikora
+
+ Niba ukunda gukoresha iyi software, ndagushimira cyane kubwa
+ ntoya [umusanzu wa buri kwezi ukoresheje Patreon](https://www.patreon.com/cobbzilla)
+
+ * Urakoze! *
+
+ ## Kwinjiza
+ Shyiramo ukoresheje `npm` `yarn` . Birashoboka ko ushaka verisiyo ya `lite` itarimo byose
+ byahinduwe dosiye ya README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Niba rwose ushaka dosiye zo GUSOMA mururimi rwose, shyiramo verisiyo yuzuye:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Tangira vuba
  Urugero rugufi ukoresheje mobiletto `s3` .

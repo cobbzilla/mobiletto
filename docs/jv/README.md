@@ -8,6 +8,8 @@ Mobiletto
  * [Wiwit cepet](#Wiwit cepet)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Sumber](#Sumber)
+ * [Pasang](#Pasang)
+ * [Dhukungan lan Pendanaan](#Support-and-Funding)
  * [Panggunaan dhasar](#Panggunaan dhasar)
  * [Metadata](#Metadata)
  * [Gaya impor alternatif](#Gaya-impor alternatif)
@@ -101,6 +103,30 @@ Mobiletto
  ## Sumber
  * [mobiletto ing GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto ing npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Dhukungan lan Pendanaan
+ Aku nyoba dadi pangembang piranti lunak sumber terbuka profesional. Aku wis kerja ing
+ industri lunak kanggo akèh taun, Aku wis miwiti perusahaan sukses lan didol menyang perusahaan umum.
+ Bubar iki aku kelangan pegaweyan, lan aku ora duwe gaweyan liyane
+
+ Dadi aku bakal nyoba nulis piranti lunak sing migunani lan ndeleng manawa bisa digunakake
+
+ Yen sampeyan seneng nggunakake piranti lunak iki, aku bakal matur nuwun banget kanggo
+ paling cilik [kontribusi saben wulan liwat Patreon](https://www.patreon.com/cobbzilla)
+
+ *Matur nuwun!*
+
+ ## Instalasi
+ Instal nggunakake `npm` utawa `yarn` . Sampeyan mbokmenawa pengin versi `lite` sing ora kalebu kabeh
+ file README sing diterjemahake:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Yen sampeyan pengin file README ing saben basa, instal versi lengkap:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Mulai cepet
  Conto singkat nggunakake driver mobiletto `s3` .

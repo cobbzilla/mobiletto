@@ -8,6 +8,8 @@ Mobiletto
  * [Bido ngwa ngwa](#Bido ngwa ngwa)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Isi Iyi](#Isi Iyi)
+ * [Nwụnye](#Nwụnye)
+ * [Nkwado na Ego](#Nkwado-na Ego)
  * [Ojiji isi](#Basic-usage)
  * [Metadata](#Metadata)
  * [Ụdị mbubata ọzọ](#Ọzọ-import-style)
@@ -71,7 +73,7 @@ Mobiletto
 
  Mgbe ịhọrọ otu onye na-ere nchekwa maka ngwa gị, ọ bụrụ na ị tinye koodu ozugbo na API ha, ngwa gị
  ugbu a dabere na ọrụ ahụ. Ka oge na-aga na koodu na-agbakọta, ndị na-ere ahịa na-agbanwe agbanwe na-aghọ
- na-esiwanye ike. Nnọọ n'ime ụwa ihe ụtọ nke mkpọchi ndị na-ere ahịa!
+ na-esiwanye ike. Nnọọ n'ime ụwa egwu egwu nke mkpọchi ndị na-ere ahịa!
 
  Emebere Mobiletto iji dozie nsogbu a. Site na itinye koodu gị ngwa na mobiletto's API, ị nwere ike mfe
  gbanwee ndị na-eweta nchekwa wee mara na oyi akwa nchekwa ngwa gị ga-eme otu ihe.
@@ -101,6 +103,30 @@ Mobiletto
  ## Isi mmalite
  * [mobiletto na GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto na npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Nkwado na ego
+ Ana m agbali ịbụ ọkachamara mmepe ngwanrọ mepere emepe. Anọ m na-arụ ọrụ
+ ụlọ ọrụ ngwanrọ ruo ọtụtụ afọ, amalitela m ụlọ ọrụ na-aga nke ọma ma ree ha ụlọ ọrụ ọha.
+ N’oge na-adịbeghị anya, a chụrụ m n’ọrụ, enweghịkwa m ọrụ ọ bụla e debere n’ahịrị
+
+ Ya mere, m ga-agbalị ide software na-enyere aka hụ ma ọ na-arụ ọrụ
+
+ Ọ bụrụ na ị na-enwe mmasị na iji nke a software, M ga-enwe nnọọ ekele maka ọbụna
+ kacha nta [onyinye kwa ọnwa site na Patreon](https://www.patreon.com/cobbzilla)
+
+ *Daalụ!*
+
+ ## Nwụnye
+ Wụnye site na iji `npm` ma ọ bụ `yarn` . Ị nwere ike ịchọrọ ụdị `lite` nke na-agụnyeghị ihe niile
+ faịlụ README atụgharịrị:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Ọ bụrụ n'ezie na ịchọrọ faịlụ README n'asụsụ ọ bụla, wụnye ụdị zuru ezu:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Mmalite ngwa ngwa
  Ihe atụ dị mkpirikpi na-eji ọkwọ ụgbọala mobiletto `s3` .
@@ -435,7 +461,7 @@ Mobiletto
 
  ### ndekọ ọkwa
  Jiri mgbanwe gburugburu `MOBILETTO_LOG_LEVEL` ka ịtọọ ọkwa ndekọ, na-eji otu
- nke `npm` ọkwa akọwapụtara na [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
+ nke ọkwa `npm` akọwapụtara na [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
 
  Ọkwa ndabara bụ `error` . Ọkwa kacha ekwu okwu bụ `silly` , ọ bụ ezie na ugbu a mobiletto
  adịghị abanye n'ọkwa dị n'okpuru `debug`

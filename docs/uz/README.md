@@ -8,6 +8,8 @@ Mobiletto
  * [Tez boshlash](#Tez boshlash)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Manba](#Manba)
+ * [O'rnatish](#O'rnatish)
+ * [Yordam va moliyalashtirish](#Yordam va moliyalashtirish)
  * [Asosiy foydalanish](#Basic-usage)
  * [Metamaʼlumotlar](#Metamaʼlumotlar)
  * [Muqobil import uslubi](#Alternate-import uslubi)
@@ -101,6 +103,30 @@ Mobiletto
  ## Manba
  * [GitHub-da mobiletto](https://github.com/cobbzilla/mobiletto)
  * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Qo'llab-quvvatlash va moliyalashtirish
+ Men professional ochiq kodli dasturiy ta'minot ishlab chiqaruvchisi bo'lishga harakat qilaman. Men ishlaganman
+ ko'p yillar davomida dasturiy ta'minot sanoatida men muvaffaqiyatli kompaniyalarni ishga tushirdim va ularni ommaviy kompaniyalarga sotdim.
+ Yaqinda men ishimni yo'qotdim va boshqa ishim yo'q
+
+ Shuning uchun men foydali dasturiy ta'minot yozishga harakat qilaman va bu ishlayotganligini tekshiraman
+
+ Agar siz ushbu dasturdan foydalanishni yoqtirsangiz, men hattoki uchun juda minnatdorman
+ eng kichik [Patreon orqali oylik hissa](https://www.patreon.com/cobbzilla)
+
+ *Rahmat!*
+
+ ## O'rnatish
+ `npm` yoki `yarn` yordamida o`rnating. Ehtimol, siz hamma narsani o'z ichiga olmaydigan " `lite` versiyasini xohlaysiz
+ tarjima qilingan README fayllari:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Agar siz haqiqatan ham har bir tilda README fayllarini olishni istasangiz, toʻliq versiyasini oʻrnating:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Tez boshlash
  Mobiletto `s3` drayveridan foydalanishga qisqacha misol.

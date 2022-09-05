@@ -8,6 +8,8 @@
  * [快速启动](#快速启动)
  * [Mobiletto CLI](#mobiletto-cli)
  * [来源](#来源)
+ * [安装](#安装)
+ * [支持和资助](#Support-and-Funding)
  * [基本用法](#Basic-usage)
  * [元数据](#元数据)
  * [替代导入样式](#Alternate-import-style)
@@ -101,6 +103,30 @@
  ＃＃ 资源
 * [github上的mobiletto](https://github.com/cobbzilla/mobiletto)
  * [npm 上的 mobiletto](https://www.npmjs.com/package/mobiletto)
+
+ ## 支持和资金
+我正在努力成为一名专业的开源软件开发人员。我一直在工作
+从事软件行业多年，我创办了成功的公司，并把它们卖给了上市公司。
+最近我失业了，我真的没有其他工作要做
+
+所以我将尝试编写有用的软件，看看是否可行
+
+如果您喜欢使用此软件，我将非常感谢
+最小的 [通过 Patreon 的每月贡献](https://www.patreon.com/cobbzilla)
+
+ *谢谢！*
+
+ ＃＃ 安装
+使用`npm`或`yarn`安装。您可能`lite`不包含所有
+翻译自述文件：
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+如果您真的想要每种语言的 README 文件，请安装完整版：
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ＃＃ 快速开始
 使用 mobiletto `s3`驱动程序的简短示例。

@@ -8,6 +8,8 @@ Mobiletto
  *
  * [Mobiletto CLI](#mobiletto-cli)
  * [Source](#Source)
+ * [Installation](#Installation)
+ * [Support and Funding](Support-and-Funding)
  * [Basic usus](# Usus)
  * [Metadata](#Metadata)
  * [Alterne import style].
@@ -65,7 +67,7 @@ Mobiletto
 
  ## Cur Mobiletto?
 
- ### Vale venditori seram-in!
+ ### Vale venditori crinem-in!
  Variae nubes provisores repono APIs repugnantes habent. Etiam ea quae contendunt ad "S3 convenientiam";
  ut idiosyncratic se gerendi rationibus.
 
@@ -101,6 +103,30 @@ Mobiletto
  ## Source
  * [Mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
  * [Mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Support et Donec
+ Conor esse professionalem fontem programmatum elit. I have been working in
+ industria programmatis multos annos feliciter societates incepi et eas societates publicas vendidi.
+ Nuper officium meum perdidi, et aliud opus non instruxit
+
+ Eo igitur experior utilium programmatum scribo et vide an opera sit
+
+ Si hoc programmate utendo frueris, gratias ago etiam ipsis
+ minima [menstrua contributio per Patreon](https://www.patreon.com/cobbzilla)
+
+ *Gratias tibi!*
+
+ ## Installation
+ Instrue utens `npm` vel `yarn` . Probabiliter vis `lite` quae non includit omnia
+ README translata files:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Si vere vis tabularia README in omni lingua, plenam versionem institue:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Velox Start
  Breve exemplum utens agitator mobiletto `s3` .
@@ -371,7 +397,7 @@ Mobiletto
  clavis vel aliter feliciter crepuit encryption. Omnes sponsiones sunt tunc off!
 
  ### euismod et caching
- Operationes in repositione encrypted tardius possunt. Indices recursivi et remotiones valde tardae esse possunt.
+ Operationes in repositione encrypted tardae esse possunt. Indices recursivi et remotiones valde tardae esse possunt.
  Caching via redis vehementer adiuvat, sed nota quod cella in quavis scribendo vel removendo rubens est.
 
  ## Key rotationis
@@ -430,8 +456,8 @@ Mobiletto
  ## Logging
  Mobiletto utitur [winston](https://www.npmjs.com/package/winston) bibliotheca logging.
 
- Tigna lima continent vias et nuntios erroris, sed nunquam claves, secreta continent.
- vel quaevis alia connexionis conformatio notitia.
+ Tigna lima continent vias et nuntios erroris, sed nunquam claves, secreta continent,
+ vel quodlibet aliud connexionis informationem.
 
  ### Log level
  Utere `MOBILETTO_LOG_LEVEL` ambitus variabilis ad utere gradum truncum, uno utendo
@@ -444,7 +470,7 @@ Mobiletto
 
  ### Stipes lima
  Defalta, logger ad consolatorium scribit. Ut omnia in tabella mittas, `MOBILETTO_LOG_FILE` . pone
- ambitus varius. Cum ad limam colligationem, acta iam ad consolatorium scribenda non erunt.
+ ambitus varius. Cum ad fasciculum colligationem, acta iam ad consolatorium scribenda non erunt.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log
 

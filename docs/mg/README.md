@@ -8,6 +8,8 @@ Mobiletto
  * [Fanombohana haingana](#Atomboka haingana)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Loharano](#Source)
+ * [Fametrahana](#Fametrahana)
+ * [Fanohanana sy Famatsiam-bola](#Fanohanana-sy-Famatsiam-bola)
  * [Fampiasana fototra](#Fampiasana fototra)
  * [Metadata](#Metadata)
  * [fomba fanafarana hafa](fomba #fanafarana hafa)
@@ -102,8 +104,32 @@ Mobiletto
  * [mobiletto amin'ny GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto amin'ny npm](https://www.npmjs.com/package/mobiletto)
 
+ ## Fanohanana sy famatsiam-bola
+ Miezaka ny ho matihanina mpamorona rindrambaiko open source aho. Niasa tao aho
+ ny indostrian'ny rindrambaiko nandritra ny taona maro, nanomboka orinasa nahomby aho ary nivarotra azy ireo tamin'ny orinasam-panjakana.
+ Vao haingana aho no very asa, ary tsy manana asa hafa milahatra
+
+ Noho izany dia hanandrana manoratra rindrambaiko mahasoa aho ary hijery raha mety izany
+
+ Raha mahafinaritra anao ny mampiasa an'ity logiciel ity dia ho feno fankasitrahana aho na dia ny
+ kely indrindra [fanomezana isam-bolana amin'ny alàlan'ny Patreon](https://www.patreon.com/cobbzilla)
+
+ *Misaotra anao!*
+
+ ## Fametrahana
+ Apetaho amin'ny fampiasana `npm` na `yarn` . Angamba tianao ny dikan-teny `lite` izay tsy ahitana ny rehetra
+ nadika ny rakitra README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Raha tena tianao ny rakitra README amin'ny fiteny rehetra, apetraho ny dikan-teny feno:
+
+    npm install mobiletto
+    yarn add mobiletto
+
  ## Manomboka haingana
- Ohatra fohy amin'ny fampiasana ny mpamily mobiletto `s3` .
+ Ohatra fohy mampiasa ny mobiletto `s3` mpamily.
 
  Ity kaody ity dia mandeha mitovy raha toa ka `b2` na `local` ny mpamily.
 
@@ -430,7 +456,7 @@ Mobiletto
  ## Loka
  Mobiletto dia mampiasa ny [winston](https://www.npmjs.com/package/winston).
 
- Ny logs **dia** misy ny làlan'ny rakitra sy ny hafatra diso, fa tsy ** misy fanalahidy, tsiambaratelo,
+ Ny logs **dia** misy làlam-drakitra sy hafatra diso, fa tsy ** misy fanalahidy, tsiambaratelo,
  na fampahalalana hafa momba ny fanefena fifandraisana.
 
  ### Ambaratonga log

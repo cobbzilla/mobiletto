@@ -8,6 +8,8 @@ Mobiletto
  * [Brzi početak](#Brzi početak)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Izvor](#Izvor)
+ * [Instalacija](#Instalacija)
+ * [Podrška i financiranje](#Support-and-Funding)
  * [Osnovna upotreba](#Basic-usage)
  * [Metapodaci](#Metapodaci)
  * [Alternativni stil uvoza](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Izvor
  * [mobiletto na GitHubu](https://github.com/cobbzilla/mobiletto)
  * [mobiletto na npm-u](https://www.npmjs.com/package/mobiletto)
+
+ ## Podrška i financiranje
+ Pokušavam biti profesionalni programer softvera otvorenog koda. radio sam u
+ U softverskoj industriji dugi niz godina, pokrenuo sam uspješne tvrtke i prodao ih javnim tvrtkama.
+ Nedavno sam ostao bez posla i zapravo nemam drugog posla u planu
+
+ Stoga ću pokušati napisati koristan softver i vidjeti hoće li to uspjeti
+
+ Ako volite koristiti ovaj softver, bio bih vam vrlo zahvalan čak i za
+ najmanji [mjesečni doprinos putem Patreona](https://www.patreon.com/cobbzilla)
+
+ *Hvala vam!*
+
+ ## Instalacija
+ Instalirajte pomoću `npm` ili `yarn` . Vjerojatno želite `lite` verziju koja ne uključuje sve
+ prevedene datoteke README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Ako stvarno želite README datoteke na svim jezicima, instalirajte punu verziju:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Brzi početak
  Kratki primjer korištenja pokretačkog programa mobiletto `s3` .

@@ -8,6 +8,8 @@ Mobiletto
  * [Isiqalo esiKhawulezayo](#Ukuqala ngokukhawuleza)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Umthombo](#Umthombo)
+ * [Ufakelo](#Fakelo)
+ * [Inkxaso kunye neNkxaso](#Inkxaso-kunye-neNkxaso-mali)
  * [Usetyenziso olusisiseko](#Usetyenziso oluSiseko)
  * [Metadata](#Metadata)
  * [Esinye isimbo sokungenisa](#Esinye-isimbo sokungenisa)
@@ -101,6 +103,30 @@ Mobiletto
  ## Umthombo
  * [mobiletto kwi-GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto kwi-npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Inkxaso kunye neNkxaso
+ Ndizama ukuba ngumphuhlisi wesoftware ovulelekileyo. Bendisebenza ngaphakathi
+ ishishini lesoftware iminyaka emininzi, ndiqale iinkampani eziphumeleleyo kwaye ndazithengisa kwiinkampani zoluntu.
+ Kutshanje ndiye ndaphelelwa ngumsebenzi, yaye andinawo omnye umsebenzi endiwudwelisileyo
+
+ Ke ndiza kuzama ukubhala isoftware eluncedo kwaye ndibone ukuba iyasebenza na
+
+ Ukuba uyakonwabela ukusebenzisa le software, ndingabulela kakhulu nokuba
+ incinci [igalelo lenyanga ngePatreon](https://www.patreon.com/cobbzilla)
+
+ *Enkosi!*
+
+ ## Ukufakela
+ Faka usebenzisa `npm` okanye `yarn` . Mhlawumbi ufuna `lite` zonke
+ Iifayile eziguqulelweyo ze-README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Ukuba ufuna ngokwenene i README iifayile kulo lonke ulwimi, faka uguqulelo olupheleleyo:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Ukuqala ngokukhawuleza
  Umzekelo omfutshane usebenzisa imobiletto `s3` umqhubi.
@@ -396,7 +422,7 @@ Mobiletto
  * `secret` : umtya, imfihlo yakho ye-API (inokushiywa kumqhubi `local` )
  * `opts` : into, iipropati ngomqhubi ngamnye:
  * `local` , `fileMode` kunye ne `dirMode` iipropati zimisela indlela entsha yokudala iifayile kunye nabalawuli benziwa
- * Kwi `s3` , ipropathi `bucket` iyafuneka. Iipropati ezikhethwayo zezi:
+ * Kwi `s3` , ipropathi `bucket` iyafuneka. Iipropati ozikhethelayo zezi:
     * `region`: the S3 region, default is us-east-1
     * `prefix`: a prefix to prepend to all S3 paths, default is the empty string
     * `delimiter`: the directory delimiter, default is '/'
@@ -430,7 +456,7 @@ Mobiletto
  ## Ukugawulwa kwemithi
  I-Mobiletto isebenzisa [winston](https://www.npmjs.com/package/winston) ilayibrari yokugawulwa kwemithi.
 
- Iilogi ** ziya kuqulatha iindlela zefayile kunye nemiyalezo yempazamo, kodwa ayisayi kuba **nakuze ** iqulathe izitshixo, iimfihlo,
+ Iilogi ** ziya kuqulatha iindlela zefayile kunye nemiyalezo yempazamo, kodwa ayinakuze ** iqulathe izitshixo, iimfihlo,
  okanye naluphi na olunye ulwazi loqwalaselo loqhagamshelwano.
 
  ### Inqanaba lokuloga

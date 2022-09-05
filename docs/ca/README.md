@@ -8,6 +8,8 @@ Mobiletto
  * [Inici ràpid](#Inici ràpid)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Font](#Font)
+ * [Instal·lació](#Instal·lació)
+ * [Suport i finançament](#Support-and-Funding)
  * [Ús bàsic](#Ús bàsic)
  * [Metadades](#Metadades)
  * [Estil d'importació alternatiu](#Estil d'importació alternatiu)
@@ -101,6 +103,30 @@ Mobiletto
  ## Font
  * [mobiletto a GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto a npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Suport i finançament
+ Estic intentant ser un desenvolupador professional de programari de codi obert. Hi he estat treballant
+ la indústria del programari durant molts anys, he creat empreses d'èxit i les he venut a empreses públiques.
+ Recentment he perdut la meva feina, i realment no tinc cap altra feina preparada
+
+ Així que intentaré escriure programari útil i veure si funciona
+
+ Si us agrada utilitzar aquest programari, us agrairia fins i tot el
+ més petita [contribució mensual a través de Patreon](https://www.patreon.com/cobbzilla)
+
+ *Gràcies!*
+
+ ## Instal·lació
+ Instal·leu amb `npm` o `yarn` . Probablement vulgueu la versió `lite` que no inclogui tots els fitxers
+ fitxers README traduïts:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Si realment voleu els fitxers README en tots els idiomes, instal·leu la versió completa:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Començament ràpid
  Un breu exemple amb el controlador mobiletto `s3` .
@@ -372,7 +398,7 @@ Mobiletto
 
  ### Rendiment i memòria cau
  Les operacions d'emmagatzematge xifrat poden ser lentes. Les fitxes recursives i les eliminacions poden ser molt lentes.
- L'emmagatzematge a la memòria cau mitjançant redis ajuda enormement, però tingueu en compte que la memòria cau s'esborra en qualsevol escriptura o eliminació.
+ L'emmagatzematge a la memòria cau mitjançant redis ajuda enormement, però tingueu en compte que la memòria cau s'esborra quan s'escriu o s'elimini.
 
  ## Rotació de tecles
  Creeu un mòbiltto amb la vostra clau nova i, a continuació, reflectiu-hi les dades antigues:

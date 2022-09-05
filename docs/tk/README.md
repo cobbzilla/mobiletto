@@ -8,6 +8,8 @@ Mobiletto
  * [Çalt başlangyç](# Çalt başlamak)
  * [Mobiletto CLI](# mobiletto-müşderi)
  * [Çeşme](# Çeşme)
+ * [Gurnama](# Gurnama)
+ * [Goldaw we maliýeleşdirmek](# Goldaw we maliýeleşdirmek)
  * [Esasy ulanyş](# Esasy ulanyş)
  * [Metadata](# Metadata)
  * [Alternatiw import stili](# Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Çeşme
  * [GitHub-da mobiletto](https://github.com/cobbzilla/mobiletto)
  * [npm-de mobiletto](https://www.npmjs.com/package/mobiletto)
+
+ ## Goldaw we maliýeleşdirmek
+ Professional açyk çeşme programma üpjünçisi bolmaga synanyşýaryn. Men işleýärin
+ programma üpjünçiligi pudagy köp ýyl bäri üstünlikli kompaniýalara başladym we olary jemgyýetçilik kompaniýalaryna satdym.
+ Recentlyakynda işimi ýitirdim, hatara düzülen başga işim ýok
+
+ Şonuň üçin peýdaly programma üpjünçiligini ýazmaga synanyşaryn we munuň işleýändigini ýa-da ýokdugyny görerin
+
+ Bu programma üpjünçiligini ulanmakdan lezzet alýan bolsaňyz, hatda hatda gaty minnetdar bolardym
+ iň kiçi [Patreonyň üsti bilen aýlyk goşant](https://www.patreon.com/cobbzilla)
+
+ *Sagbol!*
+
+ ## Gurmak
+ " `npm` ýa-da " `yarn` " ulanyp guruň. Allhli zady öz içine almaýan " `lite` " wersiýasyny isleýän bolsaňyz gerek
+ terjime edilen README faýllary:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Her dilde README faýllaryny hakykatdanam isleýän bolsaňyz, doly wersiýasyny guruň:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Çalt başlangyç
  Mobiletto `s3` draýwerini ulanmagyň gysga mysaly.
@@ -374,7 +400,7 @@ Mobiletto
  Şifrlenen ammarda amallar haýal bolup biler. Gaýtalanýan sanawlar we aýyrmalar gaty haýal bolup biler.
  Redis arkaly keş keşdemek gaty uly kömek edýär, ýöne keşiň islendik ýazgylara ýa-da aýyrylmagyna üns beriň.
 
- ## Açar aýlaw
+ ## Düwmeleriň aýlanmagy
  Täze açaryňyz bilen mobilto dörediň, soňra köne maglumatlary aýna ediň:
 
     const storage = require('mobiletto')
@@ -430,20 +456,20 @@ Mobiletto
  ## Giriş
  Mobiletto [winston](https://www.npmjs.com/package/winston) hasaba alyş kitaphanasyny ulanýar.
 
- Surnallar ** faýl ýollaryny we säwlik habarlaryny öz içine alar, ýöne ** hiç haçan ** açarlary, syrlary öz içine almaz,
+ Surnallar ** faýl ýollaryny we ýalňyş habarlaryny öz içine alar, ýöne ** hiç haçan ** açarlary, syrlary öz içine almaz,
  ýa-da başga baglanyşyk konfigurasiýa maglumatlary.
 
  ### Giriş derejesi
  Birini ulanyp, gündelik derejesini kesgitlemek üçin " `MOBILETTO_LOG_LEVEL` " gurşaw üýtgeýjisini ulanyň
  [https://www.npmjs.com/package/winston#logging-levels)(https://www.npmjs.com/package/winston#logging-levels) kesgitlenen " `npm` " derejelerinden
 
- Bellenen dereje " `error` ". Iň köp söz derejesi häzirki wagtda `silly` bolsa-da "manysyz"
+ Bellenen dereje " `error` ". Iň köp söz derejesi "samsyk", häzirki wagtda `silly`
  "düzediş" -den aşakdaky derejelere `debug`
 
     MOBILETTO_LOG_LEVEL=silly # maximum logs!
 
  ### Faýl ýazyň
- Düzgüne görä, ýazyjy konsola ýazýar. Surnallary faýla ibermek üçin " `MOBILETTO_LOG_FILE` " belläň
+ Düzgüne görä, ýazyjy konsola ýazýar. Surnallary bir faýla ibermek üçin " `MOBILETTO_LOG_FILE` " belläň
  daşky gurşaw üýtgeýjisi. Faýla gireniňizde, ýazgylar indi konsola ýazylmaz.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log

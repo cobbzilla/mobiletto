@@ -8,6 +8,8 @@ cep telefonu
  * [Hızlı başlangıç](#Hızlı başlangıç)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Kaynak](#Kaynak)
+ * [Kurulum](#Kurulum)
+ * [Destek ve Finansman](#Destek-ve-Finansman)
  * [Temel kullanım](#Temel kullanım)
  * [Meta Veri](#Meta Veri)
  * [Alternatif içe aktarma stili](#Alternatif içe aktarma stili)
@@ -89,7 +91,7 @@ cep telefonu
  Mevcut Mobiletto depolama sürücüleri:
  * `s3` : Amazon S3
  * `b2` : Arkadan Yanan B2
- * `local` yerel" : yerel dosya sistemi
+ * `local` : yerel dosya sistemi
 
  *Daha fazla bulut depolama sağlayıcısını desteklemeye yönelik katkılara açığız!*
 
@@ -101,6 +103,30 @@ cep telefonu
  ## Kaynak
  * [GitHub'da mobiletto](https://github.com/cobbzilla/mobiletto)
  * [npm'de mobiletto](https://www.npmjs.com/package/mobiletto)
+
+ ## Destek ve Finansman
+ Profesyonel bir açık kaynaklı yazılım geliştiricisi olmaya çalışıyorum. çalışıyorum
+ yazılım sektöründe uzun yıllar başarılı şirketler kurdum ve bunları halka açık şirketlere sattım.
+ Son zamanlarda işimi kaybettim ve sıralanmış başka işim yok
+
+ Bu yüzden yararlı bir yazılım yazmayı deneyeceğim ve işe yarayıp yaramadığını göreceğim.
+
+ Bu yazılımı kullanmaktan zevk alıyorsanız, bunun için bile çok minnettar olurum.
+ en küçük [Patreon aracılığıyla aylık katkı](https://www.patreon.com/cobbzilla)
+
+ *Teşekkürler!*
+
+ ## Kurulum
+ `npm` veya `yarn` kullanarak kurun. Muhtemelen tüm `lite` sürümünü istiyorsunuz.
+ çevrilmiş README dosyaları:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ README dosyalarını gerçekten her dilde istiyorsanız, tam sürümü yükleyin:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Hızlı başlangıç
  Mobiletto `s3` sürücüsünün kullanıldığı kısa bir örnek.

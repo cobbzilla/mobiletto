@@ -8,6 +8,8 @@ Mobiletto
  * [Ātrais sākums](#Quick-start)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Avots](#Avots)
+ * [Instalācija](#Instalācija)
+ * [Atbalsts un finansējums](#Support-and-Funding)
  * [Pamata lietojums](#Basic-usage)
  * [Metadati](#Metadata)
  * [Alternatīvais importēšanas stils](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Avots
  * [mobiletto vietnē GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Atbalsts un finansējums
+ Es cenšos būt profesionāls atvērtā pirmkoda programmatūras izstrādātājs. Esmu strādājis
+ programmatūras industrijā jau daudzus gadus esmu dibinājis veiksmīgus uzņēmumus un pārdevis tos valsts uzņēmumiem.
+ Nesen es zaudēju darbu, un man īsti nav citu darbu
+
+ Tāpēc es mēģināšu uzrakstīt noderīgu programmatūru un pārbaudīt, vai tā darbojas
+
+ Ja jums patīk izmantot šo programmatūru, es būšu ļoti pateicīgs pat par
+ mazākais [ikmēneša ieguldījums, izmantojot Patreon](https://www.patreon.com/cobbzilla)
+
+ *Paldies!*
+
+ ## Uzstādīšana
+ Instalējiet, izmantojot `npm` vai `yarn` . Jūs droši vien vēlaties `lite` versiju, kas neietver visas
+ tulkoti README faili:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Ja patiešām vēlaties README failus visās valodās, instalējiet pilno versiju:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Ātrs sākums
  Īss piemērs, izmantojot mobiletto `s3` draiveri.

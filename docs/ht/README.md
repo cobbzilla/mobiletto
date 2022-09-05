@@ -8,6 +8,8 @@ Mobiletto
  * [Kòmanse rapid](#Kòmanse rapid)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Sous](#Sous)
+ * [Enstalasyon](#Enstalasyon)
+ * [Sipò ak Finansman](#Sipò-ak-Finansman)
  * [Itilizasyon debaz](#Itilizasyon debaz)
  * [Metadone](#Metadone)
  * [Altènatif enpòte style](#Altènatif-enpòte-style)
@@ -60,7 +62,7 @@ Mobiletto
  * enkli URL paj la (kopi/kole nan ba adrès navigatè a)
  * enkli tèks egzak ki mal (kopi/kole nan navigatè a)
  * Tanpri dekri sa ki mal -- èske tradiksyon an pa kòrèk? se fòma a kase yon jan kanmenm?
- * Tanpri ofri yon sijesyon pou yon pi bon tradiksyon, oswa ki jan tèks la ta dwe byen fòma
+ * Tanpri ofri yon sijesyon sou yon pi bon tradiksyon, oswa ki jan tèks la ta dwe byen fòma
  * **Mèsi!**
 
  ## Poukisa Mobiletto?
@@ -101,6 +103,30 @@ Mobiletto
  ## Sous
  * [mobiletto sou GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto sou npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Sipò ak Finansman
+ Mwen eseye vin yon pwofesyonèl devlopè lojisyèl sous louvri. Mwen te travay nan
+ endistri a lojisyèl pou anpil ane, mwen te kòmanse konpayi siksè ak vann yo bay konpayi piblik yo.
+ Dènyèman mwen pèdi travay mwen, e mwen pa vrèman gen okenn lòt travay ki aliye
+
+ Se konsa, mwen pral eseye ekri lojisyèl itil epi wè si sa ap travay
+
+ Si ou renmen itilize lojisyèl sa a, mwen ta trè rekonesan pou menm a
+ pi piti [kontribisyon chak mwa atravè Patreon](https://www.patreon.com/cobbzilla)
+
+ *Mèsi!*
+
+ ## Enstalasyon
+ Enstale lè l sèvi avèk `npm` oswa `yarn` . Ou pwobableman vle vèsyon an `lite` ki pa gen ladann tout
+ dosye README tradui:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Si ou reyèlman vle dosye README yo nan tout lang, enstale vèsyon konplè a:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Kòmanse rapid
  Yon egzanp kout lè l sèvi avèk chofè mobiletto `s3` .
@@ -443,7 +469,7 @@ Mobiletto
     MOBILETTO_LOG_LEVEL=silly # maximum logs!
 
  ### Log dosye
- Pa default, logger la ekri nan konsole a. Pou voye mòso bwa nan yon dosye, mete `MOBILETTO_LOG_FILE`
+ Pa default, logger la ekri nan konsole a. Pou voye mòso bwa nan yon fichye, mete `MOBILETTO_LOG_FILE`
  anviwònman varyab. Lè w ap antre nan yon dosye, mòso bwa yo p ap ekri sou konsole a ankò.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log

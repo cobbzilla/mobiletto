@@ -8,6 +8,8 @@ Mobiletto
  * [Hoʻomaka wikiwiki](#Hoʻomaka wikiwiki)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Source](#Source)
+ * [Hoʻokomo](#Hoʻokomo)
+ * [Kōkoʻo a me ke kālā](#Support-and-Funding)
  * [Hoʻohana kumu](#Hoʻohana kumu)
  * [Metadata](#Metadata)
  * [Kaila hoʻokomo ʻokoʻa](#Kaila-hoʻokomo ʻokoʻa)
@@ -70,8 +72,8 @@ Mobiletto
  loaʻa nā ʻano idiosyncratic.
 
  Ke koho ʻoe i kahi mea kūʻai waihona no kāu polokalamu, inā ʻoe e helu pololei i kā lākou API, kāu app
- ke hilinaʻi nei i kēia lawelawe. Ke hele nei ka manawa a hōʻiliʻili nā code, lilo nā mea kūʻai aku
- mahuahua hiki ole. Welina mai i ka honua leʻaleʻa o ka mea kūʻai aku laka-i!
+ i kēia manawa ke hilinaʻi nei i kēlā lawelawe. Ke hele nei ka manawa a hōʻiliʻili nā code, lilo nā mea kūʻai aku
+ mahuahua hiki ole. Welina mai i ka honua leʻaleʻa o ka mea kūʻai lock-in!
 
  Ua hoʻolālā ʻia ʻo Mobiletto e hoʻoponopono i kēia pilikia. Ma ka hoʻopili ʻana i kāu polokalamu i ka mobiletto's API, hiki iā ʻoe ke maʻalahi
  e hoʻololi i nā mea hoʻolako waihona a ʻike e ʻano like ke ʻano o ka papa waiho o kāu app.
@@ -101,6 +103,30 @@ Mobiletto
  ## Puna
  * [mobiletto ma GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto ma npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Kākoʻo a me ke kālā
+ Ke hoʻāʻo nei au e lilo i mea hoʻomohala polokalamu open source. Ua hana au i loko
+ ka ʻoihana polokalamu no nā makahiki he nui, ua hoʻomaka wau i nā hui kūleʻa a kūʻai aku iā lākou i nā hui lehulehu.
+ I kēia mau lā ua nalowale kaʻu hana, a ʻaʻohe aʻu hana ʻē aʻe i laina
+
+ No laila e hoʻāʻo wau e kākau i nā polokalamu kōkua a ʻike inā pono ia
+
+ Inā hauʻoli ʻoe i ka hoʻohana ʻana i kēia polokalamu, e mahalo nui wau no ka
+ liʻiliʻi loa [koʻikoʻi o kēlā me kēia mahina ma o Patreon](https://www.patreon.com/cobbzilla)
+
+ *Mahalo!*
+
+ ## Hoʻokomo
+ E hoʻouka me ka hoʻohana ʻana i ka `npm` a i ʻole `yarn` . Makemake paha ʻoe i ka mana `lite` ʻaʻole i hoʻokomo i nā mea āpau
+ i unuhi ʻia nā faila README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Inā makemake ʻoe i nā faila README i kēlā me kēia ʻōlelo, e hoʻokomo i ka mana piha:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Hoʻomaka wikiwiki
  He laʻana pōkole e hoʻohana ana i ka mea hoʻokele mobiletto `s3` .
@@ -253,7 +279,7 @@ Mobiletto
 
  Hiki ke ʻano ʻano ʻano `type` `file` , `dir` , `link` , a i ʻole `special` .
 
- Ma muli o ke ʻano o ka mea hoʻokele, ʻaʻole hiki i kahi kauoha `list` ke hoʻihoʻi i nā kahua āpau. ʻO ka `name` a me `type` waiwai
+ Ma muli o ke ʻano o ka mea hoʻokele, ʻaʻole hiki i kahi kauoha `list` ke hoʻihoʻi i nā kahua āpau. ʻO ka `name` a me `type`
  pono e noho mau. E hoʻihoʻi mai kahi kauoha `metadata` i nā waiwai āpau i loaʻa.
 
  ## Kāhua hoʻokomo ʻē aʻe
@@ -326,7 +352,7 @@ Mobiletto
       errors: count-of-files-with-errors
     }
 
- 'Ōlelo Aʻo: ʻO ke aniani ʻana i nā pūʻulu ʻikepili nui hiki ke hoʻopau i ka manawa a me ka nui o ka bandwidth
+ 'Ōlelo Aʻo: ʻO ka hoʻohālikelike ʻana i nā pūʻulu ʻikepili nui hiki ke hoʻopau i ka manawa a me ka bandwidth-nui
 
  Me ka `mirror` call semantics hiki ke huikau i kekahi manawa ke maopopo ʻo wai ka
  mea heluhelu a ʻo wai ka mea kākau. E noʻonoʻo ʻoe e like me ka ʻōlelo kuhikuhi: ka "lima hema mobiletto"
@@ -387,7 +413,7 @@ Mobiletto
 
     newStorage.mirror(oldStorage) // if oldStorage is very large, this may take a looooooong time...
 
- ## Hoʻokele hoʻokele
+ ## Keʻena hoʻokele
  ʻO ka mea hoʻokele ka waihona JS e hoʻokuʻu aku i kahi hana 'storageClient' me kēia pūlima:
 
     function storageClient (key, secret, opts)
@@ -437,14 +463,14 @@ Mobiletto
  E hoʻohana i ka `MOBILETTO_LOG_LEVEL` hoʻololi kaiapuni no ka hoʻonohonoho ʻana i ka pae log, me ka hoʻohana ʻana i kekahi
  o nā pae `npm` i wehewehe ʻia ma [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
 
- ʻO ka pae paʻamau ʻo `error` . ʻO ka pae haʻihaʻi loa ʻo `silly` , ʻoiai he mobiletto i kēia manawa
+ ʻO ka pae paʻamau ʻo `error` . ʻO ka pae haʻihaʻi ʻoi loa ʻo `silly` , ʻoiai he mobiletto i kēia manawa
  ʻaʻole i hoʻopaʻa inoa ma nā pae ma lalo o `debug`
 
     MOBILETTO_LOG_LEVEL=silly # maximum logs!
 
  ### Waihona moʻolelo
- Ma ka paʻamau, kākau ka mea logger i ka console. No ka hoʻouna ʻana i nā moʻolelo i kahi faila, hoʻonohonoho i ka `MOBILETTO_LOG_FILE`
- hoʻololi kaiapuni. Ke hoʻopaʻa inoa nei i kahi faila, ʻaʻole e kākau hou ʻia nā lāʻau i ka console.
+ Ma ka maʻamau, kākau ka mea logger i ka console. No ka hoʻouna ʻana i nā moʻolelo i kahi faila, hoʻonohonoho i ka `MOBILETTO_LOG_FILE`
+ hoʻololi kaiapuni. Ke hoʻopaʻa inoa i kahi faila, ʻaʻole e kākau hou ʻia nā lāʻau i ka console.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log
 

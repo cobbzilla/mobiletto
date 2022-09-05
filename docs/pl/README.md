@@ -8,6 +8,8 @@ Mobiletto
  * [Szybki start](#Szybki start)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Źródło](#Źródło)
+ * [Instalacja](#Instalacja)
+ * [Wsparcie i finansowanie](#Wsparcie i finansowanie)
  * [Podstawowe zastosowanie](#Podstawowe użycie)
  * [Metadane](#Metadane)
  * [Alternatywny styl importu](#Alternatywny styl importu)
@@ -101,6 +103,30 @@ Mobiletto
  ## Źródło
  * [mobiletto na GitHubie](https://github.com/cobbzilla/mobiletto)
  * [mobiletto na npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Wsparcie i finansowanie
+ Próbuję zostać profesjonalnym programistą open source. pracowałem w
+ od wielu lat w branży oprogramowania, zakładałem odnoszące sukcesy firmy i sprzedawałem je spółkom publicznym.
+ Ostatnio straciłam pracę i właściwie nie mam żadnej innej pracy w kolejce
+
+ Więc spróbuję napisać pomocne oprogramowanie i zobaczę, czy to działa
+
+ Jeśli lubisz korzystać z tego oprogramowania, byłbym bardzo wdzięczny nawet za
+ najmniejsza [miesięczna składka przez Patreon](https://www.patreon.com/cobbzilla)
+
+ *Dziękuję Ci!*
+
+ ## Instalacja
+ Zainstaluj za pomocą `npm` lub `yarn` . Prawdopodobnie chcesz wersję `lite` , która nie zawiera wszystkich
+ przetłumaczone pliki README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Jeśli naprawdę chcesz mieć pliki README w każdym języku, zainstaluj pełną wersję:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Szybki start
  Krótki przykład użycia sterownika `s3` .
@@ -371,7 +397,7 @@ Mobiletto
  klucz lub w inny sposób pomyślnie złamał szyfrowanie. W takim razie wszystkie zakłady są przegrane!
 
  ### Wydajność i buforowanie
- Operacje na zaszyfrowanym magazynie mogą być powolne. Rekurencyjne aukcje i usunięcia mogą być bardzo powolne.
+ Operacje na zaszyfrowanym magazynie mogą być powolne. Rekursywne aukcje i usuwanie mogą być bardzo powolne.
  Buforowanie przez redis ogromnie pomaga, ale pamiętaj, że pamięć podręczna jest opróżniana po każdym zapisie lub usunięciu.
 
  ## Rotacja klawiszy

@@ -8,6 +8,8 @@ Mobiletto
  * [Швидкий старт](#Швидкий старт)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Джерело](#Джерело)
+ * [Встановлення](#Встановлення)
+ * [Підтримка та фінансування](#Support-and-Funding)
  * [Основне використання](#Basic-usage)
  * [Метадані](#Метадані)
  * [Альтернативний стиль імпорту](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Джерело
  * [mobiletto на GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto на npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Підтримка та фінансування
+ Я намагаюся бути професійним розробником програмного забезпечення з відкритим кодом. Я працював у
+ У індустрії програмного забезпечення протягом багатьох років я створював успішні компанії та продавав їх державним компаніям.
+ Нещодавно я втратив роботу, і в мене насправді немає іншої роботи
+
+ Тож я спробую написати корисне програмне забезпечення та перевірю, чи це спрацює
+
+ Якщо вам подобається користуватися цією програмою, я буду дуже вдячний навіть за
+ найменший [щомісячний внесок через Patreon](https://www.patreon.com/cobbzilla)
+
+ *Дякую!*
+
+ ## Встановлення
+ Встановіть за допомогою `npm` або `yarn` . Ймовірно, вам потрібна `lite` версія, яка не включає всі
+ перекладені файли README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Якщо вам справді потрібні файли README кожною мовою, встановіть повну версію:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Швидкий початок
  Короткий приклад використання драйвера mobiletto `s3` .
@@ -265,7 +291,7 @@ Mobiletto
     const objectData = await s3.readFile('some/path')
 
  ## Кешування
- Mobiletto найкраще працює з кеш-пам’яттю <a href="https://redis.io">redis</a> .
+ <a href="https://redis.io">Mobiletto</a> найкраще працює з кеш-пам’яттю Redis.
 
  Mobiletto спробує підключитися до примірника redis на 127.0.0.1:6379
 
@@ -427,7 +453,7 @@ Mobiletto
     // returns a string of a single path removed, or an array of multiple paths removed
     async remove (path, recursive = false, quiet = false)
 
- ## Журнал
+ ## Ведення журналу
  Mobiletto використовує бібліотеку журналювання [winston](https://www.npmjs.com/package/winston).
 
  Журнали **будуть** містити шляхи до файлів і повідомлення про помилки, але **ніколи** не будуть містити ключі, секрети,
@@ -438,7 +464,7 @@ Mobiletto
  рівнів `npm` , визначених у [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
 
  Типовим рівнем є `error` . Найбільш багатослівним рівнем є `silly` , хоча зараз mobiletto
- не веде журнал на рівнях нижче `debug`
+ не реєструє на рівнях нижче `debug`
 
     MOBILETTO_LOG_LEVEL=silly # maximum logs!
 

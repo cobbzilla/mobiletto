@@ -8,6 +8,8 @@ Mobiletto
  * [Kuanza kwa haraka](#Kuanza kwa haraka)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Chanzo](#Chanzo)
+ * [Usakinishaji](#Usakinishaji)
+ * [Msaada na Ufadhili](#Msaada-na-Ufadhili)
  * [Matumizi ya kimsingi](#Matumizi-msingi)
  * [Metadata](#Metadata)
  * [Mtindo mbadala wa uingizaji](#Mtindo-Mbadala-kuagiza)
@@ -101,6 +103,30 @@ Mobiletto
  ## Chanzo
  * [mobiletto kwenye GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto kwenye npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Msaada na Ufadhili
+ Ninajaribu kuwa mtaalamu wa kuunda programu huria. Nimekuwa nikifanya kazi ndani
+ tasnia ya programu kwa miaka mingi, nimeanzisha kampuni zilizofanikiwa na kuziuza kwa kampuni za umma.
+ Hivi majuzi nilipoteza kazi yangu, na kwa kweli sina kazi nyingine yoyote iliyopangwa
+
+ Kwa hivyo nitajaribu kuandika programu muhimu na kuona ikiwa hiyo inafanya kazi
+
+ Ikiwa unafurahiya kutumia programu hii, ningeshukuru sana hata kwa
+ ndogo zaidi [mchango wa kila mwezi kupitia Patreon](https://www.patreon.com/cobbzilla)
+
+ *Asante!*
+
+ ## Ufungaji
+ Sakinisha kwa kutumia `npm` au `yarn` . Labda unataka toleo la `lite` ambalo halijumuishi faili zote
+ faili za README zilizotafsiriwa:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Ikiwa unataka faili za README katika kila lugha, sakinisha toleo kamili:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Anza Haraka
  Mfano mfupi unaotumia kiendeshi cha mobiletto `s3` .

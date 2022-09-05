@@ -8,6 +8,8 @@ I-Mobiletto
  * [Isiqalo esisheshayo](#Qala ngokushesha)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Umthombo](#Umthombo)
+ * [Ukufakwa](#Ukufakwa)
+ * [Ukwesekwa Noxhaso](#Ukusekela-Noxhaso)
  * [Ukusetshenziswa okuyisisekelo](#Ukusetshenziswa okuyisisekelo)
  * [Imethadatha](#Imethadatha)
  * [Esinye isitayela sokungenisa](#Esinye-isitayela sokungenisa)
@@ -101,6 +103,30 @@ I-Mobiletto
  ## Umthombo
  * [i-mobiletto ku-GitHub](https://github.com/cobbzilla/mobiletto)
  * [i-mobiletto ku-npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Ukusekela Nokuxhaswa Ngezimali
+ Ngizama ukuba umthuthukisi wesofthiwe yomthombo ovulekile ochwepheshe. Bengisebenza e
+ imboni yesofthiwe iminyaka eminingi, ngiqale izinkampani eziphumelelayo futhi ngazithengisa ezinkampanini zomphakathi.
+ Muva nje ngilahlekelwe umsebenzi, futhi anginawo omunye umsebenzi engiwulandelayo
+
+ Ngakho-ke ngizozama ukubhala isoftware ewusizo futhi ngibone ukuthi lokho kuyasebenza
+
+ Uma uthanda ukusebenzisa le software, ngingabonga kakhulu ngisho nange
+ okuncane kakhulu [umnikelo wanyanga zonke nge-Patreon](https://www.patreon.com/cobbzilla)
+
+ *Ngiyabonga!*
+
+ ## Ukufakwa
+ Faka usebenzisa `npm` noma `yarn` . Cishe ufuna inguqulo `lite` zonke lezi
+ amafayela ahunyushwe e-README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Uma uwafuna ngempela amafayela e-README ngazo zonke izilimi, faka inguqulo egcwele:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Ukuqala Ngokushesha
  Isibonelo esifushane sisebenzisa umshayeli we-mobiletto `s3` .
@@ -370,7 +396,7 @@ I-Mobiletto
  Isitha ngeke sazi amagama ezinkomba/amafayela ngaphandle uma sikwazi nokubethela kwakho
  ukhiye noma uqhekeze ngempumelelo ukubethela. Konke ukubhejwa kuyacishwa ngaleso sikhathi!
 
- ### Ukusebenza nokugcinwa kwesikhashana
+ ### Ukusebenza kanye nokugcinwa kwesikhashana
  Ukusebenza kusitoreji esibethelwe kungase kuhambe kancane. Ukufakwa kuhlu okuphindaphindayo nokususwa kungahamba kancane kakhulu.
  Ukulondoloza isikhashana nge-redis kusiza kakhulu, kodwa qaphela ukuthi inqolobane ithululwa kunoma yikuphi okulotshiweyo noma okukhishiwe.
 
@@ -392,7 +418,7 @@ I-Mobiletto
 
     function storageClient (key, secret, opts)
 
- * `key` : iyunithi yezinhlamvu, ukhiye wakho we-API ( `local` lolu wuhlu lwemibhalo oluyisisekelo)
+ * `key` : iyunithi yezinhlamvu, ukhiye wakho we-API (komshayeli `local` lolu wuhlu lwemibhalo oluyisisekelo)
  * `secret` : iyunithi yezinhlamvu, imfihlo ye-API yakho (ingashiywa kumshayeli `local` )
  * `opts` ngamunye:
  * `local` , izici `fileMode` kanye `dirMode` zinquma ukuthi kwakhiwe kanjani amafayela amasha nezinkomba.
@@ -428,7 +454,7 @@ I-Mobiletto
     async remove (path, recursive = false, quiet = false)
 
  ## Ukugawula
- I-Mobiletto isebenzisa ilabhulali yokugawula ye-[winston](https://www.npmjs.com/package/winston).
+ I-Mobiletto isebenzisa [winston](https://www.npmjs.com/package/winston) ilabhulali yokugawula imithi.
 
  Amalogi **azoqukatha izindlela zamafayela nemilayezo yephutha, kodwa **angeke** aqukathe okhiye, izimfihlo,
  noma yiluphi olunye ulwazi lokucushwa kokuxhumana.

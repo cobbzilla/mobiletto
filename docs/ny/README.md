@@ -8,6 +8,8 @@ Mobiletto
  * [Kuyambira mwachangu](#Kuyambira mwachangu)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Gwero](#Source)
+ * [Kuyika](#Kuyika)
+ * [Thandizo ndi Ndalama](#Thandizo-ndi-ndandalama)
  * [Kagwiritsidwe ntchito kake](#Kagwiritsidwe koyambira)
  * [Metadata](#Metadata)
  * [Mtundu wina wolowetsa](#Mtundu wina wolowetsa)
@@ -101,6 +103,30 @@ Mobiletto
  ## Gwero
  * [mobiletto pa GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto pa npm](https://www.npmjs.com/package/mobiletto)
+
+ # Thandizo ndi Ndalama
+ Ndikuyesera kukhala katswiri wopanga mapulogalamu otseguka. Ndakhala ndikugwira ntchito ku
+ makampani opanga mapulogalamu kwa zaka zambiri, ndayambitsa makampani opambana ndikugulitsa kumakampani aboma.
+ Posachedwapa ndinachotsedwa ntchito, ndipo ndilibe ntchito ina iliyonse yotsatizana
+
+ Chifukwa chake ndiyesera kulemba mapulogalamu othandiza ndikuwona ngati izi zikugwira ntchito
+
+ Ngati mumakonda kugwiritsa ntchito pulogalamuyo, ndingayamikire kwambiri ngakhale
+ zing'onozing'ono [zopereka pamwezi kudzera pa Patreon](https://www.patreon.com/cobbzilla)
+
+ *Zikomo!*
+
+ ## Kukhazikitsa
+ Ikani pogwiritsa ntchito `npm` kapena `yarn` . Mwina mukufuna mtundu wa `lite` womwe suphatikiza zonse
+ mafayilo omasulira a README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Ngati mukufunadi mafayilo a README m'zilankhulo zonse, yikani mtundu wonse:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Yambani Mwachangu
  Chitsanzo chachidule chogwiritsa ntchito mobiletto `s3` driver.
@@ -371,8 +397,8 @@ Mobiletto
  key kapena adasokoneza bwino kubisa. Mabetcha onse atha ndiye!
 
  ### Magwiridwe ndi caching
- Ntchito zosungirako zosungidwa zitha kuchedwa. Zolemba zobwerezabwereza ndi zochotsa zimatha kuchedwa kwambiri.
- Kusungirako kudzera pa redis kumathandiza kwambiri, koma dziwani kuti chosungiracho chimasinthidwa pazolemba zilizonse kapena kuchotsa.
+ Ntchito zosungirako encrypted zitha kuchedwa. Zolemba zobwerezabwereza ndi zochotsa zimatha kuchedwa kwambiri.
+ Kusungirako kudzera pa redis kumathandiza kwambiri, koma dziwani kuti posungirayo imasinthidwa pazolemba zilizonse kapena kuchotsa.
 
  ## Kusintha kofunikira
  Pangani mobiletto ndi kiyi yanu yatsopano, kenako ndikuwonetsa zomwe zilimo kale:
@@ -395,7 +421,7 @@ Mobiletto
  * `key` : chingwe, kiyi yanu ya API (kwa oyendetsa `local` iyi ndiye chikwatu choyambira)
  * `secret` : chingwe, chinsinsi cha API (chikhoza kusiyidwa kwa woyendetsa `local` )
  * `opts` : chinthu, katundu ndi woyendetsa:
- * Kwa `local` , katundu wa `fileMode` ndi `dirMode` amatsimikizira momwe mafayilo atsopano ndi zolemba zimapangidwira
+ * Kwa `local` , katundu wa `fileMode` ndi `dirMode` zimatsimikizira momwe mafayilo atsopano ndi zolemba zimapangidwira
  * Kwa `s3` , katundu wa `bucket` amafunikira. Zosankha zomwe mungasankhe ndi:
     * `region`: the S3 region, default is us-east-1
     * `prefix`: a prefix to prepend to all S3 paths, default is the empty string
@@ -443,7 +469,7 @@ Mobiletto
     MOBILETTO_LOG_LEVEL=silly # maximum logs!
 
  ### Fayilo yaulere
- Mwachikhazikitso, wodula mitengoyo amalembera ku console. Kuti mutumize zolemba ku fayilo, ikani `MOBILETTO_LOG_FILE`
+ Mwachikhazikitso, wodula mitengoyo amalembera ku console. Kuti mutumize malogo ku fayilo, ikani `MOBILETTO_LOG_FILE`
  kusintha kwa chilengedwe. Mukalowa mufayilo, zipika sizidzalembedwanso ku console.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log

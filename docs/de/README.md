@@ -8,6 +8,8 @@ Mobiletto
  * [Schnellstart](#Schnellstart)
  * [Mobiletto-CLI](#mobiletto-cli)
  * [Quelle](#Quelle)
+ * [Installation](#Installation)
+ * [Unterstützung und Finanzierung](#Unterstützung-und-Finanzierung)
  * [Basisnutzung](#Basic-use)
  * [Metadaten](#Metadaten)
  * [Alternativer Importstil](#Alternativer-Importstil)
@@ -101,6 +103,30 @@ Mobiletto
  ## Quelle
  * [mobiletto auf GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto auf npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Unterstützung und Finanzierung
+ Ich versuche, ein professioneller Open-Source-Softwareentwickler zu werden. Ich habe in gearbeitet
+ Ich arbeite seit vielen Jahren in der Softwarebranche, habe erfolgreiche Unternehmen gegründet und an Aktiengesellschaften verkauft.
+ Kürzlich habe ich meinen Job verloren, und ich habe eigentlich keine andere Arbeit vor mir
+
+ Also werde ich versuchen, hilfreiche Software zu schreiben und sehen, ob das funktioniert
+
+ Wenn Sie diese Software gerne verwenden, wäre ich Ihnen sehr dankbar dafür
+ kleinster [monatlicher Beitrag über Patreon](https://www.patreon.com/cobbzilla)
+
+ *Vielen Dank!*
+
+ ## Installation
+ Installieren Sie mit `npm` oder `yarn` . Sie möchten wahrscheinlich die `lite` Version, die nicht alle enthält
+ übersetzte README-Dateien:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Wenn Sie die README-Dateien wirklich in jeder Sprache haben möchten, installieren Sie die Vollversion:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Schnellstart
  Ein kurzes Beispiel mit dem Mobiletto `s3` Treiber.
@@ -361,7 +387,7 @@ Mobiletto
  * `write` -Befehle verursachen O(N) Schreibvorgänge, wobei N = Tiefe in der Verzeichnishierarchie ist
  * Der `remove` Befehl entfernt rekursiv die entsprechende Dirent-Datei und ihre Elterndatei, falls diese leer ist; entfernt dann die Datei
  * Nicht-rekursive `remove` -Befehle verursachen O(N) Lesevorgänge und möglicherweise ebenso viele Löschvorgänge, wobei N = Tiefe in der Verzeichnishierarchie ist
- * Rekursive `remove` Befehle auf großen und tiefen Dateisystemen können teuer sein
+ * Rekursive `remove` Befehle auf großen und tiefen Dateisystemen können teuer werden
 
  Beachten Sie, dass selbst bei aktivierter clientseitiger Verschlüsselung ein Gegner mit vollständiger Einsicht in Ihre verschlüsselte Serverseite vorhanden ist
  Speicher, auch ohne den Schlüssel, kann immer noch die Gesamtzahl der Verzeichnisse sehen und wie viele Dateien sich in jedem befinden, und mit
@@ -435,7 +461,7 @@ Mobiletto
 
  ### Protokollebene
  Verwenden Sie die Umgebungsvariable `MOBILETTO_LOG_LEVEL` , um die Protokollebene festzulegen, indem Sie eins verwenden
- der in [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels) definierten `npm` Levels)
+ der `npm` Ebenen, die in [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels) definiert sind
 
  Die Standardstufe ist `error` . Die ausführlichste Stufe ist `silly` , obwohl derzeit mobiletto
  protokolliert nicht auf Ebenen unterhalb `debug`
@@ -444,7 +470,7 @@ Mobiletto
 
  ### Logdatei
  Standardmäßig schreibt der Logger in die Konsole. Um Protokolle an eine Datei zu senden, setzen Sie die `MOBILETTO_LOG_FILE`
- Umgebungsvariable. Bei der Protokollierung in eine Datei werden keine Protokolle mehr in die Konsole geschrieben.
+ Umgebungsvariable. Beim Protokollieren in eine Datei werden keine Protokolle mehr in die Konsole geschrieben.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log
 

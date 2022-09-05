@@ -8,6 +8,8 @@ Mobiletto
  * [Hasiera azkarra](#Abiarazte azkarra)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Iturria](#Iturria)
+ * [Instalazioa](#Instalazioa)
+ * [Laguntza eta finantzaketa](#Support-and-Funding)
  * [Oinarrizko erabilera](#Oinarrizko erabilera)
  * [Metadatuak](#Metadatuak)
  * [Alternate inportazio estiloa](#Alternate-inportazio-estiloa)
@@ -101,6 +103,30 @@ Mobiletto
  ## Iturria
  * [mobiletto GitHub-en](https://github.com/cobbzilla/mobiletto)
  * [mobiletto npm-n](https://www.npmjs.com/package/mobiletto)
+
+ ## Laguntza eta finantzaketa
+ Kode irekiko software garatzaile profesionala izaten saiatzen ari naiz. lanean aritu naiz
+ urte askotan softwarearen industrian, enpresa arrakastatsuak sortu eta enpresa publikoei saldu ditut.
+ Duela gutxi lana galdu nuen, eta ez daukat beste lanik prest
+
+ Beraz, software lagungarria idazten saiatuko naiz eta ea funtzionatzen duen
+
+ Software hau erabiltzea gustatzen bazaizu, asko eskertuko nuke
+ txikiena [Patreon bidezko hileko ekarpena](https://www.patreon.com/cobbzilla)
+
+ *Eskerrik asko!*
+
+ ## Instalazioa
+ Instalatu `npm` edo `yarn` erabiliz. Seguruenik, `lite` bertsioa nahi duzu guztiak barne hartzen ez dituena
+ itzulitako README fitxategiak:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ README fitxategiak hizkuntza guztietan nahi badituzu, instalatu bertsio osoa:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Hasiera azkarra
  Adibide labur bat mobiletto `s3` kontrolatzailea erabiliz.
@@ -433,7 +459,7 @@ Mobiletto
  Erregistroek **fitxategien bideak eta errore-mezuak** izango dituzte, baina **inoiz** ez dituzte izango gakoak, sekretuak,
  edo konexioaren konfigurazioko beste edozein informazio.
 
- ### Erregistro maila
+ ### Erregistro-maila
  Erabili `MOBILETTO_LOG_LEVEL` ingurune-aldagaia erregistro-maila ezartzeko, bat erabiliz
  [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels) atalean definitutako `npm` mailen artean
 

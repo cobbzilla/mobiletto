@@ -8,6 +8,8 @@ Mobiletto
  * [Início rápido](#Início rápido)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Fonte](#Fonte)
+ * [Instalação](#Instalação)
+ * [Suporte e Financiamento](#Suporte-e-Financiamento)
  * [Uso básico](#Uso básico)
  * [Metadados](#Metadados)
  * [Estilo de importação alternativo](#Estilo de importação alternativo)
@@ -101,6 +103,30 @@ Mobiletto
  ## Fonte
  * [mobiletto no GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto no npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Apoio e Financiamento
+ Estou tentando ser um desenvolvedor profissional de software de código aberto. eu tenho trabalhado em
+ na indústria de software por muitos anos, criei empresas de sucesso e as vendi para empresas públicas.
+ Recentemente eu perdi meu emprego, e eu realmente não tenho nenhum outro trabalho alinhado
+
+ Então, vou tentar escrever um software útil e ver se isso funciona
+
+ Se você gosta de usar este software, eu ficaria muito grato até mesmo pelo
+ menor [contribuição mensal via Patreon](https://www.patreon.com/cobbzilla)
+
+ *Obrigada!*
+
+ ## Instalação
+ Instale usando `npm` ou `yarn` . Você provavelmente quer a versão `lite` que não inclui todos os
+ arquivos README traduzidos:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Se você realmente deseja os arquivos README em todos os idiomas, instale a versão completa:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Começo rápido
  Um pequeno exemplo usando o driver mobiletto `s3` .

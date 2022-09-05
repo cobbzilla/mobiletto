@@ -8,6 +8,8 @@ Mobiletto
  * [Qalo e potlakileng](#Qalo e potlakileng)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Mohloli](#Mohloli)
+ * [Kenyo](#Kenyeletso)
+ * [Tšehetso le Lichelete](#Tšehetso-le-Lichelete)
  * [Tsebeliso ea mantlha](#Tšebeliso ea mantlha)
  * [Metadata](#Metadata)
  * [Mokhoa o mong oa ho reka kantle ho naha](#Mokhoa-mokhoa o mong)
@@ -101,6 +103,30 @@ Mobiletto
  ##Mohloli
  * [mobiletto ho GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto ho npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Tšehetso le Lichelete
+ Ke leka ho ba setsebi sa software ea open source software. Ke ntse ke sebetsa
+ indasteri ea software ka lilemo tse ngata, ke qalile lik'hamphani tse atlehileng mme ka li rekisetsa lik'hamphani tsa sechaba.
+ Haufinyane tjena ke lahlehetsoe ke mosebetsi, 'me ha ho na mosebetsi o mong oo ke o lokiselitseng
+
+ Kahoo ke tla leka ho ngola software e thusang mme ke bone hore na e ea sebetsa
+
+ Haeba u natefeloa ke ho sebelisa software ena, ke tla leboha haholo bakeng sa eona
+ e nyane [monehelo oa khoeli le khoeli ka Patreon](https://www.patreon.com/cobbzilla)
+
+ *Kea leboha!*
+
+ ## Kemiso
+ Kenya o sebelisa `npm` kapa `yarn` . Mohlomong u batla mofuta oa `lite` o sa kenyelletseng kaofela
+ lifaele tsa README tse fetoletsoeng:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Haeba u hlile u batla lifaele tsa README ka puo e 'ngoe le e' ngoe, kenya mofuta o felletseng:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Ho qala ka potlako
  Mohlala o mokhuts'oane o sebelisang mokhanni oa mobiletto `s3` .
@@ -372,7 +398,7 @@ Mobiletto
 
  ### Tshebetso le caching
  Ts'ebetso ea polokelo e patiloeng e ka tsamaea butle. Mananeo a iphetang le ho tlosa a ka lieha haholo.
- Caching ka redis e thusa haholo, empa hlokomela hore cache e khannoa holim'a leha e le efe ho ngola kapa ho tlosa.
+ Caching ka redis e thusa haholo, empa hlokomela hore cache e fetisoa ho eng kapa eng e ngotsoeng kapa e tlosoa.
 
  ## Phetoho ea bohlokoa
  Theha mobiletto ka senotlolo sa hau se secha, ebe u sheba lintlha tsa khale ho eona:
@@ -434,7 +460,7 @@ Mobiletto
  kapa tlhahisoleseding efe kapa efe e 'ngoe ea tlhophiso ea khokahano.
 
  ### Boemo ba marang-rang
- Sebelisa sebopeho sa `MOBILETTO_LOG_LEVEL` ho seta boemo ba tlaleho, u sebelisa e le 'ngoe
+ Sebelisa sebopeho sa `MOBILETTO_LOG_LEVEL` ho seta boemo ba log, u sebelisa e le 'ngoe
  ya maemo a `npm` a hlalositsweng ho [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
 
  Boemo ba kamehla ke `error` . Boemo ba leetsi haholo ke `silly` , leha hajoale mobiletto
@@ -444,7 +470,7 @@ Mobiletto
 
  ### Faele ea ho rekota
  Ka ho sa feleng, ralithara o ngolla console. Ho romela litlaleho faeleng, beha `MOBILETTO_LOG_FILE`
- ho feto-fetoha ha tikoloho. Ha u kena faeleng, li-log ha li sa tla ngolloa ho console.
+ tikoloho e fapaneng. Ha u kena faeleng, li-log ha li sa tla ngolloa ho console.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log
 

@@ -8,6 +8,8 @@ Mobiletto
  * [Quickstart](#Quickstart)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Source](#Source)
+ * [Installatioun](#Installatioun)
+ * [Support a Finanzéierung](#Support-a-Finanzéierung)
  * [Basis Benotzung](#Basis Benotzung)
  * [Metadaten](#Metadaten)
  * [Alternativ Importstil](#Alternate-Import-Style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Quell
  * [mobiletto op GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto op npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Ënnerstëtzung a Finanzéierung
+ Ech probéieren e professionnelle Open Source Software Entwéckler ze sinn. Ech hu geschafft an
+ der Software Industrie fir vill Joren, Ech hunn erfollegräich Betriber ugefaangen a verkaf hinnen un ëffentlech Firmen.
+ Viru kuerzem hunn ech meng Aarbecht verluer, an ech hu wierklech keng aner Aarbecht opgestallt
+
+ Also ech probéieren hëllefräich Software ze schreiwen a kucken ob dat funktionnéiert
+
+ Wann Dir genéisst dës Software ze benotzen, Ech wier ganz dankbar fir souguer de
+ klengste [monatlecht Bäitrag iwwer Patreon](https://www.patreon.com/cobbzilla)
+
+ *Merci!*
+
+ ## Installatioun
+ Installéiere mat `npm` oder `yarn` . Dir wëllt wahrscheinlech d' `lite` Versioun déi net all
+ iwwersat README Dateien:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Wann Dir wierklech d'README Dateien an all Sprooch wëllt, installéiert déi komplett Versioun:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Schnellstart
  E kuerzt Beispill mat dem mobiletto `s3` Chauffer.
@@ -370,7 +396,7 @@ Mobiletto
  De Géigner géif d'Nimm vun den Verzeichnisser/Dateien net kennen, ausser si woussten och Är Verschlësselung
  Schlëssel oder soss erfollegräich d'Verschlësselung geknackt. All Spillwette sinn dann aus!
 
- ### Leeschtung a Cache
+ ### Leeschtung an Cache
  Operatiounen op verschlësselte Späichere kënne lues sinn. Rekursiv Oplëschtungen an Entfernunge kënne ganz lues sinn.
  Caching iwwer Redis hëlleft enorm, awer bemierkt datt de Cache bei all Schreiwen oder ewechgeholl gëtt.
 

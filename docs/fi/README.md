@@ -8,6 +8,8 @@ Mobiletto
  * [Pika-aloitus](#Pika-aloitus)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Lähde](#Source)
+ * [Asennus](#Asennus)
+ * [Tuki ja rahoitus](#Support-and-Funding)
  * [Peruskäyttö](#Peruskäyttö)
  * [Metatiedot](#Metadata)
  * [Vaihtoehtoinen tuontityyli](#Alternate-import-style)
@@ -67,7 +69,7 @@ Mobiletto
 
  ### Hyvästi myyjän lukitus!
  Eri pilvitallennuspalvelujen tarjoajilla on yhteensopimattomia sovellusliittymiä. Jopa ne, jotka tavoittelevat "S3-yhteensopivuutta"
- omaa omituista käyttäytymistä.
+ on omalaatuista käyttäytymistä.
 
  Kun valitset sovelluksellesi tietyn tallennustilan toimittajan, jos koodaat suoraan heidän sovellusliittymään, sovelluksesi
  on nyt riippuvainen kyseisestä palvelusta. Ajan myötä ja koodia kertyy, vaihtuvia myyjiä tulee
@@ -102,8 +104,32 @@ Mobiletto
  * [mobiletto GitHubissa](https://github.com/cobbzilla/mobiletto)
  * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
 
+ ## Tuki ja rahoitus
+ Yritän olla ammattimainen avoimen lähdekoodin ohjelmistokehittäjä. Olen ollut töissä
+ Ohjelmistoteollisuudessa useiden vuosien ajan, olen perustanut menestyviä yrityksiä ja myynyt niitä julkisille yrityksille.
+ Menetin hiljattain työpaikkani, eikä minulla oikeastaan ole muita töitä
+
+ Joten yritän kirjoittaa hyödyllisiä ohjelmistoja ja katsoa, toimiiko se
+
+ Jos pidät tämän ohjelmiston käyttämisestä, olisin erittäin kiitollinen jopa
+ pienin [kuukausimaksu Patreonin kautta](https://www.patreon.com/cobbzilla)
+
+ *Kiitos!*
+
+ ## Asennus
+ Asenna käyttämällä `npm` tai `yarn` . Haluat luultavasti `lite` version, joka ei sisällä kaikkia
+ käännetyt README-tiedostot:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Jos todella haluat README-tiedostot kaikilla kielillä, asenna täysi versio:
+
+    npm install mobiletto
+    yarn add mobiletto
+
  ## Pika-aloitus
- Lyhyt esimerkki mobiletto `s3` -ohjaimen käytöstä.
+ Lyhyt esimerkki mobiletto `s3` -ohjaimesta.
 
  Tämä koodi toimisi samoin, jos ohjain olisi `b2` tai `local` .
 

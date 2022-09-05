@@ -8,6 +8,8 @@ Mobiletto
  * [Fljót byrjun](#Fljótbyrjun)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Heimild](#Heimild)
+ * [Uppsetning](#Uppsetning)
+ * [Support and Funding](#Support-and-Funding)
  * [Grunnnotkun](#Grunnnotkun)
  * [Lýsigögn](#Lýsigögn)
  * [Vari innflutningsstíll](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Heimild
  * [mobiletto á GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto á npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Stuðningur og fjármögnun
+ Ég er að reyna að vera faglegur opinn hugbúnaðarframleiðandi. Ég hef verið að vinna í
+ hugbúnaðariðnaðinum í mörg ár, ég hef stofnað farsæl fyrirtæki og selt þau til opinberra fyrirtækja.
+ Nýlega missti ég vinnuna mína og ég er í rauninni ekki með neina aðra vinnu í röðinni
+
+ Svo ég ætla að prófa að skrifa gagnlegan hugbúnað og sjá hvort það virkar
+
+ Ef þú hefur gaman af því að nota þennan hugbúnað, væri ég mjög þakklátur fyrir jafnvel
+ minnsta [mánaðarlegt framlag í gegnum Patreon](https://www.patreon.com/cobbzilla)
+
+ *Þakka þér fyrir!*
+
+ ## Uppsetning
+ Settu upp með því að nota `npm` eða `yarn` . Þú vilt líklega `lite` útgáfuna sem inniheldur ekki alla
+ þýddar README skrár:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Ef þú vilt virkilega hafa README skrárnar á hverju tungumáli skaltu setja upp heildarútgáfuna:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Fljót byrjun
  Stutt dæmi um að nota mobiletto `s3` bílstjórann.
@@ -443,7 +469,7 @@ Mobiletto
     MOBILETTO_LOG_LEVEL=silly # maximum logs!
 
  ### Notkunarskrá
- Sjálfgefið er að skógarhöggsmaðurinn skrifar á stjórnborðið. Til að senda logs í skrá skaltu stilla `MOBILETTO_LOG_FILE`
+ Sjálfgefið er að skógarhöggsmaðurinn skrifar á stjórnborðið. Til að senda annála í skrá skaltu stilla `MOBILETTO_LOG_FILE`
  umhverfisbreytu. Þegar þú skráir þig inn í skrá verða annálar ekki lengur skrifaðar á stjórnborðið.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log

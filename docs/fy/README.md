@@ -8,6 +8,8 @@ Mobiletto
  * [Fluchstart](#Fluchstart)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Boarne](#Boarne)
+ * [Ynstallaasje](#Ynstallaasje)
+ * [Support and Funding](#Support-and-Funding)
  * [Basisgebrûk](#Basisgebrûk)
  * [Metadata](#Metadata)
  * [Alternate ymportstyl](#Alternate-ymportstyl)
@@ -101,6 +103,30 @@ Mobiletto
  ## Boarne
  * [mobiletto op GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto op npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Stipe en finansiering
+ Ik besykje in profesjonele ûntwikkelder fan iepen boarne software te wêzen. Ik haw wurke yn
+ de software yndustry foar in protte jierren, Ik haw begûn suksesfolle bedriuwen en ferkocht se oan iepenbiere bedriuwen.
+ Koartlyn bin ik myn baan kwytrekke, en ik haw eins gjin oar wurk opsteld
+
+ Dat ik sil besykje nuttige software te skriuwen en te sjen oft dat wurket
+
+ As jo genietsje fan in gebrûk dizze sêftguod, Ik soe wêze hiel tankber foar sels de
+ lytste [moanlikse bydrage fia Patreon](https://www.patreon.com/cobbzilla)
+
+ *Dankewol!*
+
+ ## Ynstallaasje
+ Ynstallearje mei `npm` of `yarn` . Jo wolle wierskynlik de `lite` ferzje dy't net alle
+ oersette README-bestannen:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ As jo de README-bestannen wirklik yn elke taal wolle, ynstallearje dan de folsleine ferzje:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Flugge start
  In koart foarbyld mei de mobiletto `s3` -bestjoerder.
@@ -428,7 +454,7 @@ Mobiletto
     async remove (path, recursive = false, quiet = false)
 
  ## Logging
- Mobiletto brûkt de [winston](https://www.npmjs.com/package/winston) logbibleteek.
+ Mobiletto brûkt de [winston](https://www.npmjs.com/package/winston) logging bibleteek.
 
  Logboeken **sil** triempaden en flaterberjochten befetsje, mar sille **nea** kaaien, geheimen,
  of hokker oare ferbining konfiguraasje ynformaasje.

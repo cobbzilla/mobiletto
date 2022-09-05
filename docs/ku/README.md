@@ -8,6 +8,8 @@ Mobiletto
  * [Destpêka Bilez](#Destpêka Zû)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Çavkanî](#Çavkanî)
+ * [Sazkirin](# Sazkirin)
+ * [Piştgirî û Fînanse](#Piştgirî-û-Fona)
  * [Bikaranîna bingehîn](#Bikaranîna bingehîn)
  * [Metadata](#Metadata)
  * [Şêweya importa alternatîf](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Çavkanî
  * [mobiletto li ser GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto li ser npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Piştgirî û Fînanse
+ Ez hewl didim ku bibim pêşdebirek nermalava çavkaniya vekirî ya profesyonel. Ez tê de dixebitim
+ pîşesaziya nermalava gelek salan, min dest bi pargîdaniyên serfiraz kir û wan firot pargîdaniyên gelemperî.
+ Di van demên dawî de min karê xwe winda kir, û bi rastî jî tu karekî din li ber destê min nîn e
+
+ Ji ber vê yekê ez ê hewl bidim ku nermalava alîkar binivîsim û bibînim ka ew kar dike
+
+ Heke hûn ji karanîna vê nermalavê kêfxweş dibin, ez ê ji bo wê jî pir spasdar bim
+ herî piçûk [beşdariya mehane bi rêya Patreon](https://www.patreon.com/cobbzilla)
+
+ *Spas dikim!*
+
+ ## Sazkirin
+ Bi karanîna `npm` an jî `yarn` . Dibe ku hûn guhertoya `lite` ya ku hemîyan tê de nake dixwazin
+ pelên README wergerandin:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Heke hûn bi rastî pelên README bi her zimanî dixwazin, guhertoya tevahî saz bikin:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Destpêka Zû
  Mînakek kurt a ajokera `s3` ya mobiletto bikar tîne.
@@ -372,7 +398,7 @@ Mobiletto
 
  ### Performansa û caching
  Operasyonên li ser hilanîna şîfrekirî dikarin hêdî bibin. Lîsteyên veger û jêbirin dikarin pir hêdî bibin.
- Caching bi rêya redis pir alîkariyek mezin dike, lê bala xwe bidin ku cache li ser her nivîsandinê an jêbirinê tê rijandin.
+ Veşartina bi rêya redis pir alîkariyek mezin dike, lê bala xwe bidin ku cache li ser her nivîsandinê an jêbirinê tê rijandin.
 
  ## Zivirîna key
  Bi mifteya xweya nû re mobiletto biafirînin, dûv re daneyên kevn di nav wê de neynikê bikin:

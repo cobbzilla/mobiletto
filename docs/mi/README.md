@@ -8,6 +8,8 @@ Mobiletto
  * [Tīmatatanga tere](#Tīmata-tere)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Putake](#Source)
+ * [Tāuta](#Tāuta)
+ * [Tautoko me te Putea](#Tautoko-me-Pūtea)
  * [Whakamahinga Taketake](#Whakamahinga Taketake)
  * [Metadata](#Metadata)
  * [Kāhua kawemai kē](#Alternate-import-style)
@@ -66,7 +68,7 @@ Mobiletto
  ## He aha a Mobiletto?
 
  ### Kia ora te kaihoko maukati!
- Ko nga momo kaiwhakarato rokiroki kapua he API hotokore. Ahakoa te hunga e ngana ana mo te "hototahi S3"
+ Ko nga momo kaiwhakarato rokiroki kapua he API hotokore. Ahakoa te hunga e ngana ana ki te "hototahi S3"
  he whanonga motuhake.
 
  Ina whiriwhiria e koe tetahi kaihoko rokiroki mo to taupānga, mena ka tohu tika koe ki to API, to taupānga
@@ -79,7 +81,7 @@ Mobiletto
  ### He whakamatautau nui
  Ka whakamatautauhia nga taraiwa katoa mo te whanonga rite me te 60+ whakamatautau mo ia taraiwa.
  Ka whakamatauhia e matou nga taraiwa katoa me nga huinga katoa o:
- * Whakamuna: kua whakahohea me te mono
+ * Whakamunatanga: kua whakahohea me te mono
  * Redis cache: kua whakahohea me te mono
 
  Ma tenei huarahi ka mau te rongo ki a maatau ka rite tonu te mahi a mobiletto ahakoa ko wai te taraiwa e whakamahia ana e koe,
@@ -89,7 +91,7 @@ Mobiletto
  Nga taraiwa rokiroki Mobiletto o naianei:
  * `s3` : Amazon S3
  * `b2` : Backblaze B2
- * `local` : pūnaha kōnae ā-rohe
+ * `local` : pūnaha kōnae rohe
 
  *Ko nga takoha hei tautoko i te maha atu o nga kaiwhakarato rokiroki kapua e tino manakohia ana!*
 
@@ -101,6 +103,30 @@ Mobiletto
  ## Puna
  * [mobiletto i runga i GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Tautoko me te Putea
+ Kei te ngana ahau ki te noho hei kaiwhakawhanake rorohiko puna tuwhera ngaio. I mahi ahau i roto
+ te ahumahi rorohiko mo nga tau maha, kua timata ahau i nga kamupene angitu me te hoko atu ki nga kamupene a te iwi.
+ No tata nei ka ngaro taku mahi, a karekau he mahi ke atu i te rarangi
+
+ Na ka ngana ahau ki te tuhi i nga raupaparorohiko awhina me te kite mena ka mahi tera
+
+ Mena he pai ki a koe te whakamahi i tenei rorohiko, ka tino mihi ahau mo te
+ iti rawa [koha-marama ma Patreon](https://www.patreon.com/cobbzilla)
+
+ *Mauruuru!*
+
+ ## Tāutanga
+ Tāuta mā te whakamahi i te `npm` , i te `yarn` miro` ranei. Kei te pirangi pea koe ki te putanga `lite` e uru katoa nga
+ i whakamaoritia nga konae README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Mena kei te pirangi koe ki nga konae README i roto i nga reo katoa, whakauruhia te putanga katoa:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Tīmata Tere
  He tauira poto ma te whakamahi i te taraiwa mobiletto `s3` .
@@ -330,7 +356,7 @@ Mobiletto
 
  Ki te `mirror` karanga semantics i etahi wa ka raruraru te mohio ko wai te
  te kaipānui me wai te kaituhi. Whakaarohia he korero taumahi: te "maui-maui mobiletto"
- Ko te mea kua tautapahia ki te (raraunga whakaata kua tuhia), me te "mobiletto matau" (te
+ Ko te mea e tukuna ana ki te (whakaata i nga raraunga kua tuhia), me te "matau-matau mobiletto" (te
  tohenga ki te tikanga `mirror` ) ko te uara e tautapa ana (ka panuitia nga raraunga whakaata).
 
  ## Whakamunatanga marama
@@ -437,7 +463,7 @@ Mobiletto
  Whakamahia te taurangi taiao `MOBILETTO_LOG_LEVEL` ki te tautuhi i te taumata rangitaki, ma te whakamahi i tetahi
  o nga taumata `npm` kua tautuhia ki [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
 
- Ko te taumata taunoa ko `error` . Ko te taumata tino korero he `silly` , ahakoa he motini i tenei wa
+ Ko te taumata taunoa ko `error` . Ko te taumata tino kupu ko te `silly` , ahakoa he motini i tenei wa
  karekau e takiuru ki nga taumata i raro iho i `debug`
 
     MOBILETTO_LOG_LEVEL=silly # maximum logs!

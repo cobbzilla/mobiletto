@@ -8,6 +8,8 @@ Mobiletto
  * [Bilow degdeg ah](#Si degdeg ah u bilow)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Isha](#Isha)
+ * [Rakibka](#Rakiba)
+ * [Taageerada iyo Maalgelinta](#Taageerada-iyo Maalgelinta)
  * [Isticmaalka aasaasiga ah](#Isticmaalka aasaasiga ah)
  * [Metadata](#Metadata)
  * [Qaabka soo dejinta beddelka](#Habka-soo dejinta-ka beddelka)
@@ -65,13 +67,13 @@ Mobiletto
 
  Waa maxay sababta Mobiletto?
 
- ### Nabadgelyo-iibiyaha qufulka!
- Bixiyeyaasha kaydinta daruuraha ee kala duwan waxay leeyihiin API-yo aan ku haboonayn Xitaa kuwa ku dadaalaya "waafaqid S3"
+ ### Nabad gelyo quful-iibiyaha!
+ Bixiyeyaasha kaydinta daruuraha ee kala duwan waxay leeyihiin API-yo aan ku haboonayn Xataa kuwa ku dadaalaya "S3 waafaqsanaanta"
  waxay leeyihiin dabeecado aan caadi ahayn.
 
  Marka aad doorato iibiyaha kaydinta gaarka ah abkaaga, haddii aad si toos ah code ugu geliso API-ga, abkaaga
  hadda waxay ku tiirsan tahay adeeggaas. Marka uu wakhtigu sii socdo oo koodhka is urursado, beddelka iibiyeyaasha ayaa noqda
- sii kordheysa oo aan la sii wadi karin. Ku soo dhawoow aduunka xiisaha leh ee qufulka iibiyaha!
+ sii kordheysa oo aan la sii wadi karin. Ku soo dhawoow dunida xiisaha leh ee qufulka iibiyaha!
 
  Mobiletto waxaa loo qorsheeyay in lagu xalliyo dhibaatadan. Markaad ku xidhid abkaaga mobiltto's API, si fudud ayaad u samayn kartaa
  beddel bixiyeyaasha kaydinta oo ogow in lakabka kaydinta abkaagu u dhaqmi doono si isku mid ah.
@@ -101,6 +103,30 @@ Mobiletto
  ## Isha
  * [mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto onpm](https://www.npmjs.com/package/mobiletto)
+
+ ## Taageerada iyo Maalgelinta
+ Waxaan isku dayayaa inaan noqdo horumariye il furan oo xirfad leh. waan ka shaqaynayay
+ warshadaha software-ka sanado badan, waxaan bilaabay shirkado guuleysta waxaanan ka iibiyay shirkado dadweyne.
+ Dhowaan shaqadeydii waa iga luntay, runtiina shaqo kale oo safan ma jirto
+
+ Markaa waxaan isku dayi doonaa inaan qoro software waxtar leh oo aan eego inay taasi shaqaynayso
+
+ Haddii aad ku raaxaysato isticmaalka software-kan, aad baan ugu mahadcelin lahaa xataa
+ ugu yar [wax ku darsiga billaha ah ee loo maro Patreon](https://www.patreon.com/cobbzilla)
+
+ *Mahadsanid!*
+
+ ## Rakibaadda
+ Ku rakib adigoo isticmaalaya `npm` ama `yarn` . Waxaa laga yaabaa inaad rabto nooca `lite` ' oo aan ku jirin dhammaan
+ faylasha README ee la turjumay:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Haddii aad runtii rabto faylasha README ee luqad kasta, ku rakib nooca buuxa:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Deg deg ah
  Tusaale gaaban oo isticmaalaya mobaylka `s3` darawalka.
@@ -428,14 +454,14 @@ Mobiletto
     async remove (path, recursive = false, quiet = false)
 
  ## Gelida
- Mobiletto waxa ay isticmaashaa [winston](https://www.npmjs.com/package/winston)
+ Mobiletto waxay isticmaashaa [winston](https://www.npmjs.com/package/winston)
 
- Logs ** waxay ka koobnaan doonaan wadooyin faylal iyo fariimo khalad ah, laakiin ** waligiis kama koobnaan doono furayaal, siro,
- ama macluumaad kasta oo qaabeynta isku xirka kale.
+ Logs ** waxay ka koobnaan doonaan wadooyinka faylalka iyo fariimaha khaladka ah, laakiin ** waligiis kama koobnaan doono furayaal, siro,
+ ama macluumaad kasta oo qaabeynta isku xirka.
 
  ### Heer gal
- Adeegso doorsoomaha deegaanka `MOBILETTO_LOG_LEVEL` si aad u dejiso heerka log, addoo isticmaalaya mid
- ee heerarka `npm` ee lagu qeexay [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
+ Isticmaal `MOBILETTO_LOG_LEVEL` doorsoomiyaha deegaanka si aad u dejiso heerka log, addoo isticmaalaya mid
+ ee heerarka `npm` lagu qeexay [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
 
  Heerka caadiga ah waa `error` . Heerka ugu afka badan waa `silly` , inkastoo hadda mobiletto
  ma gasho heerarka ka hooseeya `debug`
@@ -444,7 +470,7 @@ Mobiletto
 
  ### Gal gal
  Sida caadiga ah, loggerku wuxuu wax u qoraa console-ka. Si aad diiwaannada ugu dirto faylka, deji `MOBILETTO_LOG_FILE`
- doorsooma deegaanka. Markaad galeyso fayl, diiwaannada laguma qori doono console-ka.
+ doorsooma deegaan. Markaad galeyso fayl, diiwaannada laguma qori doono console-ka.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log
 

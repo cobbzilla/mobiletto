@@ -8,6 +8,8 @@ Mobiletto
  * [Snabbstart](#Snabbstart)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Källa](#Källa)
+ * [Installation](#Installation)
+ * [Support and Funding](#Support-and-Funding)
  * [Basic usage](#Basic-usage)
  * [Metadata](#Metadata)
  * [Alternativ importstil](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Källa
  * [mobiletto på GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto på npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Stöd och finansiering
+ Jag försöker bli en professionell mjukvaruutvecklare med öppen källkod. Jag har jobbat i
+ mjukvaruindustrin i många år har jag startat framgångsrika företag och sålt dem till offentliga företag.
+ Nyligen förlorade jag mitt jobb, och jag har egentligen inget annat arbete på gång
+
+ Så jag ska försöka skriva användbar programvara och se om det fungerar
+
+ Om du gillar att använda den här programvaran skulle jag vara mycket tacksam för även den
+ minsta [månadsbidrag via Patreon](https://www.patreon.com/cobbzilla)
+
+ *Tack!*
+
+ ## Installation
+ Installera med `npm` eller `yarn` . Du vill förmodligen ha `lite` -versionen som inte inkluderar alla
+ översatta README-filer:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Om du verkligen vill ha README-filerna på alla språk, installera den fullständiga versionen:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Snabbstart
  Ett kort exempel med drivrutinen för mobiletto `s3` .
@@ -370,7 +396,7 @@ Mobiletto
  Motståndaren skulle inte veta namnen på katalogerna/filerna om de inte också kände till din kryptering
  nyckel eller på annat sätt hade lyckats knäcka krypteringen. Då är alla spel avstängda!
 
- ### Prestanda och cachning
+ ### Prestanda och cachelagring
  Operationer på krypterad lagring kan vara långsamma. Rekursiva listor och borttagningar kan vara mycket långsamma.
  Cachning via redis hjälper enormt, men observera att cachen töms vid alla skrivningar eller borttagningar.
 

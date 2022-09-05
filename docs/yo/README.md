@@ -8,6 +8,8 @@ Mobiletto
  * [Ibẹrẹ kiakia](#Ibẹrẹ-kia)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Orisun](#Orisun)
+ * [Fifi sori ẹrọ](#Fifi sori ẹrọ)
+ * [Atilẹyin ati Ifowopamọ](#Atilẹyin-ati-Ifunwo)
  * [Lilo ipilẹ](#Ipilẹ-lilo)
  * [Metadata](#Metadata)
  * [Ara agbewọle agbewọle miiran](#Aṣa miiran-import-ara)
@@ -101,6 +103,30 @@ Mobiletto
  ## Orisun
  * [mobiletto lori GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto lori npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Atilẹyin ati igbeowosile
+ Mo ngbiyanju lati jẹ oludasilẹ sọfitiwia orisun ṣiṣi ọjọgbọn. Mo ti ṣiṣẹ ninu
+ ile-iṣẹ sọfitiwia fun ọpọlọpọ ọdun, Mo ti bẹrẹ awọn ile-iṣẹ aṣeyọri ati ta wọn si awọn ile-iṣẹ gbangba.
+ Laipẹ Mo padanu iṣẹ mi, ati pe Emi ko ni iṣẹ miiran ti o laini gaan
+
+ Nitorinaa Emi yoo gbiyanju kikọ sọfitiwia iranlọwọ ati rii boya iyẹn ṣiṣẹ
+
+ Ti o ba gbadun lilo sọfitiwia yii, Emi yoo dupe pupọ fun paapaa awọn
+ ti o kere julọ [ilowosi oṣooṣu nipasẹ Patreon](https://www.patreon.com/cobbzilla)
+
+ *E dupe!*
+
+ ## Fifi sori ẹrọ
+ Fi sori ẹrọ ni lilo `npm` tabi `yarn` . O ṣee ṣe ki o fẹ ẹya `lite` ti ko pẹlu gbogbo wọn
+ Awọn faili README ti a tumọ:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Ti o ba fẹ gaan awọn faili README ni gbogbo ede, fi ẹya kikun sii:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Ibẹrẹ kiakia
  Apeere kukuru nipa lilo awakọ mobiletto `s3` .
@@ -241,7 +267,7 @@ Mobiletto
  Aṣẹ `metadata` da metadata pada nipa titẹ sii eto faili kan ṣoṣo.
  Bakanna, iye ipadabọ lati pipaṣẹ `list` jẹ akojọpọ awọn nkan metadata.
 
- Nkan metadata dabi eleyi:
+ Ohun metadata dabi eleyi:
 
     {
       "name": "fully/qualified/path/to/file",

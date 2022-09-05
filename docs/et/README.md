@@ -8,6 +8,8 @@ Mobiletto
  * [Kiire algus](#Quick-start)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Allikas](#Allikas)
+ * [Paigaldamine](#Installatsioon)
+ * [Toetus ja rahastamine](#Support-and-Funding)
  * [Põhikasutus](#Põhikasutus)
  * [Metaandmed](#Metadata)
  * [Alternatiivne impordi stiil](#Alternate-import-style)
@@ -67,7 +69,7 @@ Mobiletto
 
  ### Hüvasti müüja lukustus!
  Erinevatel pilvesalvestuse pakkujatel on ühildumatud API-d. Isegi need, mis püüdlevad "S3-ühilduvuse poole"
- omavad omapärast käitumist.
+ on omapärane käitumine.
 
  Kui valite oma rakendusele konkreetse salvestusruumi tarnija, kui kodeerite otse nende API-sse, oma rakendusse
  sõltub nüüd sellest teenusest. Aja möödudes ja koodi kogunedes muutuvad tarnijad
@@ -101,6 +103,30 @@ Mobiletto
  ## Allikas
  * [mobiletto GitHubis](https://github.com/cobbzilla/mobiletto)
  * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Toetus ja rahastamine
+ Üritan olla professionaalne avatud lähtekoodiga tarkvaraarendaja. Olen töötanud
+ tarkvaratööstuses aastaid, olen loonud edukaid ettevõtteid ja müünud neid riigiettevõtetele.
+ Hiljuti kaotasin töö ja muud tööd mul tegelikult ei ole
+
+ Nii et proovin kirjutada kasulikku tarkvara ja vaadata, kas see töötab
+
+ Kui teile meeldib seda tarkvara kasutada, oleksin isegi selle eest väga tänulik
+ väikseim [igakuine sissemakse Patreoni kaudu](https://www.patreon.com/cobbzilla)
+
+ *Aitäh!*
+
+ ## Paigaldamine
+ Installige, kasutades `npm` `yarn` " või "lõng". Tõenäoliselt soovite `lite` versiooni, mis ei sisalda kõiki
+ tõlgitud README failid:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Kui soovite tõesti README-faile igas keeles, installige täisversioon:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Kiire algus
  Lühike näide mobiletto `s3` draiveri kasutamisest.
@@ -396,7 +422,7 @@ Mobiletto
  * `secret` : string, teie API saladus (saab `local` draiveri puhul ära jätta)
  * `opts` : objekt, atribuudid on juhipõhised:
  * `local` ” puhul määravad atribuudid `fileMode` ja `dirMode` , kuidas luuakse uusi loovaid faile ja katalooge
- * `s3` `bucket` on atribuut „bucket” nõutav. Valikulised omadused on järgmised:
+ * `s3` `bucket` on atribuut „bucket” nõutav. Valikulised omadused on:
     * `region`: the S3 region, default is us-east-1
     * `prefix`: a prefix to prepend to all S3 paths, default is the empty string
     * `delimiter`: the directory delimiter, default is '/'

@@ -8,6 +8,8 @@ Mobiletto
  * [Quick start](#Quick-start)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Mənbə](#Mənbə)
+ * [Quraşdırma](#Quraşdırma)
+ * [Dəstək və Maliyyələşdirmə](#Dəstək və Maliyyələşdirmə)
  * [Əsas istifadə](#Basic-istifadə)
  * [Metadata](#Metadata)
  * [Alternativ idxal üslubu](#Alternativ idxal stili)
@@ -101,6 +103,30 @@ Mobiletto
  ## Mənbə
  * [GitHub-da mobiletto](https://github.com/cobbzilla/mobiletto)
  * [npm-də mobiletto](https://www.npmjs.com/package/mobiletto)
+
+ ## Dəstək və Maliyyələşdirmə
+ Mən peşəkar açıq mənbə proqram təminatı tərtibatçısı olmağa çalışıram. məndə işləmişəm
+ Uzun illər proqram sektorunda müvəffəqiyyətli şirkətlər qurdum və onları açıq şirkətlərə satdım.
+ Bu yaxınlarda işimi itirdim və başqa işim yoxdur
+
+ Beləliklə, mən faydalı proqram yazmağa çalışacağam və bunun işlədiyini görəcəyəm
+
+ Bu proqramdan istifadə etməkdən zövq alırsınızsa, mən hətta bu proqram üçün çox minnətdar olaram
+ ən kiçik [Patreon vasitəsilə aylıq töhfə](https://www.patreon.com/cobbzilla)
+
+ *Çox sağ ol!*
+
+ ## Quraşdırma
+ `npm` və ya `yarn` istifadə edərək quraşdırın. Siz yəqin ki, hamısını daxil etməyən `lite` versiyasını istəyirsiniz
+ tərcümə edilmiş README faylları:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Həqiqətən hər dildə README fayllarını istəyirsinizsə, tam versiyanı quraşdırın:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Tez Başlanğıc
  mobiletto `s3` sürücüsündən istifadə edən qısa bir nümunə.
@@ -444,7 +470,7 @@ Mobiletto
 
  ### Günlük faylı
  Varsayılan olaraq, logger konsola yazır. Qeydləri fayla göndərmək üçün `MOBILETTO_LOG_FILE`
- mühit dəyişəni. Fayla daxil olarkən qeydlər artıq konsola yazılmayacaq.
+ mühit dəyişəni. Fayla daxil olarkən loglar artıq konsola yazılmayacaq.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log
 

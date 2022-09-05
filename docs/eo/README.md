@@ -8,6 +8,8 @@ Mobiletto
  * [Rapida komenco](#Rapida komenco)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Fonto](#Fonto)
+ * [Instalado](#Instalo)
+ * [Subteno kaj Financado](#Subteno-kaj-Fincado)
  * [Baza uzado](#Baza uzado)
  * [Metadatumoj](#Metadatumoj)
  * [Alterna importa stilo](#Alternate-import-stilo)
@@ -101,6 +103,30 @@ Mobiletto
  ## Fonto
  * [mobiletto sur GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto sur npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Subteno kaj Financado
+ Mi provas esti profesia liberkoda programisto. Mi laboris en
+ la programara industrio dum multaj jaroj, mi komencis sukcesajn kompaniojn kaj vendis ilin al publikaj kompanioj.
+ Lastatempe mi perdis mian laboron, kaj mi vere ne havas alian laboron vicigita
+
+ Do mi provos verki helpeman programaron kaj vidi ĉu tio funkcias
+
+ Se vi ĝuas uzi ĉi tiun programaron, mi tre dankus eĉ pro la
+ plej malgranda [monata kontribuo per Patreon](https://www.patreon.com/cobbzilla)
+
+ *Dankon!*
+
+ ## Instalado
+ Instalu uzante `npm` aŭ `yarn` . Vi verŝajne volas la version `lite` kiu ne inkluzivas ĉiujn
+ tradukitaj README-dosieroj:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Se vi vere volas la README-dosierojn en ĉiu lingvo, instalu la plenan version:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Rapida Komenco
  Mallonga ekzemplo uzante la ŝoforon mobiletto `s3` .
@@ -370,7 +396,7 @@ Mobiletto
  La kontraŭulo ne scius la nomojn de la dosierujoj/dosieroj krom se ili ankaŭ scius vian ĉifradon
  ŝlosilo aŭ alie sukcese fendis la ĉifradon. Ĉiuj vetoj estas forigitaj tiam!
 
- ### Rendimento kaj kaŝmemoro
+ ### Agado kaj kaŝmemoro
  Operacioj pri ĉifrita stokado povas esti malrapidaj. Rekursivaj listoj kaj forigoj povas esti tre malrapidaj.
  Kaŝmemoro per redis helpas ege, sed notu, ke la kaŝmemoro estas purigita post iuj skriboj aŭ forigoj.
 

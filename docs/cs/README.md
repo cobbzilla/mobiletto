@@ -8,6 +8,8 @@ Mobiletto
  * [Rychlý start](#Rychlý start)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Zdroj](#Source)
+ * [Instalace](#Instalace)
+ * [Support and Funding](#Support-and-Funding)
  * [Základní použití](#Basic-usage)
  * [Metadata](#Metadata)
  * [Alternativní styl importu](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Zdroj
  * [mobiletto na GitHubu](https://github.com/cobbzilla/mobiletto)
  * [mobiletto na npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Podpora a financování
+ Snažím se být profesionálním vývojářem open source softwaru. Pracoval jsem v
+ v softwarovém průmyslu jsem zakládal úspěšné společnosti a prodal je veřejným společnostem.
+ Nedávno jsem přišel o práci a vlastně žádnou jinou práci nemám
+
+ Takže zkusím napsat užitečný software a uvidím, jestli to funguje
+
+ Pokud rádi používáte tento software, byl bych za něj velmi vděčný
+ nejmenší [měsíční příspěvek přes Patreon](https://www.patreon.com/cobbzilla)
+
+ *Děkuji!*
+
+ ## Instalace
+ Nainstalujte pomocí `npm` nebo `yarn` . Pravděpodobně budete chtít `lite` verzi, která nezahrnuje všechny
+ přeložené soubory README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Pokud opravdu chcete soubory README v každém jazyce, nainstalujte si plnou verzi:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Rychlý start
  Krátký příklad použití ovladače mobiletto `s3` .

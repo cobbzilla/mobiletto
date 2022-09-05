@@ -8,6 +8,8 @@ Mobilettu
  * [Inizio rapidu](#Inizio rapidu)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Source](#Source)
+ * [Installazione](#Installazione)
+ * [Supportu è Finanziamentu](#Supportu-è-Fundamentu)
  * [Usu di basa](#Usu di basa)
  * [Metadata](#Metadata)
  * [Stile d'importazione alternativu](#Stile d'importazione alternativu)
@@ -101,6 +103,30 @@ Mobilettu
  ## Fonte
  * [mobiletto in GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Supportu è Finanziamentu
+ Aghju pruvatu à esse un sviluppatore prufessiunale di software open source. Aghju travagliatu in
+ l'industria di u software per parechji anni, aghju principiatu cumpagnie di successu è li vende à cumpagnie publica.
+ Recentemente aghju persu u mo travagliu, è ùn aghju micca veramente un altru travagliu in linea
+
+ Dunque, aghju da pruvà à scrive un software utile è vede s'ellu funziona
+
+ Se ti piace à utilizà stu software, saraghju assai ringraziatu ancu per u
+ più chjucu [cuntribuzione mensuale via Patreon](https://www.patreon.com/cobbzilla)
+
+ *Grazie!*
+
+ ## Installazione
+ Installa cù `npm` o `yarn` . Probabilmente vulete a versione `lite` " chì ùn include micca tutti i
+ i file README tradotti:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Se vulete veramente i schedari README in ogni lingua, installate a versione completa:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Inizio rapidu
  Un brevi esempiu utilizendu u driver mobiletto `s3` .
@@ -444,7 +470,7 @@ Mobilettu
 
  ### File di log
  Per automaticamente, u logger scrive à a cunsola. Per mandà logs à un schedariu, stabilisce u `MOBILETTO_LOG_FILE`
- variabile ambientale. Quandu si accede à un schedariu, i logs ùn saranu più scritti in a cunsola.
+ variabile ambientale. Quandu si accede à un schedariu, i logs ùn saranu più scritti à a cunsola.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log
 

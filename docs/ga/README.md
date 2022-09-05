@@ -8,6 +8,8 @@ Soghluaiste
  * [Tús tapa](#Quick-tús)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Foinse](#Foinse)
+ * [Suiteáil](#Suiteáil)
+ * [Tacaíocht agus Maoiniú](#Tacaíocht-agus-Maoiniú)
  * [Úsáid bhunúsach](#Basic-use)
  * [Meiteashonraí](# Meiteashonraí)
  * [Stíl mhalartach iompórtála](# Malartach-stíl iompórtála)
@@ -71,7 +73,7 @@ Soghluaiste
 
  Nuair a roghnaíonn tú díoltóir stórála ar leith do d’aip, má chódaíonn tú go díreach chuig a n-API, d’aip
  ag brath ar an tseirbhís sin anois. De réir mar a théann an t-am thart agus an cód ag carnadh, éiríonn díoltóirí ag athrú
- ag éirí dochosanta. Fáilte go dtí saol spraoi glasáil díoltóirí!
+ ag éirí dochosanta. Fáilte chuig an saol spraoi a bhaineann le glasáil díoltóirí!
 
  Dearadh Mobiletto chun an fhadhb seo a réiteach. Trí d'aip a chódú chuig API mobiletto, is féidir leat go héasca
  athraigh soláthraithe stórála agus bíodh a fhios agat go n-iompróidh ciseal stórála d'aip mar an gcéanna.
@@ -101,6 +103,30 @@ Soghluaiste
  ## Foinse
  * [mobiletto ar GitHub]( https://github.com/cobbzilla/mobiletto)
  * [mobiletto ar npm]( https://www.npmjs.com/package/mobiletto)
+
+ ## Tacaíocht agus Maoiniú
+ Tá mé ag iarraidh a bheith i mo fhorbróir bogearraí foinse oscailte gairmiúil. Tá mé ag obair i
+ an tionscal bogearraí le blianta fada anuas, tá cuideachtaí rathúla tosaithe agam agus dhíol mé iad le cuideachtaí poiblí.
+ Chaill mé mo phost le déanaí, agus níl aon obair eile ar bun agam i ndáiríre
+
+ Mar sin táim chun iarracht a dhéanamh bogearraí cabhrach a scríobh agus féachaint an n-oibríonn sin
+
+ Má bhaineann tú taitneamh as na bogearraí seo a úsáid, bheinn an-bhuíoch as fiú an
+ [ranníocaíocht mhíosúil trí Patreon](https://www.patreon.com/cobbzilla)
+
+ *Go raibh maith agat!*
+
+ ## Suiteáil
+ Suiteáil ag baint úsáide as `npm` nó `yarn` . Is dócha gur mhaith leat an leagan `lite` nach n-áirítear go léir an
+ comhaid README aistrithe:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Más mian leat na comhaid README i ngach teanga, suiteáil an leagan iomlán:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Tús Tapa
  Sampla gairid ag baint úsáide as an tiománaí `s3` .
@@ -395,7 +421,7 @@ Soghluaiste
  * `key` : teaghrán, d'eochair API (don tiománaí `local` is é seo an bunchomhadlann)
  * `secret` : teaghrán, do rún API (is féidir é a fhágáil ar lár don tiománaí `local` )
  * `opts` : réad, is iad na hairíonna in aghaidh an tiománaí:
- * I gcás `local` , cinneann na `fileMode` agus `dirMode` conas a chruthaítear comhaid agus eolairí nuachruthaithe
+ * I gcás `local` , socraíonn na `fileMode` agus `dirMode` conas a chruthaítear comhaid agus eolairí nuachruthaithe
  * Le haghaidh `s3` , tá an mhaoin `bucket` ag teastáil. Is iad na hairíonna roghnacha:
     * `region`: the S3 region, default is us-east-1
     * `prefix`: a prefix to prepend to all S3 paths, default is the empty string
@@ -443,7 +469,7 @@ Soghluaiste
     MOBILETTO_LOG_LEVEL=silly # maximum logs!
 
  ### Logchomhad
- De réir réamhshocraithe, scríobhann an logálaí chuig an consól. Chun logaí a sheoladh chuig comhad, socraigh an `MOBILETTO_LOG_FILE`
+ De réir réamhshocraithe, scríobhann an logálaí chuig an consól. Chun logs a sheoladh chuig comhad, socraigh `MOBILETTO_LOG_FILE`
  athróg timpeallachta. Nuair a bheidh tú ag logáil isteach i gcomhad, ní scríobhfar logaí chuig an consól a thuilleadh.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log

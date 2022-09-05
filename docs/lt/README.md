@@ -8,6 +8,8 @@ Mobiletto
  * [Greita pradžia](#Greita pradžia)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Šaltinis](#Šaltinis)
+ * [Įdiegimas](#Įdiegimas)
+ * [Parama ir finansavimas](#Support-and-Funding)
  * [Pagrindinis naudojimas](#Basic-usage)
  * [Metaduomenys](#Metadata)
  * [Alternatyvus importavimo stilius](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Šaltinis
  * [mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Parama ir finansavimas
+ Stengiuosi būti profesionali atvirojo kodo programinės įrangos kūrėja. Esu dirbęs
+ programinės įrangos pramonėje daugelį metų įkūriau sėkmingas įmones ir pardaviau jas valstybinėms įmonėms.
+ Neseniai netekau darbo, o kitų darbų tikrai neturiu
+
+ Taigi aš pabandysiu parašyti naudingą programinę įrangą ir pažiūrėti, ar ji veikia
+
+ Jei jums patinka naudoti šią programinę įrangą, būčiau labai dėkingas net už
+ mažiausias [mėnesinis įnašas per Patreon](https://www.patreon.com/cobbzilla)
+
+ *Ačiū!*
+
+ ## Diegimas
+ Įdiekite naudodami `npm` arba `yarn` . Tikriausiai norite `lite` versijos, kuri neapima visų
+ išversti README failai:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Jei tikrai norite README failų visomis kalbomis, įdiekite pilną versiją:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Greita pradžia
  Trumpas pavyzdys naudojant mobiletto `s3` tvarkyklę.
@@ -370,9 +396,9 @@ Mobiletto
  Priešas nežinos katalogų/failų pavadinimų, nebent žinotų ir jūsų šifravimą
  raktą arba kitaip sėkmingai nulaužė šifravimą. Tada visi statymai atšaukiami!
 
- ### Našumas ir talpyklos kaupimas
+ ### Našumas ir kaupimas talpykloje
  Užšifruotos saugyklos operacijos gali būti lėtos. Rekursyvūs sąrašai ir pašalinimas gali būti labai lėtas.
- Talpyklos kaupimas naudojant „redis“ labai padeda, tačiau atminkite, kad talpykla iškraunama, kai įrašoma ar pašalinama.
+ Talpyklos kaupimas naudojant „redis“ labai padeda, tačiau atminkite, kad talpykla iškraunama po bet kokio įrašymo ar pašalinimo.
 
  ## Raktų pasukimas
  Sukurkite mobilųjį telefoną naudodami naują raktą, tada atspindėkite jame senus duomenis:

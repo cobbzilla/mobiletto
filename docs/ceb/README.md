@@ -8,6 +8,8 @@ Mobiletto
  * [Dali nga pagsugod](#Dali nga pagsugod)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Source](#Source)
+ * [Pag-instalar](#Pag-instalar)
+ * [Pagsuporta ug Pagpondo](#Suporta-ug-Pagpondo)
  * [Basic nga paggamit](#Basic-usage)
  * [Metadata](#Metadata)
  * [Alternate import style](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Tinubdan
  * [mobiletto sa GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto sa npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Suporta ug Pagpundo
+ Ako naningkamot nga mahimong usa ka propesyonal nga open source software developer. Nagtrabaho ko sa
+ ang industriya sa software sulod sa daghang katuigan, nagsugod ko og malampusong mga kompanya ug gibaligya kini sa mga publikong kompanya.
+ Bag-o lang nawad-an kog trabaho, ug wala na gyud koy laing trabaho nga nakalinya
+
+ Mao nga sulayan nako ang pagsulat sa makatabang nga software ug tan-awon kung kini molihok
+
+ Kung malingaw ka sa paggamit niini nga software, mapasalamaton kaayo ko bisan sa
+ pinakagamay [binulan nga kontribusyon pinaagi sa Patreon](https://www.patreon.com/cobbzilla)
+
+ *Salamat!*
+
+ ## Pag-instalar
+ I-install gamit ang `npm` o `yarn` . Tingali gusto nimo ang `lite` nga bersyon nga wala maglakip sa tanan nga
+ gihubad nga README nga mga file:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Kung gusto gyud nimo ang README nga mga file sa matag lengguwahe, i-install ang tibuuk nga bersyon:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Dali nga Pagsugod
  Usa ka mubo nga pananglitan gamit ang mobiletto `s3` driver.
@@ -437,14 +463,14 @@ Mobiletto
  Gamita ang `MOBILETTO_LOG_LEVEL` environment variable aron itakda ang log level, gamit ang usa
  sa mga lebel sa `npm` nga gihubit sa [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
 
- Ang default nga lebel kay `error` . Ang labing verbose nga lebel kay `silly` , bisan tuod sa pagkakaron mobiletto
+ Ang default nga lebel kay `error` . Ang labing verbose nga lebel kay `silly` , bisan sa pagkakaron mobiletto
  wala mag log sa lebel ubos sa `debug`
 
     MOBILETTO_LOG_LEVEL=silly # maximum logs!
 
  ### Log file
  Sa kasagaran, ang logger nagsulat sa console. Aron ipadala ang mga log sa usa ka file, itakda ang `MOBILETTO_LOG_FILE`
- variable sa palibot. Kung mag-log in sa usa ka file, ang mga log dili na isulat sa console.
+ variable sa palibot. Kung mag-log sa usa ka file, ang mga troso dili na isulat sa console.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log
 

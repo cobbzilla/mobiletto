@@ -8,6 +8,8 @@ Mobiletto
  * [Cychwyn cyflym](#cychwyn cyflym)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Ffynhonnell](#Ffynhonnell)
+ * [Gosod](# Gosod)
+ * [Cymorth a Chyllido](#Cymorth-a-Cyllid)
  * [Defnydd sylfaenol](#-defnydd sylfaenol)
  * [Metadata](#Metadata)
  * [Arddull mewnforio amgen](# amgen-mewnforio-arddull)
@@ -101,6 +103,30 @@ Mobiletto
  ## Ffynhonnell
  * [mobiletto ar GitHub]( https://github.com/cobbzilla/mobiletto)
  * [mobiletto ar npm]( https://www.npmjs.com/package/mobiletto)
+
+ ## Cefnogaeth a Chyllid
+ Rwy'n ceisio bod yn ddatblygwr meddalwedd ffynhonnell agored proffesiynol. Rwyf wedi bod yn gweithio yn
+ y diwydiant meddalwedd ers blynyddoedd lawer, rwyf wedi dechrau cwmnïau llwyddiannus ac wedi eu gwerthu i gwmnïau cyhoeddus.
+ Yn ddiweddar collais fy swydd, ac nid oes gennyf unrhyw waith arall wedi'i drefnu
+
+ Felly rydw i'n mynd i geisio ysgrifennu meddalwedd defnyddiol a gweld a yw hynny'n gweithio
+
+ Os ydych chi'n mwynhau defnyddio'r feddalwedd hon, byddwn yn ddiolchgar iawn am hyd yn oed y
+ lleiaf [cyfraniad misol trwy Patreon]( https://www.patreon.com/cobbzilla)
+
+ *Diolch!*
+
+ ## Gosod
+ Gosod gan ddefnyddio `npm` neu `yarn` . Mae'n debyg eich bod chi eisiau'r fersiwn `lite` nad yw'n cynnwys yr holl
+ ffeiliau README wedi'u cyfieithu:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Os ydych chi wir eisiau'r ffeiliau README ym mhob iaith, gosodwch y fersiwn lawn:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Cychwyn Cyflym
  Enghraifft fer yn defnyddio'r gyrrwr `s3` .

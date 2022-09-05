@@ -8,6 +8,8 @@ Mobiletto
  * [Bắt đầu nhanh](# Bắt đầu nhanh)
  * [Mobiletto CLI](# mobiletto-cli)
  * [Nguồn](# Nguồn)
+ * [Cài đặt](# Cài đặt)
+ * [Hỗ trợ và Tài trợ](# Hỗ trợ và Tài trợ)
  * [Cách sử dụng cơ bản](# Cách sử dụng cơ bản)
  * [Siêu dữ liệu](# Siêu dữ liệu)
  * [Kiểu nhập thay thế](# Kiểu nhập thay thế)
@@ -101,6 +103,30 @@ Mobiletto
  ## Nguồn
  * [mobiletto trên GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto trên npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Hỗ trợ và Tài trợ
+ Tôi đang cố gắng trở thành một nhà phát triển phần mềm nguồn mở chuyên nghiệp. Tôi đã làm việc ở
+ ngành công nghiệp phần mềm trong nhiều năm, tôi đã thành lập các công ty thành công và bán chúng cho các công ty đại chúng.
+ Gần đây, tôi bị mất việc và tôi không thực sự có bất kỳ công việc nào khác.
+
+ Vì vậy, tôi sẽ thử viết phần mềm hữu ích và xem nó có hoạt động không
+
+ Nếu bạn thích sử dụng phần mềm này, tôi sẽ rất biết ơn vì
+ nhỏ nhất [đóng góp hàng tháng qua Patreon](https://www.patreon.com/cobbzilla)
+
+ *Cảm ơn bạn!*
+
+ ## Cài đặt
+ Cài đặt bằng cách sử dụng `npm` `yarn` . Bạn có thể muốn phiên bản `lite` không bao gồm tất cả các
+ các tệp README đã dịch:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Nếu bạn thực sự muốn các tệp README ở mọi ngôn ngữ, hãy cài đặt phiên bản đầy đủ:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Bắt đầu nhanh
  Một ví dụ ngắn sử dụng trình điều khiển `s3` .

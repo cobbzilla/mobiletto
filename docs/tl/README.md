@@ -8,6 +8,8 @@ Mobiletto
  * [Quick start](#Quick-start)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Source](#Source)
+ * [Pag-install](#Pag-install)
+ * [Suporta at Pagpopondo](#Support-and-Funding)
  * [Basic na paggamit](#Basic-usage)
  * [Metadata](#Metadata)
  * [Alternate import style](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Pinagmulan
  * [mobiletto sa GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto sa npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Suporta at Pagpopondo
+ Sinusubukan kong maging isang propesyonal na open source software developer. Ako ay nagtatrabaho sa
+ sa industriya ng software sa loob ng maraming taon, sinimulan ko ang mga matagumpay na kumpanya at ibinenta ang mga ito sa mga pampublikong kumpanya.
+ Kamakailan ay nawalan ako ng trabaho, at wala talaga akong ibang trabahong naka-line up
+
+ Kaya't susubukan kong magsulat ng kapaki-pakinabang na software at tingnan kung gumagana iyon
+
+ Kung masiyahan ka sa paggamit ng software na ito, ako ay lubos na nagpapasalamat para sa kahit na ang
+ pinakamaliit [buwanang kontribusyon sa pamamagitan ng Patreon](https://www.patreon.com/cobbzilla)
+
+ *Salamat!*
+
+ ## Pag-install
+ I-install gamit `npm` o `yarn` . Malamang na gusto mo ang `lite` na bersyon na hindi kasama ang lahat ng
+ isinalin na README file:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Kung talagang gusto mo ang README file sa bawat wika, i-install ang buong bersyon:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Mabilis na Pagsisimula
  Isang maikling halimbawa gamit ang mobiletto `s3` driver.
@@ -241,7 +267,7 @@ Mobiletto
  Ang utos `metadata` ay nagbabalik ng metadata tungkol sa isang entry ng filesystem.
  Gayundin, ang return value mula sa command na `list` ay isang hanay ng mga metadata object.
 
- Mukhang ganito ang metadata object:
+ Ang isang metadata object ay ganito ang hitsura:
 
     {
       "name": "fully/qualified/path/to/file",

@@ -8,6 +8,8 @@ Mobiletto
  * [Quick start](#Quick-start)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Source](#Source)
+ * [Installation](#Installation)
+ * [Support thiab Funding](#Support-and-Funding)
  * [Basic siv](#Basic-siv)
  * [Metadata](#Metadata)
  * [Lwm hom ntshuam](#Alternate-import-style)
@@ -65,7 +67,7 @@ Mobiletto
 
  ## Vim li cas Mobiletto?
 
- ### Goodbye vendor lock-in!
+ ### Nyob zoo tus neeg muag khoom xauv-hauv!
  Cov chaw muab huab cia ntau yam muaj qhov tsis sib xws APIs. Txawm tias cov uas siv zog rau "S3 compatibility"
  muaj tus cwj pwm idiosyncratic.
 
@@ -101,6 +103,30 @@ Mobiletto
  ## Source
  * [mobiletto ntawm GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Kev them nyiaj yug thiab nyiaj txiag
+ Kuv tab tom sim ua tus kws tshaj lij qhib qhov software tsim tawm. Kuv tau ua haujlwm hauv
+ kev lag luam software tau ntau xyoo, kuv tau pib cov tuam txhab ua tiav thiab muag rau cov tuam txhab pej xeem.
+ Tsis ntev los no kuv poob kuv txoj haujlwm, thiab kuv tsis muaj lwm txoj haujlwm ua haujlwm
+
+ Yog li kuv yuav sim sau cov software pab tau thiab saib seb qhov ntawd ua haujlwm
+
+ Yog tias koj txaus siab siv cov software no, kuv yuav ua tsaug ntau rau txawm tias cov
+ tsawg tshaj plaws [kev pab nyiaj hli ntawm Patreon](https://www.patreon.com/cobbzilla)
+
+ * Ua tsaug!*
+
+ ## Kev teeb tsa
+ Nruab siv `npm` lossis `yarn` . Tej zaum koj yuav xav tau `lite` version uas tsis suav nrog tag nrho cov
+ txhais README cov ntaub ntawv:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Yog tias koj xav tau README cov ntaub ntawv hauv txhua hom lus, nruab tag nrho version:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Quick Start
  Piv txwv luv luv siv mobiletto `s3` tsav tsheb.

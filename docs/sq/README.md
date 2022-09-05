@@ -8,6 +8,8 @@ Mobiletto
  * [Fillimi i shpejtë](#Fillimi i shpejtë)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Burimi](#Burimi)
+ * [Instalim](#Instalim)
+ * [Mbështetje dhe financim](#Support-and-Funding)
  * [Përdorimi bazë](#Basic-usage)
  * [Metadata](#Metadata)
  * [Stil alternativ importi](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Burimi
  * [mobiletto në GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto në npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Mbështetje dhe financim
+ Po përpiqem të jem një zhvillues profesionist i softuerit me burim të hapur. Unë kam punuar në
+ në industrinë e softuerit për shumë vite, kam krijuar kompani të suksesshme dhe ua kam shitur kompanive publike.
+ Kohët e fundit kam humbur punën time dhe nuk kam asnjë punë tjetër të rreshtuar
+
+ Kështu që unë do të përpiqem të shkruaj softuer të dobishëm dhe të shikoj nëse funksionon
+
+ Nëse ju pëlqen të përdorni këtë softuer, do të isha shumë mirënjohës edhe për këtë
+ më i vogël [kontributi mujor nëpërmjet Patreon](https://www.patreon.com/cobbzilla)
+
+ *Faleminderit!*
+
+ ## Instalimi
+ Instaloni duke përdorur `npm` " ose `yarn` . Ju ndoshta dëshironi versionin `lite` që nuk i përfshin të gjitha
+ Skedarët e përkthyer README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Nëse vërtet dëshironi skedarët README në çdo gjuhë, instaloni versionin e plotë:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Fillim i shpejte
  Një shembull i shkurtër duke përdorur drejtuesin e mobiletto `s3` .

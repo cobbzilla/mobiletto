@@ -8,6 +8,8 @@ Mobiletto
  * [Pornire rapidă](#Pornire rapidă)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Sursa](#Sursa)
+ * [Instalare](#Instalare)
+ * [Suport și finanțare](#Support-and-Funding)
  * [Utilizare de bază](#Utilizare de bază)
  * [Metadate](#Metadate)
  * [Stil de import alternativ](#Stil de import alternativ)
@@ -101,6 +103,30 @@ Mobiletto
  ## Sursă
  * [mobiletto pe GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto pe npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Sprijin și finanțare
+ Încerc să fiu un dezvoltator profesionist de software open source. Am lucrat în
+ industria software de mulți ani, am început companii de succes și le-am vândut companiilor publice.
+ Recent mi-am pierdut locul de muncă și nu prea am nicio altă lucrare la rând
+
+ Așa că voi încerca să scriu un software util și să văd dacă funcționează
+
+ Dacă vă place să utilizați acest software, v-aș fi foarte recunoscător chiar și pentru
+ cea mai mică [contribuție lunară prin Patreon](https://www.patreon.com/cobbzilla)
+
+ *Mulțumesc!*
+
+ ## Instalare
+ Instalați folosind `npm` sau `yarn` . Probabil că doriți versiunea `lite` care nu include toate
+ fișiere README traduse:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Dacă doriți cu adevărat fișierele README în fiecare limbă, instalați versiunea completă:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Pornire rapidă
  Un scurt exemplu folosind driverul mobiletto `s3` .
@@ -431,7 +457,7 @@ Mobiletto
  Mobiletto utilizează biblioteca de înregistrare [winston](https://www.npmjs.com/package/winston).
 
  Jurnalele **vor** conține căi de fișiere și mesaje de eroare, dar **nu** vor conține niciodată chei, secrete,
- sau orice altă informație de configurare a conexiunii.
+ sau orice alte informații de configurare a conexiunii.
 
  ### Nivel de jurnal
  Utilizați variabila de mediu `MOBILETTO_LOG_LEVEL` pentru a seta nivelul de jurnal, folosind unul

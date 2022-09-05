@@ -8,6 +8,8 @@ Mobiletto
  * [Rýchly štart](#Rýchly štart)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Source](#Source)
+ * [Inštalácia](#Inštalácia)
+ * [Support and Funding](#Support-and-Funding)
  * [Základné použitie](#Basic-usage)
  * [Metadáta](#Metadáta)
  * [Alternatívny štýl importu](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Zdroj
  * [mobiletto na GitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto na npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Podpora a financovanie
+ Snažím sa byť profesionálnym vývojárom open source softvéru. Pracoval som v
+ v softvérovom priemysle som zakladal úspešné spoločnosti a predal ich verejným spoločnostiam.
+ Nedávno som prišiel o prácu a vlastne nemám žiadnu inú prácu
+
+ Takže skúsim napísať užitočný softvér a uvidím, či to funguje
+
+ Ak radi používate tento softvér, bol by som veľmi vďačný aj za to
+ najmenší [mesačný príspevok cez Patreon](https://www.patreon.com/cobbzilla)
+
+ *Ďakujem!*
+
+ ## Inštalácia
+ Nainštalujte pomocou `npm` alebo `yarn` . Pravdepodobne budete chcieť `lite` verziu, ktorá neobsahuje všetky
+ preložené súbory README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Ak naozaj chcete súbory README v každom jazyku, nainštalujte si plnú verziu:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Rýchly štart
  Krátky príklad použitia ovládača mobiletto `s3` .
@@ -444,7 +470,7 @@ Mobiletto
 
  ### Súbor denníka
  V predvolenom nastavení zapisovač zapisuje do konzoly. Ak chcete odoslať protokoly do súboru, nastavte `MOBILETTO_LOG_FILE`
- premenná prostredia. Pri prihlasovaní do súboru sa protokoly už nebudú zapisovať do konzoly.
+ premenná prostredia. Pri prihlasovaní do súboru sa už protokoly nebudú zapisovať do konzoly.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log
 

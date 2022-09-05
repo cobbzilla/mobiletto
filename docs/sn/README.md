@@ -8,6 +8,8 @@ Mobiletto
  * [Kurumidza kutanga](#Kurumidza-kutanga)
  * [Mobiletto CLI](#mobiletto-cli)
  * [Kwakabva](#Mabviro)
+ * [Kuiswa](#Kuiswa)
+ * [Kutsigira uye Mari](#Kutsigira-uye-Mari)
  * [Basic kushandiswa](#Basic-kushandisa)
  * [Metadata](#Metadata)
  * [Mamwe maitiro ekunze](#Alternate-import-style)
@@ -101,6 +103,30 @@ Mobiletto
  ## Source
  * [mobiletto paGitHub](https://github.com/cobbzilla/mobiletto)
  * [mobiletto pa npm](https://www.npmjs.com/package/mobiletto)
+
+ ## Tsigiro uye Mari
+ Ndiri kuyedza kuve nyanzvi yakavhurika sosi software yekuvandudza. Ndanga ndichishanda mu
+ indasitiri yemasoftware kwemakore mazhinji, ndakatanga makambani akabudirira uye ndikaatengesa kumakambani eruzhinji.
+ Munguva ichangopfuura ndakarasikirwa nebasa rangu, uye handina chaizvoizvo rimwe basa ripi neripi rakarongwa
+
+ Saka ndichaedza kunyora software inobatsira uye kuona kana izvo zvinoshanda
+
+ Kana iwe uchinakidzwa nekushandisa iyi software, ndingatenda zvikuru kunyangwe iyo
+ diki [mupiro wepamwedzi nePatreon](https://www.patreon.com/cobbzilla)
+
+ *Ndatenda!*
+
+ ## Kuiswa
+ Isa uchishandisa `npm` kana `yarn` . Iwe unogona kunge uchida iyo `lite` isingasanganisire ese
+ mafaira akaturikirwa README:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+ Kana iwe uchinyatsoda iwo README mafaera mumitauro yese, isa iyo yakazara vhezheni:
+
+    npm install mobiletto
+    yarn add mobiletto
 
  ## Kurumidza Kutanga
  Muenzaniso mupfupi uchishandisa mobiletto `s3` mutyairi.
@@ -371,7 +397,7 @@ Mobiletto
  kiyi kana kuti anga akwanisa kupaza encryption. Mabheti ese adzimwa ipapo!
 
  ### Kuita uye caching
- Mashandisiro epa encrypted storage anogona kunonoka. Recursive listings uye kubviswa kunogona kunonoka.
+ Mashandisirwo ekuchengetera encrypted anogona kunonoka. Recursive listings uye kubviswa kunogona kunonoka.
  Kuchengetedza kuburikidza ne redis kunobatsira zvikuru, asi cherechedza kuti cache inoputirwa pane chero inonyora kana kubvisa.
 
  ## Kutenderera kwakakosha
@@ -430,11 +456,11 @@ Mobiletto
  ## Kutema
  Mobiletto inoshandisa [winston](https://www.npmjs.com/package/winston) raibhurari yekutema matanda.
 
- Logs ** ichave iine mafaera nzira uye mhosho mameseji, asi ** haazombove ** ane makiyi, zvakavanzika,
+ Marogi ** achave ** ane mafaera nzira uye mhosho meseji, asi ** haazombove ** ane makiyi, zvakavanzika,
  kana chero rumwe ruzivo rwekubatanidza gadziriso.
 
  ### Log level
- Shandisa `MOBILETTO_LOG_LEVEL` shanduko yenharaunda kuseta irogi, uchishandisa imwe
+ Shandisa `MOBILETTO_LOG_LEVEL` shanduko yenzvimbo kuseta irogi, uchishandisa imwe
  ye `npm` mazinga anotsanangurwa mu [https://www.npmjs.com/package/winston#logging-levels](https://www.npmjs.com/package/winston#logging-levels)
 
  Default level ndeye `error` . Chirevo chezwi chakanyanya ndeche `silly` , kunyangwe parizvino mobiletto
@@ -444,7 +470,7 @@ Mobiletto
 
  ### Log file
  Nokusingaperi, murogi anonyora kune console. Kuti utumire magwaro kufaira, isa iyo `MOBILETTO_LOG_FILE`
- environment variable. Paunenge uchipinda mufaira, matanda haachazonyorerwe kune iyo console.
+ environment variable. Paunenge uchidhinda kufaira, matanda haachanyorwe kune iyo console.
 
     MOBILETTO_LOG_FILE=/var/my_mobiletto_log
 
