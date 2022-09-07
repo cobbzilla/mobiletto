@@ -94,6 +94,7 @@ class StorageClient {
         return {
             name: this.denormalizePath(f.fileName),
             size: f.contentLength,
+            mtime: f.uploadTimestamp,
             type: this.b2type(f),
             b2id: f.fileId
         }

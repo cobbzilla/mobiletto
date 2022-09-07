@@ -62,6 +62,7 @@ async function assertMeta (api, name, expectedSize) {
     should().exist(meta, 'expected return value from metadata call')
     expect(meta.name).equals(name, 'expected name of written file to be correct')
     expect(meta.size).equals(expectedSize, 'expected size of written file to equal size of randomData')
+    expect(meta.mtime).is.greaterThan(0, 'expected mtime of written file to be > 0')
 }
 
 async function assertMetaFail (api, name) {
