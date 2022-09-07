@@ -2,7 +2,7 @@ const winston = require('winston')
 
 const logger = winston.createLogger({
     level: process.env.MOBILETTO_LOG_LEVEL || 'error',
-    format: winston.format.simple(),
+    format: winston.format.timestamp(),
     transports: process.env.MOBILETTO_LOG_FILE
         ? [ new winston.transports.File({ filename: process.env.MOBILETTO_LOG_FILE }) ]
         : [ new winston.transports.Console() ]
