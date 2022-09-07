@@ -1,7 +1,7 @@
 const Redis = require('ioredis')
 const generators = require('redis-async-gen')
 const { logger } = require('./logger')
-const LRU = require("lru-cache")
+const LRU = require('lru-cache')
 
 const { DEFAULT_REDIS_OPTIONS } = require('ioredis/built/redis/RedisOptions')
 
