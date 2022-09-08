@@ -1,5 +1,4 @@
 const fs = require('fs')
-const path = require('path')
 const { Readable, Transform } = require('stream')
 const { logger, setLogLevel: setLoggerLevel } = require('./util/logger')
 const { getRedis, teardown } = require('./util/redis')
@@ -461,14 +460,29 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
 
     const _loadMeta = async (dirent, entries) => {
         const files = []
+        const promises = []
         for (const entry of entries) {
-            const cipherText = []
-            await client.read(dirent + '/' + basename(entry.name), reader(cipherText))
-            const plain = decrypt(cipherText.toString(), enc)
-            const realPath = plain.split(ENC_PAD_SEP)[0]
-            const meta = await _metadata(client)(realPath)
-            files.push(meta)
+            promises.push(new Promise((resolve) => {
+                const cipherText = []
+                client.read(dirent + '/' + basename(entry.name), reader(cipherText))
+                    .then((bytesRead) => {
+                        if (!bytesRead) {
+                            logger.warn(`_loadMeta(${dirent}/${basename(entry.name)}) returned no data`)
+                            resolve()
+                        } else {
+                            const plain = decrypt(cipherText.toString(), enc)
+                            const realPath = plain.split(ENC_PAD_SEP)[0]
+                            _metadata(client)(realPath)
+                                .then((meta) => {
+                                    files.push(meta)
+                                    resolve()
+                                })
+                        }
+                        }
+                    )
+            }))
         }
+        await Promise.all(promises)
         return files
     }
 
