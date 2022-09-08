@@ -39,7 +39,7 @@ function getCipher(enc) {
         c.setAutoPadding(true)
         return c
     } catch (e) {
-        winston.error(`getCipher(${enc}): ${e}`)
+        winston.error(`getCipher(${enc}) ${e}`)
         throw e
     }
 }
