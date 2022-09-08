@@ -181,7 +181,8 @@ class StorageClient {
             const head = await this.client.send(new HeadObjectCommand(bucketParams))
             const meta = {
                 name: this.stripPrefix(path),
-                size: head.ContentLength
+                size: head.ContentLength,
+                type: path.endsWith(this.delimiter) ? M_DIR : M_FILE
             }
             if (head.LastModified) {
                 meta.mtime = Date.parse(head.LastModified)
