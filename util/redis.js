@@ -41,20 +41,20 @@ class MobilettoCache {
             try {
                 this.redis = new Redis(Object.assign({}, DEFAULT_REDIS_OPTIONS, {host, port}))
             } catch (e) {
-                logger.error(`redis(${name}): error connecting to redis, using fallback LRU for scoped caches: ${e}`)
+                logger.error(`redis(${name}) error connecting to redis, using fallback LRU for scoped caches: ${e}`)
                 this.redis = null
             }
         } else {
-            logger.warn(`redis(${name}): no host or port provided, using fallback LRU for scoped caches`)
+            logger.warn(`redis(${name}) no host or port provided, using fallback LRU for scoped caches`)
             this.redis = null
         }
         this.prefix = prefix
         if (this.redis) {
             // test connection by flushing
             this.flush().then(
-                () => { logger.debug(`redis(${name}): successfully flushed`) },
+                () => { logger.debug(`redis(${name}) successfully flushed`) },
                 (e) => {
-                    logger.warn(`redis(${name}): error flushing: ${e}, disabling redis`)
+                    logger.warn(`redis(${name}) error flushing: ${e}, disabling redis`)
                     this.redis = null
                 }
             )
@@ -73,7 +73,7 @@ class MobilettoCache {
         try {
             return this.redis ? await func(this.redis) : defaultValue
         } catch (e) {
-            logger.warn(`redis(${this.name}): doRedisAsync(${func}): ${e} (returning default value: ${defaultValue})`)
+            logger.warn(`redis(${this.name}) doRedisAsync(${func}) ${e} (returning default value: ${defaultValue})`)
             return defaultValue
         }
     }
@@ -82,16 +82,16 @@ class MobilettoCache {
         try {
             return this.redis ? func(this.redis) : defaultValue
         } catch (e) {
-            logger.warn(`redis(${this.name}): doRedis(${func}): ${e} (returning default value: ${defaultValue})`)
+            logger.warn(`redis(${this.name}) doRedis(${func}) ${e} (returning default value: ${defaultValue})`)
             return defaultValue
         }
     }
 
     get = async key => {
         this.counters.get++
-        logger.silly(`redis(${this.name}): get(${key}) starting`)
+        logger.silly(`redis(${this.name}) get(${key}) starting`)
         const val = await this.doRedis(r => r.get(this.pfx(key)), null)
-        logger.silly(`redis(${this.name}): get(${key}) found value: ${val}`)
+        logger.silly(`redis(${this.name}) get(${key}) found value: ${val}`)
         if (val) {
             this.counters.hit++
         } else {
@@ -106,9 +106,9 @@ class MobilettoCache {
 
     set = async (key, val, expirationMillis = DEFAULT_EXPIRATION_MILLIS) => {
         this.counters.set++
-        logger.silly(`redis(${this.name}): set(${key}, ${val}, ${expirationMillis}) starting`)
+        logger.silly(`redis(${this.name}) set(${key}, ${val}, ${expirationMillis}) starting`)
         await this.doRedisAsync(r => r.set(this.pfx(key), val, 'EX', expirationMillis / 1000))
-        logger.silly(`redis(${this.name}): set(${key}, ${val}, ${expirationMillis}) finished`)
+        logger.silly(`redis(${this.name}) set(${key}, ${val}, ${expirationMillis}) finished`)
     }
 
     del = async key => {
@@ -156,7 +156,7 @@ class MobilettoCache {
                 try {
                     return JSON.parse(val)
                 } catch (e) {
-                    logger.warn(`redis(${this.name}): get(${key}) error: ${e}`)
+                    logger.warn(`redis(${this.name}) get(${key}) error: ${e}`)
                     return null
                 }
             },
@@ -165,7 +165,7 @@ class MobilettoCache {
                     try {
                         await this.set(realKey(key), JSON.stringify(value))
                     } catch (e) {
-                        logger.warn(`redis(${this.name}): set(${key}) error: ${e}`)
+                        logger.warn(`redis(${this.name}) set(${key}) error: ${e}`)
                     }
                 }
             }
@@ -190,7 +190,7 @@ const teardown = async () => await forAllCaches((client) => {
             client.redis = null
         }
     } catch (e) {
-        logger.warn(`teardown: error disconnecting from redis(${client.name}): ${e}`)
+        logger.warn(`teardown: error disconnecting from redis(${client.name}) ${e}`)
     }
 })
 

@@ -106,7 +106,7 @@ class StorageClient {
             return []
         }
         const objects = files.map((f) => {
-            logger.debug(`addListedFiles(${path}): adding file: ${f.fileName}`)
+            logger.debug(`addListedFiles(${path}) adding file: ${f.fileName}`)
             return this.file2object(f)
         })
         if (visitor) {

@@ -202,7 +202,7 @@ const UTILITY_FUNCTIONS = {
         try {
             return await client.readFile(path)
         } catch (e) {
-            logger.info(`safeReadFile(${path}): ${e}`)
+            logger.info(`safeReadFile(${path}) ${e}`)
             return null
         }
     },
@@ -377,13 +377,13 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     }
     const encKey = normalizeKey(encryption.key)
     if (!encKey) {
-        const message = `mobiletto(${driverPath}): invalid encryption key`
+        const message = `mobiletto(${driverPath}) invalid encryption key`
         logger.error(message)
         throw new MobilettoError(message)
     }
     const iv = normalizeIV(encryption.iv, encKey)
     if (!iv) {
-        const message = `mobiletto(${driverPath}): invalid encryption IV`
+        const message = `mobiletto(${driverPath}) invalid encryption IV`
         logger.error(message)
         throw new MobilettoError(message)
     }
@@ -559,7 +559,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                         }
                         throw e
                     } else {
-                        throw new MobilettoError(`encClient.list(${p}): ${e}`, e)
+                        throw new MobilettoError(`encClient.list(${p}) ${e}`, e)
                     }
                 }
                 if (recursive) {

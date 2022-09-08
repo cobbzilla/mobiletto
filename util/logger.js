@@ -1,6 +1,7 @@
 const winston = require('winston')
 
 const logger = winston.createLogger({
+    levels: winston.config.npm.levels,
     level: process.env.MOBILETTO_LOG_LEVEL || 'error',
     format: winston.format.combine(
         winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
@@ -9,7 +10,7 @@ const logger = winston.createLogger({
         })),
     transports: process.env.MOBILETTO_LOG_FILE
         ? [ new winston.transports.File({ filename: process.env.MOBILETTO_LOG_FILE }) ]
-        : [ new winston.transports.Console() ]
+        : [ new winston.transports.Console({ stderrLevels: Object.keys(winston.config.npm.levels) }) ]
 })
 
 const setLogLevel = (level) => { logger.level = level }

@@ -79,7 +79,7 @@ class StorageClient {
     }
 
     async _list (path, recursive = false, visitor = null, params = {}) {
-        const logPrefix = `_list(path=${path}):`
+        const logPrefix = `_list(path=${path})`
 
         // Declare truncated as a flag that the while loop is based on.
         let truncated = true
@@ -212,7 +212,7 @@ class StorageClient {
         })
         let total = 0
         uploader.on('httpUploadProgress', (progress) => {
-            logger.debug(`write(${bucketParams.Key}): ${JSON.stringify(progress)}`)
+            logger.debug(`write(${bucketParams.Key}) ${JSON.stringify(progress)}`)
             total += progress.loaded
         })
         const response = await uploader.done()
@@ -255,15 +255,15 @@ class StorageClient {
                     Bucket: this.bucket,
                     Delete
                 }
-                logger.debug(`remove(${path}): deleting objects: ${JSON.stringify(objects)}`)
+                logger.debug(`remove(${path}) deleting objects: ${JSON.stringify(objects)}`)
                 const response = await this.client.send(new DeleteObjectsCommand(bucketParams))
                 let statusCode = response.$metadata.httpStatusCode
                 let statusClass = Math.floor(statusCode / 100)
                 if (statusClass !== 2) {
-                    throw new MobilettoError(`remove(${path}): DeleteObjectsCommand returned HTTP status ${statusCode}`)
+                    throw new MobilettoError(`remove(${path}) DeleteObjectsCommand returned HTTP status ${statusCode}`)
                 }
                 if (!quiet && response.Errors && response.Errors.length > 0) {
-                    throw new MobilettoError(`remove(${path}): DeleteObjectsCommand returned Errors: ${JSON.stringify(response.Errors)}`)
+                    throw new MobilettoError(`remove(${path}) DeleteObjectsCommand returned Errors: ${JSON.stringify(response.Errors)}`)
                 }
                 if (response.Deleted) {
                     removed.push(...response.Deleted.map(del => this.denormalizeKey(del.Key)))
@@ -272,7 +272,7 @@ class StorageClient {
                     objects = await this._list(path, true, null, {MaxKeys: DELETE_OBJECTS_MAX_KEYS})
                 } catch (e) {
                     if (!(e instanceof MobilettoNotFoundError)) {
-                        throw e instanceof MobilettoError ? e : new MobilettoError(`remove(${path}): error listing: ${e}`)
+                        throw e instanceof MobilettoError ? e : new MobilettoError(`remove(${path}) error listing: ${e}`)
                     }
                     objects = null
                 }
