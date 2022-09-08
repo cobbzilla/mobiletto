@@ -578,10 +578,24 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                         const subdirListing = await client.list(subdir)
                         if (subdirListing && subdirListing.length > 0) {
                             const subdirEntries = await _loadMeta(subdir, subdirListing)
+                            if (visitor) {
+                                for (const obj of subdirEntries) {
+                                    await visitor(obj)
+                                }
+                            }
                             entries.push(...subdirEntries)
                             const moreDirs = subdirEntries.filter(obj => obj.type === M_DIR)
                             dirs.unshift(...moreDirs)
                         }
+                    }
+                    if (cache) {
+                        cache.set(cacheKey, entries).then(
+                            () => { logger.debug(`enc_list: cached ${p} r=${recursive}`) },
+                            (err) => { logger.error(`enc_list(${p}) error: ${err}`) }
+                        )
+                    }
+                    if (!entries || entries.length === 0) {
+                        return []
                     }
                 }
             }
