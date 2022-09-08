@@ -462,24 +462,32 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         const files = []
         const promises = []
         for (const entry of entries) {
+            const logPrefix = `_loadMeta(${dirent}/${basename(entry.name)})`
             promises.push(new Promise((resolve) => {
                 const cipherText = []
-                client.read(dirent + '/' + basename(entry.name), reader(cipherText))
-                    .then((bytesRead) => {
+                client.read(dirent + '/' + basename(entry.name), reader(cipherText)).then(
+                    (bytesRead) => {
                         if (!bytesRead) {
-                            logger.warn(`_loadMeta(${dirent}/${basename(entry.name)}) returned no data`)
+                            logger.warn(`${logPrefix} returned no data`)
                             resolve()
                         } else {
                             const plain = decrypt(cipherText.toString(), enc)
                             const realPath = plain.split(ENC_PAD_SEP)[0]
-                            _metadata(client)(realPath)
-                                .then((meta) => {
+                            _metadata(client)(realPath).then(
+                                (meta) => {
                                     files.push(meta)
+                                    resolve()
+                                },
+                                (err) => {
+                                    logger.warn(`${logPrefix} error fetching _metadata: ${err}`)
                                     resolve()
                                 })
                         }
-                        }
-                    )
+                    },
+                    (err) => {
+                        logger.warn(`${logPrefix} error reading file: ${err}`)
+                        resolve()
+                    })
             }))
         }
         await Promise.all(promises)
