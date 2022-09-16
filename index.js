@@ -191,10 +191,13 @@ const UTILITY_FUNCTIONS = {
         await client.read(path, reader(chunks))
         const data = Buffer.concat(chunks);
         if (cache && data.length < READ_FILE_CACHE_SIZE_THRESHOLD) {
-            cache.set(path, data.toString('base64')).then(
-                () => { logger.debug(`readFile(${path}) cached ${data.length} bytes`) },
-                (err) => { logger.error(`readFile(${path}) error: ${err}`) }
-            )
+            const setVal = cache.set(path, data.toString('base64')) // redis returns promise, LRU does not
+            if (setVal instanceof Promise) {
+                setVal.then(
+                    () => { logger.debug(`readFile(${path}) cached ${data.length} bytes`) },
+                    (err) => { logger.error(`readFile(${path}) error: ${err}`) }
+                )
+            }
         }
         return data
     },
@@ -409,7 +412,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
 
     const outerClient = addCacheFunctions(client)
     const _metadata = (client) => async (path) => {
-        const cache = outerClient.scopedCache('_metadata')
+        const cache = outerClient.scopedCache('metadata')
         const cached = cache ? await cache.get(path) : null
         if (cached) {
             return cached
