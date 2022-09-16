@@ -130,7 +130,7 @@ if (!redisSetup.enabled) continue
 
 for (const driverName of DRIVER_NAMES) {
 // For testing single drivers
-// if (driverName !== 'b2') continue
+// if (driverName !== 'local') continue
 
 const driverTest = `${driverName} [${redisSetup.name}]`
 const config = redisSetup.config(DRIVER_CONFIG[driverName])

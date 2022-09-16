@@ -1,5 +1,5 @@
 const Redis = require('ioredis')
-const generators = require('redis-async-gen')
+const redisScan = require('node-redis-scan')
 const { logger } = require('./logger')
 const LRU = require('lru-cache')
 
@@ -28,6 +28,7 @@ const ZERO_COUNTERS = {
 class MobilettoCache {
     name
     redis
+    scanner
     prefix
     scopedCaches = {}
     counters = Object.assign({}, ZERO_COUNTERS)
@@ -51,13 +52,13 @@ class MobilettoCache {
         this.prefix = prefix
         if (this.redis) {
             // test connection by flushing
+            this.scanner = new redisScan(this.redis)
             this.flush().then(
                 () => { logger.debug(`redis(${name}) successfully flushed`) },
                 (e) => {
                     logger.warn(`redis(${name}) error flushing: ${e}, disabling redis`)
                     this.redis = null
-                }
-            )
+                })
         }
     }
 
@@ -66,7 +67,7 @@ class MobilettoCache {
     hitRate = () => this.counters.get === 0 ? 0 : (100 * this.counters.hit) / this.counters.get
     toString = () => `MobilettoCache(${this.name}) [${this.counters.hit}/${this.counters.get} = ${this.hitRate()}% hit] stats=${JSON.stringify(this.counters)}`
 
-    pfx = key => this.prefix + key
+    pfx = key => key.startsWith(this.prefix) ? key : this.prefix + key
     unprefix = key => key && key.startsWith(this.prefix) ? key.substring(this.prefix.length) : key
 
     doRedisAsync = async (func, defaultValue = null) => {
@@ -117,23 +118,31 @@ class MobilettoCache {
     }
 
     findMatchingKeys = async (pattern) => {
-        if (!this.redis) return []
-        const { keysMatching } = generators.using(this.redis)
-        const keys = []
-        for await (const key of keysMatching(this.pfx(pattern))) {
-            keys.push(this.unprefix(key))
-        }
-        return keys
+        return await new Promise((resolve, reject) => {
+            this.scanner.scan(pattern, (err, matchingKeys) => {
+                if (err) reject(err)
+                resolve(matchingKeys)
+            })
+        })
     }
+
     applyToMatchingKeys = async (pattern, asyncFunc) => {
-        if (!this.redis) return []
-        const { keysMatching } = generators.using(this.redis)
         const results = []
-        for await (const key of keysMatching(this.pfx(pattern))) {
-            results.push(await asyncFunc(this.unprefix(key)))
-        }
-        return results
+        return await new Promise((resolve, reject) => {
+            this.scanner.eachScan(pattern, {}, async (matchingKeys) => {
+                for (const key of matchingKeys) {
+                    const val = await asyncFunc(key);
+                    if (typeof val !== 'undefined') {
+                        results.push(val)
+                    }
+                }
+            }, (err, matchCount) => {
+                if (err) reject(err)
+                resolve(results)
+            })
+        })
     }
+
     removeMatchingKeys = async  (pattern) => await this.applyToMatchingKeys(pattern, this.del)
 
     flush = async () => {
