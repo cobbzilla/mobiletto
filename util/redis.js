@@ -134,16 +134,24 @@ class MobilettoCache {
                     asyncFunc(key).then(
                         (val) => {
                             if (typeof val !== 'undefined') {
+                                logger.debug(`applyToMatchingKeys: found key ${key} = ${val}`)
                                 results.push(val)
+                            } else {
+                                logger.debug(`applyToMatchingKeys: found key with undefined value: ${key}`)
                             }
                         },
                         (e) => {
-                            logger.error(`applyToMatchingKeys: error with key ${key}: ${e}`)
-                            reject(e)
+                            const message = `applyToMatchingKeys: error with key ${key}: ${e}`;
+                            logger.error(message)
+                            reject(message)
                         })
                 }
             }, (err, matchCount) => {
-                if (err) reject(err)
+                if (err) {
+                    logger.error(`applyToMatchingKeys: error in final callback: ${err}`)
+                    reject(err)
+                }
+                logger.error(`applyToMatchingKeys: resolving and returning ${results.length} results`)
                 resolve(results)
             })
         })
