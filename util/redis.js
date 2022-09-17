@@ -128,16 +128,17 @@ class MobilettoCache {
 
     applyToMatchingKeys = async (pattern, asyncFunc) => {
         const results = []
+        const start = Date.now()
         return await new Promise((resolve, reject) => {
             this.scanner.eachScan(pattern, {}, async (matchingKeys) => {
                 for (const key of matchingKeys) {
                     asyncFunc(key).then(
                         (val) => {
                             if (typeof val !== 'undefined') {
-                                logger.debug(`applyToMatchingKeys: found key ${key} = ${val}`)
+                                logger.silly(`applyToMatchingKeys: found key ${key} = ${val}`)
                                 results.push(val)
                             } else {
-                                logger.debug(`applyToMatchingKeys: found key with undefined value: ${key}`)
+                                logger.silly(`applyToMatchingKeys: found key with undefined value: ${key}`)
                             }
                         },
                         (e) => {
@@ -151,7 +152,8 @@ class MobilettoCache {
                     logger.error(`applyToMatchingKeys: error in final callback: ${err}`)
                     reject(err)
                 }
-                logger.error(`applyToMatchingKeys: resolving and returning ${results.length} results`)
+                const duration = Date.now() - start
+                logger.debug(`applyToMatchingKeys: resolving and returning ${results.length} results in ${duration/1000} seconds`)
                 resolve(results)
             })
         })
