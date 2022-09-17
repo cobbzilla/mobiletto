@@ -131,10 +131,16 @@ class MobilettoCache {
         return await new Promise((resolve, reject) => {
             this.scanner.eachScan(pattern, {}, async (matchingKeys) => {
                 for (const key of matchingKeys) {
-                    const val = await asyncFunc(key);
-                    if (typeof val !== 'undefined') {
-                        results.push(val)
-                    }
+                    asyncFunc(key).then(
+                        (val) => {
+                            if (typeof val !== 'undefined') {
+                                results.push(val)
+                            }
+                        },
+                        (e) => {
+                            logger.error(`applyToMatchingKeys: error with key ${key}: ${e}`)
+                            reject(e)
+                        })
                 }
             }, (err, matchCount) => {
                 if (err) reject(err)
