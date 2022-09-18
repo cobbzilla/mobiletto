@@ -168,7 +168,10 @@ class MobilettoCache {
         })
     }
 
-    removeMatchingKeys = async  (pattern) => await this.applyToMatchingKeys(pattern, this.del)
+    removeMatchingKeys = async (pattern) => {
+        logger.info(`removeMatchingKeys called from ${new Error().stack}`)
+        await this.applyToMatchingKeys(pattern, this.del)
+    }
 
     flush = async () => {
         this.counters.flush++
