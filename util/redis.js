@@ -119,7 +119,7 @@ class MobilettoCache {
 
     findMatchingKeys = async (pattern) => {
         return await new Promise((resolve, reject) => {
-            this.scanner.scan(pattern, (err, matchingKeys) => {
+            this.scanner.scan(this.pfx(pattern), (err, matchingKeys) => {
                 if (err) reject(err)
                 resolve(matchingKeys)
             })
@@ -132,7 +132,7 @@ class MobilettoCache {
         const logPrefix = `applyToMatchingKeys(${pattern}, ${asyncFunc && asyncFunc.name ? asyncFunc.name : 'nameless function'})`
         const start = Date.now()
         return await new Promise((resolve, reject) => {
-            this.scanner.eachScan(pattern, {}, async (matchingKeys) => {
+            this.scanner.eachScan(this.pfx(pattern), {}, async (matchingKeys) => {
                 if (!matchingKeys || typeof matchingKeys.length !== 'number') {
                     const message = `${logPrefix}: eachScan received invalid matchingKeys = ${typeof matchingKeys !== 'undefined' ? matchingKeys : 'undefined'}`;
                     logger.error(message)
