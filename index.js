@@ -495,7 +495,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
 
     const META_LOAD_QUEUE_NAME = '_loadMetaQueue'
     const META_LOAD_JOB_NAME = '_loadMetaJob'
-    const META_LOAD_CONCURRENCY = 5
+    const META_LOAD_CONCURRENCY = process.env.MOBILETTO_META_LOAD_CONCURRENCY || 10
     let META_LOAD_QUEUE = null
     const metaLoadQueue = () => {
         if (META_LOAD_QUEUE === null) {
