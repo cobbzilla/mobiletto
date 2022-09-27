@@ -166,7 +166,7 @@ class StorageClient {
                     }
                 }
                 if (hasMax && files.length + list.length >= maxFileCount) {
-                    files.push(...list.slice(0, (list.length - maxFileCount) + 1))
+                    files.push(...list.slice(0, (maxFileCount - files.length) + 1))
                     return true
                 } else {
                     files.push(...list)
