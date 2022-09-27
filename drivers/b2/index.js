@@ -187,7 +187,7 @@ class StorageClient {
             }
             await handleResponse(files, pth, response, visitor)
             if (dirDiscovered && !pth.endsWith(this.delimiter)) {
-                const subdirFiles = await this.b2_list(pth + this.delimiter, recursive, null, { max: 10000, dir: true })
+                const subdirFiles = await this.b2_list(pth + this.delimiter, recursive, null, { dir: true })
                 files.shift()
                 files.push(...subdirFiles)
             }
