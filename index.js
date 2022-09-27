@@ -523,21 +523,22 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         return META_LOAD_QUEUE
     }
 
-    const waitForFiles = (files, entries, resolve) => {
-        if (files.length === entries.length) {
-            resolve(files)
-        } else {
-            setTimeout(() => { waitForFiles(files, entries, resolve) }, 1000)
-        }
-    }
-
     const _loadMeta = async (dirent, entries) => {
         const files = []
+
+        const waitForFiles = (resolve) => {
+            if (files.length === entries.length) {
+                resolve(files)
+            } else {
+                setTimeout(() => waitForFiles(resolve), 1000)
+            }
+        }
+
         for (const entry of entries) {
             const job = { dirent, entry, files }
             metaLoadQueue().add(META_LOAD_JOB_NAME, job)
         }
-        await new Promise(resolve => waitForFiles(files, entries, resolve))
+        await new Promise(resolve => waitForFiles(resolve))
         return files
     }
 
