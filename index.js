@@ -510,14 +510,14 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             META_LOAD_QUEUE.process(META_LOAD_JOB_NAME, META_LOAD_CONCURRENCY, _singleMeta)
             META_LOAD_QUEUE.on('completed', function (job, result) {
                 logger.info(`${META_LOAD_JOB_NAME} completed with result: ${JSON.stringify(result)}`)
-                if (job.data.jobId && META_LOAD_QUEUE.mobilettoHandlers[job.data.jobId]) {
-                    META_LOAD_QUEUE.mobilettoHandlers[job.data.jobId](result)
+                if (job.data.mobilettoJobID && META_LOAD_QUEUE.mobilettoHandlers[job.data.mobilettoJobID]) {
+                    META_LOAD_QUEUE.mobilettoHandlers[job.data.mobilettoJobID](result)
                 }
             })
             META_LOAD_QUEUE.on('failed', function (job, result) {
                 logger.info(`${META_LOAD_JOB_NAME} failed with result: ${JSON.stringify(result)}`)
-                if (job.data.jobId && META_LOAD_QUEUE.mobilettoErrorHandlers[job.data.jobId]) {
-                    META_LOAD_QUEUE.mobilettoErrorHandlers[job.data.jobId](result)
+                if (job.data.mobilettoJobID && META_LOAD_QUEUE.mobilettoErrorHandlers[job.data.mobilettoJobID]) {
+                    META_LOAD_QUEUE.mobilettoErrorHandlers[job.data.mobilettoJobID](result)
                 }
             })
         }
@@ -535,17 +535,17 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             }
         }
 
-        const jobId = randomstring.generate(10)
+        const mobilettoJobID = randomstring.generate(10)
         const mq = metaLoadQueue()
-        mq.mobilettoHandlers[jobId] = meta => files.push(meta)
-        mq.mobilettoErrorHandlers[jobId] = err => files.push(err)
+        mq.mobilettoHandlers[mobilettoJobID] = meta => files.push(meta)
+        mq.mobilettoErrorHandlers[mobilettoJobID] = err => files.push(err)
         for (const entry of entries) {
-            const job = { jobId, dirent, entry, files }
+            const job = { mobilettoJobID, dirent, entry }
             mq.add(META_LOAD_JOB_NAME, job)
         }
         await new Promise(resolve => waitForFiles(resolve))
-        delete mq.mobilettoHandlers[jobId]
-        delete mq.mobilettoErrorHandlers[jobId]
+        delete mq.mobilettoHandlers[mobilettoJobID]
+        delete mq.mobilettoErrorHandlers[mobilettoJobID]
         return files
     }
 
