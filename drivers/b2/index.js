@@ -166,7 +166,7 @@ class StorageClient {
                     }
                 }
                 if (hasMax && files.length + list.length >= maxFileCount) {
-                    files.push(...list.slice(0, (list.length - maxFileCount) + 1))
+                    files.push(...list.slice(0, (maxFileCount - files.length) + 1))
                     return true
                 } else {
                     files.push(...list)
@@ -182,12 +182,12 @@ class StorageClient {
                     startFileName: response.data.nextFileName,
                     maxFileCount,
                     delimiter: recursive ? '' : this.delimiter,
-                    prefix: this.prefix
+                    prefix: pfx
                 })
             }
             await handleResponse(files, pth, response, visitor)
             if (dirDiscovered && !pth.endsWith(this.delimiter)) {
-                const subdirFiles = await this.b2_list(pth + this.delimiter, recursive, null, { max: 10000, dir: true })
+                const subdirFiles = await this.b2_list(pth + this.delimiter, recursive, null, { dir: true })
                 files.shift()
                 files.push(...subdirFiles)
             }
