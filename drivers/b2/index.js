@@ -126,7 +126,7 @@ class StorageClient {
             const files = []
             await this.auth()
             const hasMax = opts && opts.max
-            const maxFileCount = hasMax ? opts.max : 1000
+            const maxFileCount = hasMax ? opts.max : 10000
             const pfx = (this.prefix.length === 0 || this.prefix.endsWith(this.delimiter) ? this.prefix : this.prefix + this.delimiter) +
                 (pth.startsWith(this.delimiter) ? pth.substring(0) : pth)
 

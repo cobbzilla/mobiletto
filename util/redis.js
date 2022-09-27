@@ -53,9 +53,9 @@ class MobilettoCache {
         if (this.redis) {
             // test connection by flushing
             this.scanner = new redisScan(this.redis)
-            this.flush().then(
-                () => { logger.debug(`redis(${name}) successfully flushed`) },
-                (e) => {
+            this.flush()
+                .then(() => { logger.debug(`redis(${name}) successfully flushed`) })
+                .catch((e) => {
                     logger.warn(`redis(${name}) error flushing: ${e}, disabling redis`)
                     this.redis = null
                 })
@@ -99,7 +99,7 @@ class MobilettoCache {
             this.counters.miss++
         }
         if (this.printStatsInterval && this.printStatsInterval > 0 && this.counters.get % this.printStatsInterval === 0) {
-            const message = `${new Date()}: ${this}`;
+            const message = `${new Date()}: ${this}`
             logger.info(message)
         }
         return val
@@ -134,24 +134,24 @@ class MobilettoCache {
         return await new Promise((resolve, reject) => {
             this.scanner.eachScan(this.pfx(pattern), {}, async (matchingKeys) => {
                 if (!matchingKeys || typeof matchingKeys.length !== 'number') {
-                    const message = `${logPrefix}: eachScan received invalid matchingKeys = ${typeof matchingKeys !== 'undefined' ? matchingKeys : 'undefined'}`;
+                    const message = `${logPrefix}: eachScan received invalid matchingKeys = ${typeof matchingKeys !== 'undefined' ? matchingKeys : 'undefined'}`
                     logger.error(message)
                     reject(message)
                 } else {
                     keyMatchCount += matchingKeys.length
                 }
                 for (const key of matchingKeys) {
-                    asyncFunc(key).then(
-                        (val) => {
+                    asyncFunc(key)
+                        .then((val) => {
                             if (typeof val !== 'undefined') {
                                 logger.silly(`${logPrefix} found key ${key} = ${val}`)
                                 results.push(val)
                             } else {
                                 logger.silly(`${logPrefix} found key with undefined value: ${key}`)
                             }
-                        },
-                        (e) => {
-                            const message = `${logPrefix} error with key ${key}: ${e}`;
+                        })
+                        .catch((e) => {
+                            const message = `${logPrefix} error with key ${key}: ${e}`
                             logger.error(message)
                             reject(message)
                         })

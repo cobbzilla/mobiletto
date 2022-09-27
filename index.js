@@ -1,5 +1,6 @@
 const fs = require('fs')
 const { Readable, Transform } = require('stream')
+const Queue = require('bull')
 const { logger, setLogLevel: setLoggerLevel } = require('./util/logger')
 const { getRedis, teardown } = require('./util/redis')
 const { basename, dirname } = require('path')
@@ -54,8 +55,8 @@ function MobilettoNotFoundError (message) {
 
 const reader = (chunks) => (chunk) => { if (chunk) { chunks.push(chunk) } }
 
-const isAsyncGenerator = (func) => func[Symbol.toStringTag] === 'AsyncGenerator'
-const isReadable = (thing) => thing instanceof fs.ReadStream || thing instanceof Transform || thing instanceof Readable
+const isAsyncGenerator = func => func[Symbol.toStringTag] === 'AsyncGenerator'
+const isReadable = thing => thing instanceof fs.ReadStream || thing instanceof Transform || thing instanceof Readable
 
 const READ_FILE_CACHE_SIZE_THRESHOLD = 128 * 1024 // we can cache files of this size
 
@@ -64,12 +65,12 @@ class AwaitableLRU {
     constructor(size) {
         this.lru = new LRU({ max: size })
     }
-    get = (key) => Promise.resolve(this.lru.get(key))
+    get = key => Promise.resolve(this.lru.get(key))
     set = (key, value) => Promise.resolve(this.lru.set(key, value))
 }
 
 const CACHE_FUNCTIONS = {
-    redis: (client) => () => {
+    redis: client => () => {
         if (typeof client.cache !== 'undefined') return client.cache
         const redisConfig = client.redisConfig || {}
         const enabled = redisConfig.enabled !== false
@@ -89,11 +90,11 @@ const CACHE_FUNCTIONS = {
         }
         return client.cache
     },
-    scopedCache: (client) => (cacheName, size = 100) => {
+    scopedCache: client => (cacheName, size = 100) => {
         const redis = client.redis()
         return redis ? redis.scopedCache(cacheName, size) : new AwaitableLRU(size)
     },
-    flush: (client) => async () => {
+    flush: client => async () => {
         const redis = client.redis()
         return redis ? redis.flush() : true
     }
@@ -101,7 +102,7 @@ const CACHE_FUNCTIONS = {
 
 // noinspection JSUnusedGlobalSymbols,JSUnresolvedFunction
 const UTILITY_FUNCTIONS = {
-    list: (client) => async (path, opts) => {
+    list: client => async (path, opts) => {
         const cache = client.scopedCache('list')
         let cached = cache ? await cache.get(path) : null
         if (cached) {
@@ -133,7 +134,7 @@ const UTILITY_FUNCTIONS = {
             throw e
         }
     },
-    safeList: (client) => async (path, opts) => {
+    safeList: client => async (path, opts) => {
         const recursive = opts && opts.recursive ? opts.recursive : false
         const visitor = opts && opts.visitor ? opts.visitor : null
         try {
@@ -146,7 +147,7 @@ const UTILITY_FUNCTIONS = {
             throw e
         }
     },
-    metadata: (client) => async (path) => {
+    metadata: client => async (path) => {
         const cache = client.scopedCache('metadata')
         const cached = cache ? await cache.get(path) : null
         if (cached) {
@@ -162,7 +163,7 @@ const UTILITY_FUNCTIONS = {
         }
         return meta
     },
-    safeMetadata: (client) => async (path) => {
+    safeMetadata: client => async (path) => {
         try {
             return await client.metadata(path)
         } catch (e) {
@@ -172,7 +173,7 @@ const UTILITY_FUNCTIONS = {
             throw e
         }
     },
-    remove: (client) => async (path, opts) => {
+    remove: client => async (path, opts) => {
         const recursive = opts && opts.recursive ? opts.recursive : false
         // noinspection JSUnresolvedVariable
         const quiet = opts && opts.quiet ? opts.quiet : false
@@ -181,7 +182,7 @@ const UTILITY_FUNCTIONS = {
         await client.flush()
         return result
     },
-    readFile: (client) => async (path) => {
+    readFile: client => async (path) => {
         const cache = client.scopedCache('readFile')
         const cached = cache ? await cache.get(path) : null
         if (cached) {
@@ -201,7 +202,7 @@ const UTILITY_FUNCTIONS = {
         }
         return data
     },
-    safeReadFile: (client) => async (path) => {
+    safeReadFile: client => async (path) => {
         try {
             return await client.readFile(path)
         } catch (e) {
@@ -209,7 +210,7 @@ const UTILITY_FUNCTIONS = {
             return null
         }
     },
-    write: (client) => async (path, data) => {
+    write: client => async (path, data) => {
         logger.debug(`util.write(${path}) starting ...`)
         const p = path.startsWith('/') ? path.substring(1) : path
         if (p !== path) {
@@ -221,11 +222,11 @@ const UTILITY_FUNCTIONS = {
         logger.debug(`util.write(${p}) wrote ${bytesWritten} bytes`)
         return bytesWritten
     },
-    writeFile: (client) => async (path, data) => {
+    writeFile: client => async (path, data) => {
         const readFunc = function* () { yield data }
         return await client.write(path, readFunc())
     },
-    mirror: (client) => async (source, clientPath = '', sourcePath = '') => {
+    mirror: client => async (source, clientPath = '', sourcePath = '') => {
         logger.info(`mirror: starting, sourcePath=${sourcePath} -> clientPath=${clientPath}`)
         const results = {
             success: 0,
@@ -332,7 +333,7 @@ const addUtilityFunctions = (client, readOnly = false) => {
     return client
 }
 
-const addCacheFunctions = (client) => addClientFunctions(client, CACHE_FUNCTIONS, (client, func) => {
+const addCacheFunctions = client => addClientFunctions(client, CACHE_FUNCTIONS, (client, func) => {
     logger.warn(`addCacheFunctions: ${func} already exists, not re-adding`)
     return false
 })
@@ -411,7 +412,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     const direntFile = (dirent, path) => dirent + '/' + shasum(DIR_ENT_FILE_PREFIX + ' ' + path)
 
     const outerClient = addCacheFunctions(client)
-    const _metadata = (client) => async (path) => {
+    const _metadata = client => async (path) => {
         const cache = outerClient.scopedCache('metadata')
         const cached = cache ? await cache.get(path) : null
         if (cached) {
@@ -461,39 +462,90 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
         return finalMeta
     }
 
+    const _singleMeta = async (job) => {
+        const dirent = job.data.dirent
+        const entry = job.data.entry
+        const logPrefix = `_singleMeta(${dirent}/${basename(entry.name)})`
+        return new Promise((resolve, reject) => {
+            const cipherText = []
+            client.read(dirent + '/' + basename(entry.name), reader(cipherText))
+                .then((bytesRead) => {
+                    if (!bytesRead) {
+                        logger.warn(`${logPrefix} returned no data`)
+                        resolve({})
+                    } else {
+                        const plain = decrypt(cipherText.toString(), enc)
+                        const realPath = plain.split(ENC_PAD_SEP)[0]
+                        _metadata(client)(realPath)
+                            .then(meta => resolve(meta))
+                            .catch((err) => {
+                                const message = `${logPrefix} error fetching _metadata: ${err}`
+                                logger.warn(message)
+                                reject(message)
+                            })
+                    }
+                })
+                .catch((err) => {
+                    const message = `${logPrefix} error reading file: ${err}`
+                    logger.warn(message)
+                    reject(message)
+                })
+        })
+    }
+
+    const META_LOAD_QUEUE_NAME = '_loadMetaQueue'
+    const META_LOAD_JOB_NAME = '_loadMetaJob'
+    const META_LOAD_CONCURRENCY = 5
+    let META_LOAD_QUEUE = null
+    const metaLoadQueue = () => {
+        if (META_LOAD_QUEUE === null) {
+            if (!client.redisConfig) {
+                const message = 'metaLoadQueue: redis is required but not enabled'
+                logger.error(message)
+                throw new MobilettoError(message)
+            }
+            META_LOAD_QUEUE = new Queue(META_LOAD_QUEUE_NAME, `redis://${client.redisConfig.host || REDIS_HOST}:${client.redisConfig.port || REDIS_PORT}`)
+            META_LOAD_QUEUE.mobilettoHandlers = {}
+            META_LOAD_QUEUE.mobilettoErrorHandlers = {}
+            META_LOAD_QUEUE.process(META_LOAD_JOB_NAME, META_LOAD_CONCURRENCY, _singleMeta)
+            META_LOAD_QUEUE.on('completed', function (job, result) {
+                logger.info(`${META_LOAD_JOB_NAME} completed with result: ${JSON.stringify(result)}`)
+                if (job.data.mobilettoJobID && META_LOAD_QUEUE.mobilettoHandlers[job.data.mobilettoJobID]) {
+                    META_LOAD_QUEUE.mobilettoHandlers[job.data.mobilettoJobID](result)
+                }
+            })
+            META_LOAD_QUEUE.on('failed', function (job, result) {
+                logger.info(`${META_LOAD_JOB_NAME} failed with result: ${JSON.stringify(result)}`)
+                if (job.data.mobilettoJobID && META_LOAD_QUEUE.mobilettoErrorHandlers[job.data.mobilettoJobID]) {
+                    META_LOAD_QUEUE.mobilettoErrorHandlers[job.data.mobilettoJobID](result)
+                }
+            })
+        }
+        return META_LOAD_QUEUE
+    }
+
     const _loadMeta = async (dirent, entries) => {
         const files = []
-        const promises = []
-        for (const entry of entries) {
-            const logPrefix = `_loadMeta(${dirent}/${basename(entry.name)})`
-            promises.push(new Promise((resolve) => {
-                const cipherText = []
-                client.read(dirent + '/' + basename(entry.name), reader(cipherText)).then(
-                    (bytesRead) => {
-                        if (!bytesRead) {
-                            logger.warn(`${logPrefix} returned no data`)
-                            resolve()
-                        } else {
-                            const plain = decrypt(cipherText.toString(), enc)
-                            const realPath = plain.split(ENC_PAD_SEP)[0]
-                            _metadata(client)(realPath).then(
-                                (meta) => {
-                                    files.push(meta)
-                                    resolve()
-                                },
-                                (err) => {
-                                    logger.warn(`${logPrefix} error fetching _metadata: ${err}`)
-                                    resolve()
-                                })
-                        }
-                    },
-                    (err) => {
-                        logger.warn(`${logPrefix} error reading file: ${err}`)
-                        resolve()
-                    })
-            }))
+
+        const waitForFiles = (resolve) => {
+            if (files.length === entries.length) {
+                resolve(files)
+            } else {
+                setTimeout(() => waitForFiles(resolve), 1000)
+            }
         }
-        await Promise.all(promises)
+
+        const mobilettoJobID = randomstring.generate(10)
+        const mq = metaLoadQueue()
+        mq.mobilettoHandlers[mobilettoJobID] = meta => files.push(meta)
+        mq.mobilettoErrorHandlers[mobilettoJobID] = err => files.push(err)
+        for (const entry of entries) {
+            const job = { mobilettoJobID, dirent, entry }
+            mq.add(META_LOAD_JOB_NAME, job)
+        }
+        await new Promise(resolve => waitForFiles(resolve))
+        delete mq.mobilettoHandlers[mobilettoJobID]
+        delete mq.mobilettoErrorHandlers[mobilettoJobID]
         return files
     }
 
