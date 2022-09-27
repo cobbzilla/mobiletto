@@ -182,7 +182,7 @@ class StorageClient {
                     startFileName: response.data.nextFileName,
                     maxFileCount,
                     delimiter: recursive ? '' : this.delimiter,
-                    prefix: this.prefix
+                    prefix: pfx
                 })
             }
             await handleResponse(files, pth, response, visitor)
