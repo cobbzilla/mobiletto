@@ -464,6 +464,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     const _loadMeta = async (dirent, entries) => {
         const files = []
         const promises = []
+        const promiseWaitPer = 5
         for (const entry of entries) {
             const logPrefix = `_loadMeta(${dirent}/${basename(entry.name)})`
             promises.push(new Promise((resolve) => {
@@ -486,12 +487,15 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                                     resolve()
                                 })
                         }
-                    },
-                    (err) => {
+                    }).catch((err) => {
                         logger.warn(`${logPrefix} error reading file: ${err}`)
                         resolve()
                     })
             }))
+            if (promises.length % promiseWaitPer === 0) {
+                logger.debug(`${logPrefix} promises.length = ${promises.length} awaiting`)
+                await Promise.all(promises)
+            }
         }
         await Promise.all(promises)
         return files

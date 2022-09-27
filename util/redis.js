@@ -99,7 +99,7 @@ class MobilettoCache {
             this.counters.miss++
         }
         if (this.printStatsInterval && this.printStatsInterval > 0 && this.counters.get % this.printStatsInterval === 0) {
-            const message = `${new Date()}: ${this}`;
+            const message = `${new Date()}: ${this}`
             logger.info(message)
         }
         return val
@@ -134,7 +134,7 @@ class MobilettoCache {
         return await new Promise((resolve, reject) => {
             this.scanner.eachScan(this.pfx(pattern), {}, async (matchingKeys) => {
                 if (!matchingKeys || typeof matchingKeys.length !== 'number') {
-                    const message = `${logPrefix}: eachScan received invalid matchingKeys = ${typeof matchingKeys !== 'undefined' ? matchingKeys : 'undefined'}`;
+                    const message = `${logPrefix}: eachScan received invalid matchingKeys = ${typeof matchingKeys !== 'undefined' ? matchingKeys : 'undefined'}`
                     logger.error(message)
                     reject(message)
                 } else {
@@ -151,7 +151,7 @@ class MobilettoCache {
                             }
                         },
                         (e) => {
-                            const message = `${logPrefix} error with key ${key}: ${e}`;
+                            const message = `${logPrefix} error with key ${key}: ${e}`
                             logger.error(message)
                             reject(message)
                         })
