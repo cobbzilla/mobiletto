@@ -465,31 +465,22 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     const _singleMeta = async (job) => {
         const dirent = job.data.dirent
         const entry = job.data.entry
-        const files = job.data.files
         const logPrefix = `_singleMeta(${dirent}/${basename(entry.name)})`
-        // every outcome always pushes something onto the files array
-        // this is because we know we're done when files.length === entries.length, even if
-        // some items in the files array are error messages instead of metadata objects
         return new Promise((resolve, reject) => {
             const cipherText = []
             client.read(dirent + '/' + basename(entry.name), reader(cipherText))
                 .then((bytesRead) => {
                     if (!bytesRead) {
                         logger.warn(`${logPrefix} returned no data`)
-                        files.push({})
                         resolve({})
                     } else {
                         const plain = decrypt(cipherText.toString(), enc)
                         const realPath = plain.split(ENC_PAD_SEP)[0]
                         _metadata(client)(realPath)
-                            .then((meta) => {
-                                files.push(meta)
-                                resolve(meta)
-                            })
+                            .then(meta => resolve(meta))
                             .catch((err) => {
                                 const message = `${logPrefix} error fetching _metadata: ${err}`
                                 logger.warn(message)
-                                files.push(message)
                                 reject(message)
                             })
                     }
@@ -497,7 +488,6 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                 .catch((err) => {
                     const message = `${logPrefix} error reading file: ${err}`
                     logger.warn(message)
-                    files.push(message)
                     reject(message)
                 })
         })
@@ -515,9 +505,20 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                 throw new MobilettoError(message)
             }
             META_LOAD_QUEUE = new Queue(META_LOAD_QUEUE_NAME, `redis://${client.redisConfig.host || '127.0.0.1'}:${client.redisConfig.port || 6379}`)
+            META_LOAD_QUEUE.mobilettoHandlers = {}
+            META_LOAD_QUEUE.mobilettoErrorHandlers = {}
             META_LOAD_QUEUE.process(META_LOAD_JOB_NAME, META_LOAD_CONCURRENCY, _singleMeta)
             META_LOAD_QUEUE.on('completed', function (job, result) {
                 logger.info(`${META_LOAD_JOB_NAME} completed with result: ${JSON.stringify(result)}`)
+                if (job.data.jobId && META_LOAD_QUEUE.mobilettoHandlers[job.data.jobId]) {
+                    META_LOAD_QUEUE.mobilettoHandlers[job.data.jobId](result)
+                }
+            })
+            META_LOAD_QUEUE.on('failed', function (job, result) {
+                logger.info(`${META_LOAD_JOB_NAME} failed with result: ${JSON.stringify(result)}`)
+                if (job.data.jobId && META_LOAD_QUEUE.mobilettoErrorHandlers[job.data.jobId]) {
+                    META_LOAD_QUEUE.mobilettoErrorHandlers[job.data.jobId](result)
+                }
             })
         }
         return META_LOAD_QUEUE
@@ -534,11 +535,17 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
             }
         }
 
+        const jobId = randomstring.generate(10)
+        const mq = metaLoadQueue()
+        mq.mobilettoHandlers[jobId] = meta => files.push(meta)
+        mq.mobilettoErrorHandlers[jobId] = err => files.push(err)
         for (const entry of entries) {
-            const job = { dirent, entry, files }
-            metaLoadQueue().add(META_LOAD_JOB_NAME, job)
+            const job = { jobId, dirent, entry, files }
+            mq.add(META_LOAD_JOB_NAME, job)
         }
         await new Promise(resolve => waitForFiles(resolve))
+        delete mq.mobilettoHandlers[jobId]
+        delete mq.mobilettoErrorHandlers[jobId]
         return files
     }
 
