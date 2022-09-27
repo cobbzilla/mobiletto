@@ -504,7 +504,7 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
                 logger.error(message)
                 throw new MobilettoError(message)
             }
-            META_LOAD_QUEUE = new Queue(META_LOAD_QUEUE_NAME, `redis://${client.redisConfig.host || '127.0.0.1'}:${client.redisConfig.port || 6379}`)
+            META_LOAD_QUEUE = new Queue(META_LOAD_QUEUE_NAME, `redis://${client.redisConfig.host || REDIS_HOST}:${client.redisConfig.port || REDIS_PORT}`)
             META_LOAD_QUEUE.mobilettoHandlers = {}
             META_LOAD_QUEUE.mobilettoErrorHandlers = {}
             META_LOAD_QUEUE.process(META_LOAD_JOB_NAME, META_LOAD_CONCURRENCY, _singleMeta)
