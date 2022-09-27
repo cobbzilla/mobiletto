@@ -53,9 +53,9 @@ class MobilettoCache {
         if (this.redis) {
             // test connection by flushing
             this.scanner = new redisScan(this.redis)
-            this.flush().then(
-                () => { logger.debug(`redis(${name}) successfully flushed`) },
-                (e) => {
+            this.flush()
+                .then(() => { logger.debug(`redis(${name}) successfully flushed`) })
+                .catch((e) => {
                     logger.warn(`redis(${name}) error flushing: ${e}, disabling redis`)
                     this.redis = null
                 })
@@ -141,16 +141,16 @@ class MobilettoCache {
                     keyMatchCount += matchingKeys.length
                 }
                 for (const key of matchingKeys) {
-                    asyncFunc(key).then(
-                        (val) => {
+                    asyncFunc(key)
+                        .then((val) => {
                             if (typeof val !== 'undefined') {
                                 logger.silly(`${logPrefix} found key ${key} = ${val}`)
                                 results.push(val)
                             } else {
                                 logger.silly(`${logPrefix} found key with undefined value: ${key}`)
                             }
-                        },
-                        (e) => {
+                        })
+                        .catch((e) => {
                             const message = `${logPrefix} error with key ${key}: ${e}`
                             logger.error(message)
                             reject(message)

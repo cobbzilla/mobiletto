@@ -39,6 +39,7 @@
     "@aws-sdk/lib-storage": "^3.150.0",
     "@gideo-llc/backblaze-b2-upload-any": "^0.1.4",
     "backblaze-b2": "^1.7.0",
+    "bull": "^4.9.0",
     "ioredis": "^5.2.3",
     "lru-cache": "^7.14.0",
     "node-fetch-commonjs": "^3.1.1",
