@@ -38,7 +38,7 @@ Mobiletto
  [🇮🇹 Italiancha](../it/README.md)
  [🇯🇵 Yapon](../ja/README.md)
  [🇰🇷 Koreys](../ko/README.md)
- [🇮🇳 Maranthi](../mr/README.md)
+ [🇮🇳 Marathi](../mr/README.md)
  [🇵🇱 Polsha](../pl/README.md)
  [🇧🇷 Portugalcha](../pt/README.md)
  [🇷🇺 Ruscha](../ru/README.md)

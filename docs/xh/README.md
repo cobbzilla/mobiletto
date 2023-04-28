@@ -38,7 +38,7 @@ Mobiletto
  [🇮🇹 IsiTaliyane](amaxwebhu/it/README.md)
  [🇯🇵 Japanese](../ja/README.md)
  [🇰🇷 isiKorea](amaxwebhu/ko/README.md)
- [🇮🇳 Maranthi](../mr/README.md)
+ [🇮🇳 Marathi](../mr/README.md)
  [🇵🇱 Polish](../pl/README.md)
  [🇧🇷 IsiPhuthukezi](amaxwebhu/pt/README.md)
  [🇷🇺 IsiRashiya](../ru/README.md)

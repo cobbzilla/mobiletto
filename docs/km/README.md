@@ -38,7 +38,7 @@
  [🇮🇹 អ៊ីតាលី](../it/README.md)
  [🇯🇵ជប៉ុន](../ja/README.md)
  [🇰🇷កូរ៉េ](../ko/README.md)
- [🇮🇳 Maranthi](../mr/README.md)
+ [🇮🇳 Marathi](../mr/README.md)
  [🇵🇱 ប៉ូឡូញ](../pl/README.md)
  [🇧🇷 ព័រទុយហ្គាល់](../pt/README.md)
  [🇷🇺 រុស្ស៊ី](../ru/README.md)

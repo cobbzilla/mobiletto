@@ -38,7 +38,7 @@ Mobiletto
  [🇮🇹 Taljan](../it/README.md)
  [🇯🇵 Ġappuniż](../ja/README.md)
  [🇰🇷 Korean](../ko/README.md)
- [🇮🇳 Maranthi](../mr/README.md)
+ [🇮🇳 Marathi](../mr/README.md)
  [🇵🇱 Pollakk](../pl/README.md)
  [🇧🇷 Portugiż](../pt/README.md)
  [🇷🇺 Russu](../ru/README.md)

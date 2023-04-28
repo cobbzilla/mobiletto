@@ -38,7 +38,7 @@ Mobiletto
  [🇮🇹 Talyaani](../it/README.md)
  [🇯🇵 Jabbaan](../ja/README.md)
  [🇰🇷 Kuuriyaan](../ko/README.md)
- [🇮🇳 Maranthi](../mr/README.md)
+ [🇮🇳 Marathi](../mr/README.md)
  [🇵🇱 Polish](../pl/README.md)
  [🇧🇷 Boortaqiis](../pt/README.md)
  [🇷🇺 Ruush](../ru/README.md)

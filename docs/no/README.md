@@ -38,7 +38,7 @@ Mobiletto
  [🇮🇹 italiensk](../it/README.md)
  [🇯🇵 japansk](../ja/README.md)
  [🇰🇷 koreansk](../ko/README.md)
- [🇮🇳 Maranthi](../mr/README.md)
+ [🇮🇳 Marathi](../mr/README.md)
  [🇵🇱 polsk](../pl/README.md)
  [🇧🇷 portugisisk](../pt/README.md)
  [🇷🇺 russisk](../ru/README.md)

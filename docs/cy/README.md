@@ -38,7 +38,7 @@ Mobiletto
  [🇮🇹 Eidaleg](../it/README.md)
  [🇯🇵 Japaneaidd](../ja/README.md)
  [🇰🇷 Corea](../ko/README.md)
- [🇮🇳 Maranthi](../mr/README.md)
+ [🇮🇳 Marathi](../mr/README.md)
  [🇵🇱 Pwyleg](../pl/README.md)
  [🇧🇷 Portiwgaleg](../pt/README.md)
  [🇷🇺 Rwsieg](../ru/README.md)

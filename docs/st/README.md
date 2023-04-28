@@ -38,7 +38,7 @@ Mobiletto
  [🇮🇹 Setaliana](../it/README.md)
  [🇯🇵 Sejapane](../ja/README.md)
  [🇰🇷 Sekorea](../ko/README.md)
- [🇮🇳 Maranthi](../mr/README.md)
+ [🇮🇳 Marathi](../mr/README.md)
  [🇵🇱 Sepolishe](../pl/README.md)
  [🇧🇷 Sepotoketsi](../pt/README.md)
  [🇷🇺 Serussia](../ru/README.md)

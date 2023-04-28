@@ -38,7 +38,7 @@ Soghluaiste
  [🇮🇹 Iodáilis](../it/README.md)
  [🇯🇵 Seapáinis](../ja/README.md)
  [🇰🇷 Cóiréis](../ko/README.md)
- [🇮🇳 Maranthi](../mr/README.md)
+ [🇮🇳 Marathi](../mr/README.md)
  [🇵🇱 Polainnis](../pl/README.md)
  [🇧🇷 Portaingéilis](../pt/README.md)
  [🇷🇺 Rúisis](../ru/README.md)

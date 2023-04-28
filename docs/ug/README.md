@@ -38,7 +38,7 @@ Mobiletto
  [🇮🇹 ئىتالىيانچە](docs / it / README.md)
  [🇯🇵 ياپونچە](docs / ja / README.md)
  [🇰🇷 كورېيەچە](docs / ko / README.md)
- [🇮🇳 Maranthi](docs / mr / README.md)
+ [🇮🇳 Marathi](docs / mr / README.md)
  [🇵🇱 پولشاچە](docs / pl / README.md)
  [🇧🇷 پورتۇگالچە](docs / pt / README.md)
  [🇷🇺 رۇسچە](docs / ru / README.md)

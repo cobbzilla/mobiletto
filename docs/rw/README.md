@@ -38,7 +38,7 @@ Mobiletto
  [🇮🇹 Umutaliyani](docs / it / README.md)
  [🇯🇵 Ikiyapani](docs / ja / README.md)
  [🇰🇷 Igikoreya](docs / ko / README.md)
- [🇮🇳 Maranthi](docs / mr / README.md)
+ [🇮🇳 Marathi](docs / mr / README.md)
  [Ish Igipolonye](docs / pl / README.md)
  [🇧🇷 Igiporutugali](docs / pt / README.md)
  [🇷🇺 Ikirusiya](docs / ru / README.md)

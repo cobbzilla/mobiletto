@@ -38,7 +38,7 @@ I-Mobiletto
  [🇮🇹 isiNtaliyane](../it/README.md)
  [🇯🇵 Japanese](../ja/README.md)
  [🇰🇷 isi-Korean](../ko/README.md)
- [🇮🇳 Maranthi](../mr/README.md)
+ [🇮🇳 Marathi](../mr/README.md)
  [🇵🇱 Polish](../pl/README.md)
  [🇧🇷 isi-Portuguese](../pt/README.md)
  [🇷🇺 Russian](../ru/README.md)

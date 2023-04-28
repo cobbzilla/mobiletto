@@ -38,7 +38,7 @@
  [🇮🇹 ایتالیایی](../it/README.md)
  [🇯🇵 ژاپنی](../ja/README.md)
  [🇰🇷 کره ای](../ko/README.md)
- [🇮🇳 Maranthi](../mr/README.md)
+ [🇮🇳 Marathi](../mr/README.md)
  [🇵🇱 لهستانی](../pl/README.md)
  [🇧🇷 پرتغالی](../pt/README.md)
  [🇷🇺 روسی](../ru/README.md)

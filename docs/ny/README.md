@@ -38,7 +38,7 @@ Mobiletto
  [🇮🇹 Chiitaliya](../it/README.md)
  [🇯🇵 Japanese](../ja/README.md)
  [🇰🇷 Chikorea](../ko/README.md)
- [🇮🇳 Maranthi](../mr/README.md)
+ [🇮🇳 Marathi](../mr/README.md)
  [🇵🇱 Chipolishi](../pl/README.md)
  [🇧🇷 Chipwitikizi](../pt/README.md)
  [🇷🇺 Russian](../ru/README.md)
