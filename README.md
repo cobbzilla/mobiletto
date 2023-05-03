@@ -42,7 +42,7 @@ I'm certain it's not perfect, but I hope it's better than nothing!
 &nbsp;&nbsp;&nbsp;[🇮🇹 Italian](docs/it/README.md)
 &nbsp;&nbsp;&nbsp;[🇯🇵 Japanese](docs/ja/README.md)
 &nbsp;&nbsp;&nbsp;[🇰🇷 Korean](docs/ko/README.md)
-&nbsp;&nbsp;&nbsp;[🇮🇳 Maranthi](docs/mr/README.md)
+&nbsp;&nbsp;&nbsp;[🇮🇳 Marathi](docs/mr/README.md)
 &nbsp;&nbsp;&nbsp;[🇵🇱 Polish](docs/pl/README.md)
 &nbsp;&nbsp;&nbsp;[🇧🇷 Portuguese](docs/pt/README.md)
 &nbsp;&nbsp;&nbsp;[🇷🇺 Russian](docs/ru/README.md)
@@ -108,16 +108,7 @@ To work with mobiletto at the command-line, use [mobiletto-cli](https://www.npmj
 * [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
 
 ## Support and Funding
-I am attempting to be a professional open source software developer. I have been working in
-the software industry for many years, I have started successful companies and sold them to public companies.
-Recently I lost my job, and I don't really have any other work lined up
-
-So I'm going to try writing helpful software and see if that works
-
-If you enjoy using this software, I would be very thankful for even the
-smallest [monthly contribution via Patreon](https://www.patreon.com/cobbzilla)
-
-*Thank you!*
+I would be very thankful for any [contribution via Patreon](https://www.patreon.com/cobbzilla)
 
 ## Installation
 Install using `npm` or `yarn`. You probably want the `lite` version that does not include all the
