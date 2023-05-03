@@ -77,14 +77,15 @@ class StorageClient {
 
 
     fileToObject = (dir) => (f) => {
-        const stat = fs.lstatSync(dir + '/' + f)
+        const normPath = (dir.endsWith('/') ? dir : dir + '/') + f;
+        const stat = fs.lstatSync(normPath)
         const type = fileType(stat)
         const entry = {
-            name: this.denormalizePath(dir + '/' + f),
+            name: this.denormalizePath(normPath),
             type
         }
         if (type === M_LINK) {
-            const resolved = this.resolveSymlinks(dir + '/' + f)
+            const resolved = this.resolveSymlinks(normPath)
             entry.link = resolved.path
         }
         return entry
