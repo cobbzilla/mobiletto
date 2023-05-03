@@ -1,6 +1,6 @@
 {
   "name": "mobiletto-lite",
-  "version": "1.1.34",
+  "version": "1.1.35",
   "description": "A storage layer that presents a uniform interface to Amazon S3, Backblaze B2, and local storage",
   "main": "index.js",
   "keywords": [

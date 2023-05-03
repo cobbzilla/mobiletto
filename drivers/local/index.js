@@ -115,11 +115,11 @@ class StorageClient {
         } catch (e) {
             if (isNotExistError(e)) {
                 // try to list the parent directory and filter for just this file
+                const files = []
                 try {
                     const parent = dirname(norm)
                     const base = basename(norm)
                     const names = fs.readdirSync(parent)
-                    const files = []
                     for (const n of names) {
                         if (n === base) {
                             const f = this.fileToObject(parent)(base)
@@ -127,13 +127,18 @@ class StorageClient {
                             await visitor(f)
                         }
                     }
-                    return files
                 } catch (e2) {
-                    logger.warn(`dirFiles (try-file): ${JSON.stringify(e2)}`)
+                    logger.warn(`dirFiles (try-file) error: ${JSON.stringify(e2)}`)
                     throw this.ioError(e2, norm, 'dirFiles')
                 }
+                if (files.length > 0) {
+                    return files
+                } else {
+                    logger.warn(`dirFiles (try-file) not found: ${JSON.stringify(e2)}`)
+                    throw this.ioError(e, norm, 'dirFiles')
+                }
             }
-            logger.warn(`dirFiles: ${JSON.stringify(e)}`)
+            logger.warn(`dirFiles error: ${JSON.stringify(e)}`)
             throw this.ioError(e, norm, 'dirFiles')
         }
     }
