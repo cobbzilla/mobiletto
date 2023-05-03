@@ -1,4 +1,4 @@
-const { dirname } = require('path')
+const { dirname, basename } = require('path')
 
 const {
     M_FILE, M_DIR, M_LINK, M_SPECIAL, isAsyncGenerator, isReadable,
@@ -106,14 +106,39 @@ class StorageClient {
     dirFiles = async (dir, visitor) => {
         const norm = this.normalizePath(dir);
         try {
-            let names = fs.readdirSync(norm);
+            const names = fs.readdirSync(norm);
             const files = names.map(this.fileToObject(norm))
             for (const f of files) {
                 await visitor(f)
             }
             return files
         } catch (e) {
-            logger.warn(`dirFiles: ${e}`)
+            if (isNotExistError(e)) {
+                // try to list the parent directory and filter for just this file
+                const files = []
+                try {
+                    const parent = dirname(norm)
+                    const base = basename(norm)
+                    const names = fs.readdirSync(parent)
+                    for (const n of names) {
+                        if (n === base) {
+                            const f = this.fileToObject(parent)(base)
+                            files.push(f)
+                            await visitor(f)
+                        }
+                    }
+                } catch (e2) {
+                    logger.warn(`dirFiles (try-file) error: ${JSON.stringify(e2)}`)
+                    throw this.ioError(e2, norm, 'dirFiles')
+                }
+                if (files.length > 0) {
+                    return files
+                } else {
+                    logger.warn(`dirFiles (try-file) not found: ${JSON.stringify(e2)}`)
+                    throw this.ioError(e, norm, 'dirFiles')
+                }
+            }
+            logger.warn(`dirFiles error: ${JSON.stringify(e)}`)
             throw this.ioError(e, norm, 'dirFiles')
         }
     }
