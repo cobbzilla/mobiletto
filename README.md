@@ -307,7 +307,7 @@ You can also set per-connection caching with the `opts.redisConfig` object:
 To disable: pass `enabled: false` in your `opts.redisConfig` object when you establish your connection.
 
 As discussed below, disabling caching will have an adverse effect on performance and incur more requests
-to storage that you really need to.
+to storage than you really need to.
 
 ### Caching guidance
 **Encrypted storage**: reading/writing encrypted storage is only a little slower than normal,

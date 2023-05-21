@@ -134,7 +134,7 @@ class StorageClient {
                 if (files.length > 0) {
                     return files
                 } else {
-                    logger.warn(`dirFiles (try-file) not found: ${JSON.stringify(e2)}`)
+                    logger.warn(`dirFiles (try-file) not found`)
                     throw this.ioError(e, norm, 'dirFiles')
                 }
             }
