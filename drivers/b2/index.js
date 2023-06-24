@@ -446,8 +446,4 @@ function storageClient (key, secret, opts) {
     return new StorageClient(key, secret, opts)
 }
 
-function setLogger (logger) {
-    log = logger
-}
-
-module.exports = { storageClient, setLogger }
+module.exports = { storageClient }

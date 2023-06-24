@@ -1,6 +1,6 @@
 {
   "name": "mobiletto-driver-b2",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "The b2 driver for mobiletto. This package is intended to be used with mobiletto-base, which does not include any drivers",
   "main": "index.js",
   "keywords": [
