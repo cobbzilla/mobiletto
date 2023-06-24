@@ -330,17 +330,6 @@ async function connect (driverPath, key, secret, opts, encryption = null) {
     return await mobiletto(driverPath, key, secret, opts, encryption)
 }
 
-const ALL_DRIVERS = {}
-
-function registerDriver (name, driver) {
-    if (ALL_DRIVERS[name]) {
-        logger.warn(`registerDriver(${name}): driver already registered, not re-registering`)
-    } else {
-        ALL_DRIVERS[name] = driver
-    }
-    return ALL_DRIVERS[name]
-}
-
 async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     logger.info(`mobiletto: connecting with driver ${driverPath}`)
     let driver
@@ -795,6 +784,21 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
 }
 
 const closeRedis = async () => { await teardown() }
+
+const ALL_DRIVERS = {}
+
+function registerDriver (name, driver) {
+    if (ALL_DRIVERS[name]) {
+        logger.warn(`registerDriver(${name}): driver already registered, not re-registering`)
+    } else {
+        if (typeof(driver) === 'object' && typeof(driver.storageClient) === 'function') {
+            ALL_DRIVERS[name] = driver.storageClient
+        } else {
+            ALL_DRIVERS[name] = driver
+        }
+    }
+    return ALL_DRIVERS[name]
+}
 
 module.exports = {
     registerDriver, mobiletto, connect,
