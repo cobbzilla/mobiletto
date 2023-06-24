@@ -6,12 +6,10 @@ B2.prototype.uploadAny = require('@gideo-llc/backblaze-b2-upload-any')
 const { Readable } = require('stream')
 
 const {
-    M_FILE, M_DIR,
+    M_FILE, M_DIR, logger,
     readStream, isReadable, isAsyncGenerator,
     MobilettoError, MobilettoNotFoundError
-} = require('../../index')
-
-const { logger } = require('../../util/logger')
+} = require('mobiletto-common')
 
 // B2 tokens last 24 hours. Let's refresh ours after 23 hours and 50 minutes
 const AUTH_REFRESH = (1000 * 60 * 60 * 24) - (1000 * 60 * 10)
@@ -448,4 +446,8 @@ function storageClient (key, secret, opts) {
     return new StorageClient(key, secret, opts)
 }
 
-module.exports = { storageClient }
+function setLogger (logger) {
+    log = logger
+}
+
+module.exports = { storageClient, setLogger }
