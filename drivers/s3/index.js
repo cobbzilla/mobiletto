@@ -3,7 +3,16 @@ const {
     MobilettoError, MobilettoNotFoundError, readStream
 } = require('../../index')
 
-const { logger } = require('../../util/logger')
+let log = {
+    debug: s => { console.log(s) }
+}
+
+try {
+    const { logger } = require('../../util/logger')
+    log = logger
+} catch (e) {
+    log.debug(`s3 driver logger init failed: ${e}`)
+}
 
 const { dirname } = require('path')
 
@@ -97,7 +106,7 @@ class StorageClient {
         }
         const objects = []
         let objectCount = 0
-        logger.debug(`${logPrefix} bucketParams=${JSON.stringify(bucketParams)}`)
+        log.debug(`${logPrefix} bucketParams=${JSON.stringify(bucketParams)}`)
 
         // while loop that runs until 'response.truncated' is false.
         while (truncated) {
@@ -212,7 +221,7 @@ class StorageClient {
         })
         let total = 0
         uploader.on('httpUploadProgress', (progress) => {
-            logger.debug(`write(${bucketParams.Key}) ${JSON.stringify(progress)}`)
+            log.debug(`write(${bucketParams.Key}) ${JSON.stringify(progress)}`)
             total += progress.loaded
         })
         const response = await uploader.done()
@@ -224,7 +233,7 @@ class StorageClient {
 
     async read (path, callback, endCallback = null) {
         const Key = this.normalizeKey(path)
-        logger.debug(`read: reading Key: ${path} - ${Key}`)
+        log.debug(`read: reading Key: ${path} - ${Key}`)
         const bucketParams = {
             Region: this.region,
             Bucket: this.bucket,
@@ -255,7 +264,7 @@ class StorageClient {
                     Bucket: this.bucket,
                     Delete
                 }
-                logger.debug(`remove(${path}) deleting objects: ${JSON.stringify(objects)}`)
+                log.debug(`remove(${path}) deleting objects: ${JSON.stringify(objects)}`)
                 const response = await this.client.send(new DeleteObjectsCommand(bucketParams))
                 let statusCode = response.$metadata.httpStatusCode
                 let statusClass = Math.floor(statusCode / 100)
@@ -313,4 +322,8 @@ function storageClient (key, secret, opts) {
     return new StorageClient(key, secret, opts)
 }
 
-module.exports = { storageClient }
+function setLogger (logger) {
+    log = logger
+}
+
+module.exports = { storageClient, setLogger }
