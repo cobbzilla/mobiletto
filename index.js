@@ -86,6 +86,6 @@ module.exports = {
     M_FILE, M_DIR, M_LINK, M_SPECIAL,
     isAsyncGenerator, isReadable,
     MobilettoError, MobilettoNotFoundError,
-    setLogLevel,
+    logger, setLogLevel,
     readStream, writeStream, closeStream
 }

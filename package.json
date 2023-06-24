@@ -1,6 +1,6 @@
 {
   "name": "mobiletto-common",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Common constants and functions used by mobiletto and mobiletto storage drivers",
   "main": "index.js",
   "keywords": [
