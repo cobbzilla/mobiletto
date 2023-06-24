@@ -1,11 +1,9 @@
 const { dirname, basename } = require('path')
 
 const {
-    M_FILE, M_DIR, M_LINK, M_SPECIAL, isAsyncGenerator, isReadable,
+    M_FILE, M_DIR, M_LINK, M_SPECIAL, isAsyncGenerator, isReadable, logger,
     MobilettoError, MobilettoNotFoundError, readStream, writeStream, closeStream
-} = require('../../index')
-
-const { logger } = require('../../util/logger')
+} = require('mobiletto-common')
 
 const fs = require('fs')
 
