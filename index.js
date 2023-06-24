@@ -7,7 +7,8 @@ const {
     MobilettoError, MobilettoNotFoundError
 } = require('mobiletto-common')
 
-const { getRedis, teardown } = require('./util/redis')
+const redis = require('./util/redis');
+const { getRedis, teardown } = redis
 const { basename, dirname } = require('path')
 const shasum = require('shasum')
 const randomstring = require('randomstring')
@@ -797,5 +798,5 @@ const closeRedis = async () => { await teardown() }
 
 module.exports = {
     registerDriver, mobiletto, connect,
-    closeRedis
+    redis, closeRedis
 }
