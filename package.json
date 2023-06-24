@@ -1,6 +1,6 @@
 {
   "name": "mobiletto-driver-s3",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "The s3 driver for mobiletto. This package is intended to be used with mobiletto-base, which does not include any drivers",
   "main": "index.js",
   "keywords": [
@@ -21,9 +21,6 @@
     "url": "https://github.com/cobbzilla/mobiletto"
   },
   "license": "Apache-2.0",
-  "scripts": {
-    "test": "mocha --timeout 60000 ./test/*.spec.js"
-  },
   "devDependencies": {
     "@babel/core": "^7.22.5",
     "@babel/node": "^7.22.5",
