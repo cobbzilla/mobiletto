@@ -1,7 +1,12 @@
 const fs = require('fs')
-const { Readable, Transform } = require('stream')
+const { Transform } = require('stream')
 const Queue = require('bull')
-const { logger, setLogLevel: setLoggerLevel } = require('./util/logger')
+
+const {
+    M_FILE, M_DIR, isReadable, logger,
+    MobilettoError, MobilettoNotFoundError
+} = require('mobiletto-common')
+
 const { getRedis, teardown } = require('./util/redis')
 const { basename, dirname } = require('path')
 const shasum = require('shasum')
@@ -9,7 +14,7 @@ const randomstring = require('randomstring')
 
 const crypt = require('./util/crypt')
 const {DEFAULT_CRYPT_ALGO, normalizeKey, normalizeIV, encrypt, decrypt} = require("./util/crypt")
-const LRU = require("lru-cache")
+const LRU = require('lru-cache')
 
 const DIR_ENT_DIR_SUFFIX = '__.dirent'
 const DIR_ENT_FILE_PREFIX = 'dirent__'
@@ -25,38 +30,7 @@ const REDIS_HOST = process.env.MOBILETTO_REDIS_HOST || '127.0.0.1'
 const REDIS_PORT = process.env.MOBILETTO_REDIS_PORT || 6379
 const REDIS_PREFIX = process.env.MOBILETTO_REDIS_PREFIX || '_mobiletto__'
 
-// adapted from https://stackoverflow.com/a/27724419
-function MobilettoError (message, err) {
-    this.message = `${message}: ${err ? err : ''}`
-    // noinspection JSUnusedGlobalSymbols
-    this.err = err
-    // Use V8's native method if available, otherwise fallback
-    if ('captureStackTrace' in Error) {
-        Error.captureStackTrace(this, TypeError)
-    } else {
-        // noinspection JSUnusedGlobalSymbols
-        this.stack = (new Error(this.message)).stack
-    }
-    MobilettoError.prototype.toString = () => JSON.stringify(this)
-}
-
-// adapted from https://stackoverflow.com/a/27724419
-function MobilettoNotFoundError (message) {
-    this.message = `${message}`
-    // Use V8's native method if available, otherwise fallback
-    if ('captureStackTrace' in Error) {
-        Error.captureStackTrace(this, TypeError)
-    } else {
-        // noinspection JSUnusedGlobalSymbols
-        this.stack = (new Error(this.message)).stack
-    }
-    MobilettoNotFoundError.prototype.toString = () => JSON.stringify(this)
-}
-
 const reader = (chunks) => (chunk) => { if (chunk) { chunks.push(chunk) } }
-
-const isAsyncGenerator = func => func[Symbol.toStringTag] === 'AsyncGenerator'
-const isReadable = thing => thing instanceof fs.ReadStream || thing instanceof Transform || thing instanceof Readable
 
 const READ_FILE_CACHE_SIZE_THRESHOLD = 128 * 1024 // we can cache files of this size
 
@@ -355,9 +329,25 @@ async function connect (driverPath, key, secret, opts, encryption = null) {
     return await mobiletto(driverPath, key, secret, opts, encryption)
 }
 
+const ALL_DRIVERS = {}
+
+function registerDriver (name, driver) {
+    if (ALL_DRIVERS[name]) {
+        logger.warn(`registerDriver(${name}): driver already registered, not re-registering`)
+    } else {
+        ALL_DRIVERS[name] = driver
+    }
+    return ALL_DRIVERS[name]
+}
+
 async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     logger.info(`mobiletto: connecting with driver ${driverPath}`)
-    const driver = require(driverPath.includes('/') ? driverPath : `./drivers/${driverPath}/index.js`)
+    let driver
+    if (ALL_DRIVERS[driverPath]) {
+        driver = ALL_DRIVERS[driverPath]
+    } else {
+        driver = require(driverPath.includes('/') ? driverPath : `./drivers/${driverPath}/index.js`)
+    }
     const client = driver.storageClient(key, secret, opts)
     const configValue = await client.testConfig();
     if (!configValue) {
@@ -803,63 +793,9 @@ async function mobiletto (driverPath, key, secret, opts, encryption = null) {
     return addUtilityFunctions(addCacheFunctions(encClient), readOnly)
 }
 
-async function readStream(stream, callback, endCallback) {
-    const counter = {count: 0}
-    const streamHandler = stream =>
-        new Promise((resolve, reject) => {
-            stream.on('data', (data) => {
-                counter.count += data ? data.length : 0
-                callback(data)
-            })
-            stream.on('error', reject)
-            stream.on('end', () => {
-                if (endCallback) {
-                    endCallback()
-                }
-                resolve()
-            })
-        })
-    await streamHandler(stream)
-    return counter.count
-}
-
-function writeStream (stream) {
-    return (chunk) => {
-        if (chunk) {
-            stream.write(chunk, (err) => {
-                if (err) {
-                    logger.error(`writeStream: error writing: ${err}`)
-                    throw err
-                }
-            })
-        }
-    }
-}
-
-function closeStream (stream) {
-    return () => stream.close((err) => {
-        if (err) {
-            logger.error(`closeStream: error closing: ${err}`)
-            throw err
-        }
-    })
-}
-
-const M_FILE = 'file'
-const M_DIR = 'dir'
-const M_LINK = 'link'
-const M_SPECIAL = 'special'
-
-const setLogLevel = level => setLoggerLevel(level)
-
 const closeRedis = async () => { await teardown() }
 
 module.exports = {
-    M_FILE, M_DIR, M_LINK, M_SPECIAL,
-    isAsyncGenerator, isReadable,
-    mobiletto, connect,
-    MobilettoError, MobilettoNotFoundError,
-    setLogLevel,
-    readStream, writeStream, closeStream,
+    registerDriver, mobiletto, connect,
     closeRedis
 }
