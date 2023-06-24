@@ -1,6 +1,6 @@
 {
   "name": "mobiletto-base",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A storage layer that presents a uniform interface to Amazon S3, Backblaze B2, local and other storage systems.",
   "main": "index.js",
   "keywords": [
@@ -35,10 +35,6 @@
     "randomstring": "^1.2.2"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.150.0",
-    "@aws-sdk/lib-storage": "^3.150.0",
-    "@gideo-llc/backblaze-b2-upload-any": "^0.1.4",
-    "backblaze-b2": "^1.7.0",
     "bull": "^4.9.0",
     "ioredis": "^5.2.3",
     "lru-cache": "^7.14.0",
