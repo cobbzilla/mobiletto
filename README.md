@@ -1,4 +1,4 @@
-Mobiletto-driver-s3
+Mobiletto-driver-b2
 ===================
 
 This is the Backblaze B2 driver for [mobiletto](https://github.com/cobbzilla/mobiletto).
