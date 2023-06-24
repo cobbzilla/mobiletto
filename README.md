@@ -10,4 +10,4 @@ are included, you must load the mobiletto storage driver for a given storage typ
 
 If you'd prefer a more "batteries included" experience, check out [mobiletto-lite](https://www.npmjs.com/package/mobiletto-lite).
 
-See the [https://github.com/cobbzilla/mobiletto](mobiletto home page) for the latest documentation.
+See the [mobiletto home page](https://github.com/cobbzilla/mobiletto) for the latest documentation.
