@@ -1,6 +1,6 @@
 const Redis = require('ioredis')
 const redisScan = require('node-redis-scan')
-const { logger } = require('./logger')
+const { logger } = require('mobiletto-common')
 const LRU = require('lru-cache')
 
 const { DEFAULT_REDIS_OPTIONS } = require('ioredis/built/redis/RedisOptions')

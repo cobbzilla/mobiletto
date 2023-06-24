@@ -1,7 +1,6 @@
 // adapted from https://stackoverflow.com/a/64136185
 const crypto = require('crypto')
 const shasum = require('shasum')
-const winston = require("winston");
 
 const WARN_PLAINTEXT = !process.env.IGNORE_DISABLED_ENCRYPTION
 const MIN_KEY_LEN = 16
@@ -39,7 +38,6 @@ function getCipher(enc) {
         c.setAutoPadding(true)
         return c
     } catch (e) {
-        winston.error(`getCipher(${enc}) ${e}`)
         throw e
     }
 }
