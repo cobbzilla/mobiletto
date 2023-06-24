@@ -1,6 +1,6 @@
 {
   "name": "mobiletto-driver-local",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "The local filesystem driver for mobiletto. This package is intended to be used with mobiletto-base, which does not include any drivers",
   "main": "index.js",
   "keywords": [
