@@ -1,6 +1,6 @@
 {
   "name": "mobiletto",
-  "version": "1.1.40",
+  "version": "1.2.0",
   "description": "A storage layer that presents a uniform interface to Amazon S3, Backblaze B2, and local storage",
   "main": "index.js",
   "keywords": [
@@ -26,25 +26,20 @@
     "test": "mocha --timeout 60000 ./test/*.spec.js"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.10",
-    "@babel/node": "^7.18.10",
-    "@babel/preset-env": "^7.18.10",
-    "chai": "^4.3.6",
-    "dotenv": "^16.0.1",
-    "mocha": "^10.0.0",
-    "randomstring": "^1.2.2"
+    "@babel/core": "^7.22.5",
+    "@babel/node": "^7.22.5",
+    "@babel/preset-env": "^7.22.5",
+    "chai": "^4.3.7",
+    "dotenv": "^16.3.1",
+    "mocha": "^10.2.0",
+    "randomstring": "^1.3.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.150.0",
-    "@aws-sdk/lib-storage": "^3.150.0",
-    "@gideo-llc/backblaze-b2-upload-any": "^0.1.4",
-    "backblaze-b2": "^1.7.0",
-    "bull": "^4.9.0",
-    "ioredis": "^5.2.3",
-    "lru-cache": "^7.14.0",
-    "node-fetch-commonjs": "^3.1.1",
-    "node-redis-scan": "^1.3.5",
-    "shasum": "^1.0.2",
-    "winston": "^3.8.1"
+    "mobiletto-base": "^1.0.13",
+    "mobiletto-common": "^1.0.2",
+    "mobiletto-driver-b2": "^1.0.6",
+    "mobiletto-driver-local": "^1.0.3",
+    "mobiletto-driver-s3": "^1.0.5",
+    "mobiletto-driver-indexeddb": "^1.0.1"
   }
 }

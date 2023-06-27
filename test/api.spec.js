@@ -3,24 +3,26 @@ require('dotenv').config()
 
 const fs = require('fs')
 const { basename, dirname } = require('path')
-
 const randomstring = require('randomstring')
 const crypto = require('crypto')
-const redis = require('../util/redis')
-
-const { expect, should, assert } = require('chai')
 
 const {
-    M_DIR, M_FILE,
-    mobiletto, connect, MobilettoNotFoundError, closeRedis
-} = require("../index")
+    M_DIR, M_FILE, MobilettoNotFoundError, logger
+} = require('mobiletto-common')
 
-const { logger } = require("../util/logger")
+const { connect, mobiletto, redis, closeRedis } = require('mobiletto-base')
+
+const { registerDrivers } = require("../index")
+registerDrivers()
+
+const { expect, should, assert } = require('chai')
 
 // chunk size used by generator function, used by driver's 'write' function
 // the temp file is also TEMP_SZ_MULTIPLE of this number
 const READ_SZ = 8 * 1024   // xfer data in 8k chunks
 const TEMP_SZ_MULTIPLE = 3 // temp file will be ~24k (READ_SZ * 3)
+
+const SINGLE_DRIVER = process.env.SINGLE_DRIVER || null
 
 DRIVER_CONFIG = {
     local: {
@@ -130,7 +132,7 @@ if (!redisSetup.enabled) continue
 
 for (const driverName of DRIVER_NAMES) {
 // For testing single drivers
-// if (driverName !== 'local') continue
+if (SINGLE_DRIVER != null && SINGLE_DRIVER !== driverName) continue
 
 const driverTest = `${driverName} [${redisSetup.name}]`
 const config = redisSetup.config(DRIVER_CONFIG[driverName])
@@ -205,6 +207,10 @@ describe(`${driverTest} test`, () => {
 
     for (const encryption of encryptionTests()) {
         const encDesc = encryption ? '(with encryption)' : '(without encryption)'
+        if (encryption && redisSetup.name !== 'redis-enabled' && driverName !== 'local') {
+            // encryption without redis is simply too slow, except for local filesystems
+            continue
+        }
         describe(`${driverTest} - ${encDesc} fail to write and delete files in readOnly mode`, () => {
         // describe(`${driverTest} - ENC fail to write and delete files in readOnly mode`, () => {
             // const encryption = {key: rand(32)}
@@ -288,6 +294,10 @@ describe(`${driverTest} test`, () => {
 
     for (const encryption of encryptionTests()) {
         const encDesc = encryption ? '(with encryption)' : '(without encryption)'
+        if (encryption && redisSetup.name !== 'redis-enabled') {
+            // encryption without redis is simply too slow
+            continue
+        }
         const mirrorDriver = pickAnotherDriver(driverName)
         // const mirrorDriver = 'local'  // for hard-coding the mirror driver
         const mirrorConfig = DRIVER_CONFIG[mirrorDriver]

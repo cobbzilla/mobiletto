@@ -9,6 +9,7 @@ Mobiletto is a JavaScript storage abstraction layer, with optional transparent c
 * [Mobiletto CLI](#mobiletto-cli)
 * [Source](#Source)
 * [Installation](#Installation)
+  * [Minimal install](#Minimal-install)
 * [Support and Funding](#Support-and-Funding)
 * [Basic usage](#Basic-usage)
 * [Metadata](#Metadata)
@@ -91,37 +92,14 @@ Current Mobiletto storage drivers:
 * `s3`: Amazon S3
 * `b2`: Backblaze B2
 * `local`: local filesystem
+* `indexeddb`: IndexedDB storage
 
 *Contributions to support more cloud storage providers are very welcome!*
-
-## mobiletto-cli
-Mobiletto is intended to be used as a library by other JavaScript code.
-
-To work with mobiletto at the command-line, use [mobiletto-cli](https://www.npmjs.com/package/mobiletto-cli)
-
-## Source
-* [mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
-* [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
-
-## Support and Funding
-I would be very thankful for any [contribution via Patreon](https://www.patreon.com/cobbzilla)
-
-## Installation
-Install using `npm` or `yarn`. You probably want the `lite` version that does not include all the
-translated README files:
-
-    npm install mobiletto-lite
-    yarn add mobiletto-lite
-
-If you really want the README files in every language, install the full version:
-
-    npm install mobiletto
-    yarn add mobiletto
 
 ## Quick Start
 A short example using the mobiletto `s3` driver.
 
-This code would run the same if the driver were `b2` or `local`.
+This code would run the same with any other mobiletto storage driver.
 
     const storage = require('mobiletto')
     const bucket = await storage.connect('s3', aws_key, aws_secret, {bucket: 'bk'})
@@ -150,11 +128,67 @@ This code would run the same if the driver were `b2` or `local`.
     // remove a directory, returns array of paths removed
     removed = await bucket.remove('some/directory', {recursive: true})  // removed is now an array!
 
+## mobiletto-cli
+Mobiletto is intended to be used as a library by other JavaScript code.
+
+To work with mobiletto at the command-line, use [mobiletto-cli](https://www.npmjs.com/package/mobiletto-cli)
+
+## Source
+* [mobiletto on GitHub](https://github.com/cobbzilla/mobiletto)
+* [mobiletto on npm](https://www.npmjs.com/package/mobiletto)
+
+## Support and Funding
+I would be very thankful for any [contribution via Patreon](https://www.patreon.com/cobbzilla)
+
+## Installation
+Install using `npm` or `yarn`. You probably want the `lite` version that does not include all the
+translated README files:
+
+    npm install mobiletto-lite
+    yarn add mobiletto-lite
+
+If you really want the README files in every language, install the full version:
+
+    npm install mobiletto
+    yarn add mobiletto
+
+### Minimal install
+The `mobiletto` and `mobiletto-lite` packages include support for all mobiletto storage drivers.
+
+If you know the storage driver(s) that you will need ahead of time, you can lighten your app's
+footprint by installing the `mobiletto-base` package, and then one or more of the `mobiletto-driver-` packages:
+
+#### Minimal installation with npm
+
+    npm install mobiletto-base                # install driver-less mobiletto
+
+    npm install mobiletto-driver-s3           # install Amazon S3 driver
+    npm install mobiletto-driver-b2           # install Backblaze B2 driver
+    npm install mobiletto-driver-local        # install local filesystem driver
+    npm install mobiletto-driver-indexeddb    # install IndexedDB driver
+
+#### Minimal installation with yarn
+
+    yarn add mobiletto-base                # install driver-less mobiletto
+
+    yarn add mobiletto-driver-s3           # install Amazon S3 driver
+    yarn add mobiletto-driver-b2           # install Backblaze B2 driver
+    yarn add mobiletto-driver-local        # install local filesystem driver
+    yarn add mobiletto-driver-indexeddb    # install IndexedDB driver
+
 ----
 ## Basic usage
 A much more extensive example, showing most of the features offered:
 
+    // When using mobiletto or mobiletto-lite, all drivers are included
     const { mobiletto } = require('mobiletto')
+
+    // When using mobiletto-base, use registerDriver to load a storage driver before connecting 
+    const { registerDriver, mobiletto } = = require('mobiletto-base')
+    registerDriver('s3', require('mobiletto-driver-s3'))
+    registerDriver('b2', require('mobiletto-driver-b2'))
+    registerDriver('local', require('mobiletto-driver-local'))
+    registerDriver('indexeddb', require('mobiletto-driver-indexeddb'))
 
     // General usage
     const api = await mobiletto(driverName, key, secret, opts)
@@ -189,6 +223,13 @@ A much more extensive example, showing most of the features offered:
     //     * delimiter: optional, directory delimiter, default is '/' (note: always '/' when encryption is enabled)
     //     * partSize: optional, large files will be split into chunks of this size when uploading
     const b3 = await mobiletto('b2', b2_key_id, b2_app_key, {bucket: 'bk', partSize: 10000000})
+
+    // To use 'indexeddb' driver:
+    //   * key: IndexedDB database name
+    //   * secret: ignored, can be null
+    //   * opts object:
+    //     * indexedDB: required, the indexedDB object (an instance of IDBFactory)
+    const idb = await mobiletto('indexeddb', 'my_db', null, { indexedDB })
 
     // List files
     api.list()  // --> returns an array of metadata objects
@@ -431,11 +472,11 @@ The object that the storageClient function returns must define these functions:
     // Read metadata for a path
     async metadata (path)
     
-    // Read a file
+    // Read a file, return bytes read
     // callback receives a chunk of data. endCallback is called at end-of-stream
     async read (path, callback, endCallback = null)
 
-    // Write a file
+    // Write a file, return bytes written
     // driver must be able to handle a generator or a stream
     async write (path, generatorOrReadableStream)
 

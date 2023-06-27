@@ -10,7 +10,7 @@ const {
     getCipher, getDecipher
 } = require("../util/crypt")
 
-const { readStream } = require("../index")
+const { readStream } = require('mobiletto-common')
 
 describe('crypto test', () => {
     const enc = {
