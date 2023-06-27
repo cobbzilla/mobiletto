@@ -8,7 +8,7 @@ const {
     normalizeKey, normalizeIV,
     encrypt, decrypt,
     getCipher, getDecipher
-} = require("../util/crypt")
+} = require("mobiletto-base/util/crypt")
 
 const { readStream } = require('mobiletto-common')
 
