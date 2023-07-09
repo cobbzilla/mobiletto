@@ -1,1 +1,1 @@
-declare module "mobiletto-driver-b2"
+declare module "mobiletto-driver-b2";
