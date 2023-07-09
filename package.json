@@ -1,8 +1,8 @@
 {
   "name": "mobiletto",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "A storage layer that presents a uniform interface to Amazon S3, Backblaze B2, and local storage",
-  "main": "index.js",
+  "type": "module",
   "keywords": [
     "storage",
     "s3",
@@ -23,23 +23,37 @@
   },
   "license": "Apache-2.0",
   "scripts": {
-    "test": "mocha --timeout 60000 ./test/*.spec.js"
+    "test": "mocha --timeout 30000 ./test/crypt.spec.js",
+    "tsc": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "lint": "npx eslint src test",
+    "lint:fix": "npm run lint -- --fix",
+    "prettier": "npx prettier src test --check",
+    "prettier:fix": "npm run prettier -- --write"
   },
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "files": [
+    "lib/"
+  ],
   "devDependencies": {
-    "@babel/core": "^7.22.5",
-    "@babel/node": "^7.22.5",
-    "@babel/preset-env": "^7.22.5",
+    "@types/node": "^20.3.3",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
     "chai": "^4.3.7",
     "dotenv": "^16.3.1",
+    "eslint": "^8.44.0",
+    "eslint-config-prettier": "^8.8.0",
     "mocha": "^10.2.0",
-    "randomstring": "^1.3.0"
+    "prettier": "^2.8.8",
+    "randomstring": "^1.3.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^5.1.6"
   },
   "dependencies": {
-    "mobiletto-base": "^1.0.13",
-    "mobiletto-common": "^1.0.2",
-    "mobiletto-driver-b2": "^1.0.6",
-    "mobiletto-driver-local": "^1.0.3",
-    "mobiletto-driver-s3": "^1.0.5",
-    "mobiletto-driver-indexeddb": "^1.0.1"
+    "mobiletto-base": "^2.0.27",
+    "mobiletto-driver-b2": "^2.0.4",
+    "mobiletto-driver-indexeddb": "^2.0.8",
+    "mobiletto-driver-local": "^2.0.4",
+    "mobiletto-driver-s3": "^2.0.4"
   }
 }
