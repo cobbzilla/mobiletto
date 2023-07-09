@@ -1,7 +1,11 @@
-Mobiletto
-=========
+Mobiletto-lite
+==============
 
 Mobiletto is a JavaScript storage abstraction layer, with optional transparent client-side encryption.
+
+### *this is mobiletto-lite*
+In order to lighten the weight of this npm package, this branch does not include any localized translations
+of the mobiletto documentation. It otherwise works the same as the regular `mobiletto` software.
 
 # Contents
 * [Why Mobiletto?](#Why-Mobiletto?)
