@@ -1,6 +1,6 @@
 export * from "mobiletto-base";
 
-import { MobilettoDriverParameter, registerDriver } from "mobiletto-base";
+import { MobilettoConnectionFunction, MobilettoDriverParameter, registerDriver } from "mobiletto-base";
 
 import { storageClient as localDriver } from "mobiletto-driver-local";
 import { storageClient as s3Driver } from "mobiletto-driver-s3";
@@ -12,4 +12,11 @@ export const registerDrivers = () => {
     registerDriver("s3", s3Driver as MobilettoDriverParameter);
     registerDriver("b2", b2Driver as MobilettoDriverParameter);
     registerDriver("indexeddb", indexeddbDriver as MobilettoDriverParameter);
+};
+
+export const ALL_DRIVERS: Record<string, MobilettoConnectionFunction> = {
+    local: localDriver as MobilettoConnectionFunction,
+    s3: s3Driver as MobilettoConnectionFunction,
+    b2: b2Driver as MobilettoConnectionFunction,
+    indexeddb: indexeddbDriver as MobilettoConnectionFunction,
 };
