@@ -14,9 +14,9 @@ export const registerDrivers = () => {
     registerDriver("indexeddb", indexeddbDriver as MobilettoDriverParameter);
 };
 
-export const ALL_DRIVERS: Record<string, MobilettoConnectionFunction> = {
+export const allDrivers = (): Record<string, MobilettoConnectionFunction> => ({
     local: localDriver as MobilettoConnectionFunction,
     s3: s3Driver as MobilettoConnectionFunction,
     b2: b2Driver as MobilettoConnectionFunction,
     indexeddb: indexeddbDriver as MobilettoConnectionFunction,
-};
+});
