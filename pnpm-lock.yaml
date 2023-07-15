@@ -9,8 +9,8 @@ dependencies:
     specifier: ^2.0.29
     version: 2.0.29
   mobiletto-driver-b2:
-    specifier: ^2.0.5
-    version: 2.0.5
+    specifier: ^2.0.6
+    version: 2.0.6
   mobiletto-driver-indexeddb:
     specifier: ^2.0.9
     version: 2.0.9
@@ -2490,8 +2490,8 @@ packages:
       winston: 3.10.0
     dev: false
 
-  /mobiletto-driver-b2@2.0.5:
-    resolution: {integrity: sha512-eCGnPWPM8TUOmI6oiaNCfihOPtVdEtxN683dzXQ1qEpnGkMofvkZi2NRL8T/rOCEkJQjHBmyfwCsJkxDGc7f5w==}
+  /mobiletto-driver-b2@2.0.6:
+    resolution: {integrity: sha512-sF3UkNQqwgcDLeZzET2eY6hYrgeCaw3UWYKIkEftrZTidWIGjGZAo9RMcopBzrwMsOf/v4hod6dMQbfIFeLJeg==}
     dependencies:
       '@gideo-llc/backblaze-b2-upload-any': 0.1.4
       backblaze-b2: 1.7.0
