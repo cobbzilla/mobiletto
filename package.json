@@ -1,6 +1,6 @@
 {
   "name": "mobiletto-lite",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "A storage layer that presents a uniform interface to Amazon S3, Backblaze B2, and local storage",
   "type": "module",
   "keywords": [
@@ -22,6 +22,9 @@
     "url": "https://github.com/cobbzilla/mobiletto/tree/feature/lite2"
   },
   "license": "Apache-2.0",
+  "scripts": {
+    "tsc": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json"
+  },
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
   "files": [
