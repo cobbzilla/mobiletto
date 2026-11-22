@@ -1,6 +1,6 @@
 {
   "name": "mobiletto",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "A storage layer that presents a uniform interface to Amazon S3, Backblaze B2, and local storage",
   "type": "module",
   "keywords": [
@@ -24,15 +24,15 @@
   "license": "Apache-2.0",
   "scripts": {
     "test": "if [[ -z \"$SKIP_TESTS\" ]] ; then mocha --timeout 60000 ./test/*.spec.js; else echo 'Skipping tests due to SKIP_TESTS env variable'; fi",
-    "tsc": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "tsc": "tsc -p tsconfig.json",
     "lint": "npx eslint src test",
     "lint:fix": "npm run lint -- --fix",
     "prettier": "npx prettier src test --check",
     "prettier:fix": "npm run prettier -- --write",
-    "smoke": "node --input-type=module -e \"const m = await import('mobiletto'); m.registerDrivers(); console.log('ESM smoke OK:', Object.keys(m.allDrivers()).join(','))\" && node -e \"const m = require('mobiletto'); console.log('CJS smoke OK (require(esm)):', typeof m)\"",
+    "smoke": "node --input-type=module -e \"const m = await import('mobiletto'); m.registerDrivers(); console.log('ESM smoke OK:', Object.keys(m.allDrivers()).join(','))\" && node -e \"const m = require('mobiletto'); m.registerDrivers(); console.log('require(esm) smoke OK:', typeof m.mobiletto)\"",
     "release": "pnpm tsc && pnpm smoke && pnpm prettier && pnpm lint && pnpm test"
   },
-  "main": "./lib/cjs/index.js",
+  "main": "./lib/esm/index.js",
   "module": "./lib/esm/index.js",
   "files": [
     "lib/"
@@ -66,9 +66,9 @@
   "exports": {
     ".": {
       "types": "./lib/esm/index.d.ts",
-      "import": "./lib/esm/index.js",
-      "require": "./lib/cjs/index.js"
-    }
+      "default": "./lib/esm/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "types": "./lib/esm/index.d.ts",
   "pnpm": {
