@@ -16,23 +16,23 @@ importers:
   .:
     dependencies:
       mobiletto-base:
-        specifier: ^2.3.2
-        version: 2.3.2
+        specifier: ^2.3.4
+        version: 2.3.4
       mobiletto-driver-b2:
-        specifier: ^2.3.0
-        version: 2.3.0(mobiletto-base@2.3.2)
+        specifier: ^2.3.2
+        version: 2.3.2(mobiletto-base@2.3.4)
       mobiletto-driver-generic:
-        specifier: ^2.2.3
-        version: 2.2.3(mobiletto-base@2.3.2)
+        specifier: ^2.3.2
+        version: 2.3.2(mobiletto-base@2.3.4)
       mobiletto-driver-indexeddb:
-        specifier: ^2.3.0
-        version: 2.3.0(mobiletto-base@2.3.2)
+        specifier: ^2.3.2
+        version: 2.3.2(mobiletto-base@2.3.4)
       mobiletto-driver-local:
-        specifier: ^2.3.0
-        version: 2.3.0(mobiletto-base@2.3.2)
+        specifier: ^2.3.3
+        version: 2.3.3(mobiletto-base@2.3.4)
       mobiletto-driver-s3:
-        specifier: ^2.3.0
-        version: 2.3.0(mobiletto-base@2.3.2)
+        specifier: ^2.3.2
+        version: 2.3.2(mobiletto-base@2.3.4)
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.3.7
@@ -72,7 +72,7 @@ importers:
         version: 17.14.0
       mobiletto-driver-test:
         specifier: file:../mobiletto-driver-test
-        version: file:../mobiletto-driver-test(mobiletto-base@2.3.2)(mocha@12.0.3)
+        version: file:../mobiletto-driver-test(mobiletto-base@2.3.4)(mocha@12.0.3)
       mocha:
         specifier: ^12.0.3
         version: 12.0.3
@@ -925,34 +925,34 @@ packages:
     resolution: {integrity: sha512-tEBHqDnIoM/1rXME1zgka9g6Q2lcoCkxHLuc7ODJ5BxbP5d4c2Z5cGgtXAku59200Cx7diuHTOYfSBD8n6mm8A==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  mobiletto-base@2.3.2:
-    resolution: {integrity: sha512-Sdlhwc8bB0W1MhPk2+e1KuVzt1kH6r9Qa5HwLPSQmIR5+js14nuu3rkoL5HOQGItZm8S1nhcyMj99D70CWD3Aw==}
+  mobiletto-base@2.3.4:
+    resolution: {integrity: sha512-HMvoF2zHA815jcKNAsJVR9tPOXTMhL0PE5yj644phkY+mlOjPGX8WbYv3LY7ON98YRnFl+tSo6JM6Aac6hR60g==}
 
   mobiletto-common@2.3.2:
     resolution: {integrity: sha512-LXjBQrNo67rdKbmGaymmbuIJk2BrUcBfHvXSk08+KMpuCaMS0RL0/O4vUY/2GfJwtP9wQ6YNVUTpWVR+Hj5leg==}
 
-  mobiletto-driver-b2@2.3.0:
-    resolution: {integrity: sha512-BkDWnPUaMIPH9pv2hbuX4YHcMny7pYFlWL+SB4nAZvLutPVHKxrdTzB/OQdCoZpxkJ0jUIVSQj+LqBehIFclfg==}
+  mobiletto-driver-b2@2.3.2:
+    resolution: {integrity: sha512-W8zpr74hczLwOT6TxDWrnOd618/MyzTwj5NJ8M3VOt4d92NfM41c2RONeQdf0cuAXnvoCmRfU6OuwDuSWcCJ4A==}
     peerDependencies:
       mobiletto-base: ^2.2.14
 
-  mobiletto-driver-generic@2.2.3:
-    resolution: {integrity: sha512-BokSNpqm1P8TwZo6MJKqiFmW1dsu/MzVNpBMn2QpSwKSMDBS6DAl3SzTYQuXHlHw/yEUpmnPD3wqdeAm5ptZ9g==}
+  mobiletto-driver-generic@2.3.2:
+    resolution: {integrity: sha512-azQgq7zzkfLrnUy5JcwwP+8YSHtYGqx3QFVnTDSUS1RZ9JTKiKKX2c5HwIyu4URwEfe8pb48l6jIxsN01HSXgQ==}
     peerDependencies:
       mobiletto-base: ^2.3.2
 
-  mobiletto-driver-indexeddb@2.3.0:
-    resolution: {integrity: sha512-/8fpcdV2nrxQAYuzEIPakjNdn/9ACRwIuGlTCJr+JW8cTrQy+y7Wjl5fa23crDl4MnQ3pkusDoVldJ+jtxh/gA==}
+  mobiletto-driver-indexeddb@2.3.2:
+    resolution: {integrity: sha512-1Mes1VFw+zZi9SRe+zaHZ2ZtPgtcxs40MPPdS/nTM0HK7AIMxg+MOKqNSFwUAXCnCXnyBulUD0QjdmFDR3g93w==}
     peerDependencies:
       mobiletto-base: ^2.2.14
 
-  mobiletto-driver-local@2.3.0:
-    resolution: {integrity: sha512-A6nnV6j7EZFmAHoUdAqZMtf1nbgn3N0BgpeyWgKA672ODUkrohoaiI4ADYIb4wOFK7OsVcNDJnnPbcfGStwdng==}
+  mobiletto-driver-local@2.3.3:
+    resolution: {integrity: sha512-drYyeTxsjbwlsOCNA2YwhUoxzuntSZDr7Fm0n7eY7Z9fOX5Glfm+wyvuD1ZJouGXGBeD2We4+JtuT0V0yK/qLw==}
     peerDependencies:
       mobiletto-base: ^2.2.14
 
-  mobiletto-driver-s3@2.3.0:
-    resolution: {integrity: sha512-Bc10hFV/Kjy+Gf6WYNJydrL9o9B56mtekHR5NclEb/Qk9m/o+IzYlgfjzndJtAGuM9488UlRy0DrVpzBU3whYw==}
+  mobiletto-driver-s3@2.3.2:
+    resolution: {integrity: sha512-mhp5NVUnem8YbJtvllF26OiD/ydl3Z40jTzMqXpIseaKr15IZYRbq9HG1xys0EOCFc9E85CssZgSsYfJYB3p1Q==}
     peerDependencies:
       mobiletto-base: ^2.3.2
 
@@ -2152,7 +2152,7 @@ snapshots:
 
   minipass@7.1.3: {}
 
-  mobiletto-base@2.3.2:
+  mobiletto-base@2.3.4:
     dependencies:
       bullmq: 6.7.8(ioredis@6.0.0)
       ioredis: 6.0.0
@@ -2169,39 +2169,39 @@ snapshots:
       consola: 3.4.2
       zilla-util: 1.3.0
 
-  mobiletto-driver-b2@2.3.0(mobiletto-base@2.3.2):
+  mobiletto-driver-b2@2.3.2(mobiletto-base@2.3.4):
     dependencies:
       '@gideo-llc/backblaze-b2-upload-any': 0.1.5
       backblaze-b2: 1.7.1
-      mobiletto-base: 2.3.2
+      mobiletto-base: 2.3.4
     transitivePeerDependencies:
       - debug
       - supports-color
 
-  mobiletto-driver-generic@2.2.3(mobiletto-base@2.3.2):
+  mobiletto-driver-generic@2.3.2(mobiletto-base@2.3.4):
     dependencies:
-      mobiletto-base: 2.3.2
+      mobiletto-base: 2.3.4
 
-  mobiletto-driver-indexeddb@2.3.0(mobiletto-base@2.3.2):
+  mobiletto-driver-indexeddb@2.3.2(mobiletto-base@2.3.4):
     dependencies:
       buffer: 6.0.3
-      mobiletto-base: 2.3.2
+      mobiletto-base: 2.3.4
 
-  mobiletto-driver-local@2.3.0(mobiletto-base@2.3.2):
+  mobiletto-driver-local@2.3.3(mobiletto-base@2.3.4):
     dependencies:
-      mobiletto-base: 2.3.2
+      mobiletto-base: 2.3.4
 
-  mobiletto-driver-s3@2.3.0(mobiletto-base@2.3.2):
+  mobiletto-driver-s3@2.3.2(mobiletto-base@2.3.4):
     dependencies:
       '@aws-sdk/client-s3': 3.1175.0
       '@aws-sdk/lib-storage': 3.1175.0(@aws-sdk/client-s3@3.1175.0)
-      mobiletto-base: 2.3.2
+      mobiletto-base: 2.3.4
 
-  mobiletto-driver-test@file:../mobiletto-driver-test(mobiletto-base@2.3.2)(mocha@12.0.3):
+  mobiletto-driver-test@file:../mobiletto-driver-test(mobiletto-base@2.3.4)(mocha@12.0.3):
     dependencies:
       chai: 6.3.0
       fake-indexeddb: 6.2.8
-      mobiletto-base: 2.3.2
+      mobiletto-base: 2.3.4
       mocha: 12.0.3
       zilla-util: 1.3.0
 

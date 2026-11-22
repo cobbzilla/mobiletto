@@ -1,6 +1,6 @@
 {
   "name": "mobiletto",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "A storage layer that presents a uniform interface to Amazon S3, Backblaze B2, and local storage",
   "type": "module",
   "keywords": [
@@ -56,12 +56,12 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "mobiletto-base": "^2.3.2",
-    "mobiletto-driver-b2": "^2.3.0",
-    "mobiletto-driver-generic": "^2.2.3",
-    "mobiletto-driver-indexeddb": "^2.3.0",
-    "mobiletto-driver-local": "^2.3.0",
-    "mobiletto-driver-s3": "^2.3.0"
+    "mobiletto-base": "^2.3.4",
+    "mobiletto-driver-b2": "^2.3.2",
+    "mobiletto-driver-generic": "^2.3.2",
+    "mobiletto-driver-indexeddb": "^2.3.2",
+    "mobiletto-driver-local": "^2.3.3",
+    "mobiletto-driver-s3": "^2.3.2"
   },
   "exports": {
     ".": {
