@@ -1,6 +1,6 @@
 {
   "name": "mobiletto",
-  "version": "2.0.8",
+  "version": "2.3.0",
   "description": "A storage layer that presents a uniform interface to Amazon S3, Backblaze B2, and local storage",
   "type": "module",
   "keywords": [
@@ -23,12 +23,14 @@
   },
   "license": "Apache-2.0",
   "scripts": {
-    "test": "mocha --timeout 30000 ./test/crypt.spec.js",
+    "test": "if [[ -z \"$SKIP_TESTS\" ]] ; then mocha --timeout 60000 ./test/*.spec.js; else echo 'Skipping tests due to SKIP_TESTS env variable'; fi",
     "tsc": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
     "lint": "npx eslint src test",
     "lint:fix": "npm run lint -- --fix",
     "prettier": "npx prettier src test --check",
-    "prettier:fix": "npm run prettier -- --write"
+    "prettier:fix": "npm run prettier -- --write",
+    "smoke": "node --input-type=module -e \"const m = await import('mobiletto'); m.registerDrivers(); console.log('ESM smoke OK:', Object.keys(m.allDrivers()).join(','))\" && node -e \"const m = require('mobiletto'); console.log('CJS smoke OK (require(esm)):', typeof m)\"",
+    "release": "pnpm tsc && pnpm smoke && pnpm prettier && pnpm lint && pnpm test"
   },
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
@@ -36,24 +38,46 @@
     "lib/"
   ],
   "devDependencies": {
-    "@types/node": "^20.3.3",
-    "@typescript-eslint/eslint-plugin": "^5.61.0",
-    "@typescript-eslint/parser": "^5.61.0",
-    "chai": "^4.3.7",
-    "dotenv": "^16.3.1",
-    "eslint": "^8.44.0",
-    "eslint-config-prettier": "^8.8.0",
-    "mocha": "^10.2.0",
-    "prettier": "^2.8.8",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript": "^5.1.6"
+    "@eslint/eslintrc": "^3.3.7",
+    "@eslint/js": "^10.0.1",
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^26.6.6",
+    "@typescript-eslint/eslint-plugin": "^8.73.0",
+    "@typescript-eslint/parser": "^8.73.0",
+    "chai": "^6.3.0",
+    "dotenv": "^18.0.10",
+    "eslint": "^10.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
+    "mobiletto-driver-test": "file:../mobiletto-driver-test",
+    "mocha": "^12.0.3",
+    "prettier": "^3.10.1",
+    "typescript": "^6.0.3"
   },
   "dependencies": {
-    "mobiletto-base": "^2.0.29",
-    "mobiletto-driver-b2": "^2.0.7",
-    "mobiletto-driver-generic": "^2.0.10",
-    "mobiletto-driver-indexeddb": "^2.0.13",
-    "mobiletto-driver-local": "^2.0.6",
-    "mobiletto-driver-s3": "^2.0.6"
+    "mobiletto-base": "^2.3.2",
+    "mobiletto-driver-b2": "^2.3.0",
+    "mobiletto-driver-generic": "^2.2.3",
+    "mobiletto-driver-indexeddb": "^2.3.0",
+    "mobiletto-driver-local": "^2.3.0",
+    "mobiletto-driver-s3": "^2.3.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./lib/esm/index.d.ts",
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    }
+  },
+  "types": "./lib/esm/index.d.ts",
+  "pnpm": {
+    "overrides": {
+      "brace-expansion@1": "^1.1.21",
+      "minimatch@>=7.0.0 <11.0.1": "^11.0.1",
+      "glob@>=9.0.0 <=14.0.1": "^14.0.2",
+      "@hapi/joi": "npm:joi@^17.13.3",
+      "uuid": "^11.1.1"
+    }
   }
 }

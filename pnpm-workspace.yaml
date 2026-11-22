@@ -1,0 +1,4 @@
+onlyBuiltDependencies:
+  - '@ronomon/crypto-async'
+  - es5-ext
+  - msgpackr-extract
